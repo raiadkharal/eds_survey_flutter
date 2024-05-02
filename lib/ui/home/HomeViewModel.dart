@@ -1,74 +1,72 @@
+import 'dart:async';
+
+import 'package:eds_survey/data/models/WorkStatus.dart';
 import 'package:eds_survey/ui/home/HomeRepository.dart';
 import 'package:eds_survey/utils/Event.dart';
 import 'package:eds_survey/utils/PreferenceUtil.dart';
+import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 import '../../utils/Util.dart';
 
-class HomeViewModel extends ChangeNotifier {
-  late final HomeRepository repository;
-  late ValueNotifier<bool> _isLoading;
-  bool startDay = false;
-  bool endDay = false;
-  bool isLoading = false;
-  Event<String> msg = Event("");
-  Event<String> progressMsg = Event("");
+class HomeViewModel extends GetxController {
+  final HomeRepository _homeRepository;
+  final PreferenceUtil _preferenceUtil;
+  Rx<bool> endDay = Rx<bool>(false);
+  RxString lastSyncDate = "".obs;
 
-  HomeViewModel() {
-    repository = HomeRepository.singleInstance();
-    _isLoading = repository.isLoading();
-
-    addValueListeners();
-  }
-
-  void start() {
-    repository.getToken();
-  }
-
-  void setStartDay() {
-    repository.setStartDay();
-  }
+  HomeViewModel(this._homeRepository, this._preferenceUtil);
 
   void checkDayEnd() {
-    PreferenceUtil.getInstance().then((preferenceUtil) {
-      int lastSyncDate = preferenceUtil.getWorkSyncData().syncDate;
-      if (lastSyncDate != 0) {
-        if (!Util.isDateToday(lastSyncDate)) {
-          repository.startDay().value = false;
-        } else {
-          repository.startDay().value = true;
-        }
+    int lastSyncDate = _preferenceUtil.getWorkSyncData().syncDate;
+    if (lastSyncDate != 0) {
+      if (!Util.isDateToday(lastSyncDate)) {
+        setStartDay(false);
       } else {
-        repository.startDay().value = false;
+        setStartDay(true);
+      }
+    } else {
+      setStartDay(false);
+    }
+  }
+
+  void dayEnd() {
+    _homeRepository.dayEndResults().then((marketVisitList) {
+      if (marketVisitList.isNotEmpty) {
+        showToastMessage("Please upload your latest data");
+      } else {
+        endDay(true);
+        endDay.refresh();
       }
     });
   }
 
-  void addValueListeners() {
-    repository.isLoading().addListener(() {
-      isLoading = repository.isLoading().value;
-      notifyListeners();
-    });
+  void start() => _homeRepository.getToken();
 
-    repository.startDay().addListener(() {
-      startDay = repository.startDay().value;
-      notifyListeners();
-    });
+  void setStartDay(bool value) => _homeRepository.setStartDay(value);
 
-    repository.endDay().addListener(() {
-      endDay = repository.endDay().value;
-      notifyListeners();
-    });
+  void download() => _homeRepository.fetchData(true);
 
-    repository.getMessage().addListener(() {
-      Fluttertoast.showToast(msg: repository.getMessage().value.peekContent());
-      notifyListeners();
-    });
+  void setSyncDate(String date) => lastSyncDate.value = date;
 
-    repository.getProgressMsg().addListener(() {
-      progressMsg = repository.getProgressMsg().value;
-      notifyListeners();
-    });
-  }
+  RxBool isLoading() => _homeRepository.isLoading();
+
+  RxBool startDay() => _homeRepository.startDay();
+
+  Rx<Event<String>> getProgressMsg() => _homeRepository.getProgressMsg();
+
+  Rx<Event<String>> getMessage() => _homeRepository.getMessage();
+
+  bool isDayStarted() => _homeRepository.isDayStarted();
+
+  WorkStatus getWorkSyncData() => _preferenceUtil.getWorkSyncData();
+
+  void updateDayEndStatus() => _homeRepository.updateWorkStatus(false);
+
+  void saveWorkSyncData(WorkStatus status) =>
+      _preferenceUtil.saveWorkSyncData(status);
 }

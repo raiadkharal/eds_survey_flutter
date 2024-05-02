@@ -1,13 +1,24 @@
-import 'package:eds_survey/components/buttons/custom_button.dart';
+import 'package:eds_survey/Route.dart';
+import 'package:eds_survey/components/buttons/CustomButton.dart';
+import 'package:eds_survey/data/WorkWithSingletonModel.dart';
+import 'package:eds_survey/data/db/entities/task_type.dart';
+import 'package:eds_survey/ui/market_visit/feedback/SurveyFeedbackScreen.dart';
+import 'package:eds_survey/ui/outlet/outlet_list/OutletsScreen.dart';
 import 'package:eds_survey/ui/priorities/PrioritiesListItem.dart';
 import 'package:eds_survey/ui/priorities/PrioritiesViewModel.dart';
+import 'package:eds_survey/utils/Enums.dart';
+import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/navigation_drawer/nav_drawer.dart';
+import '../../components/navigation_drawer/MyNavigationDrawer.dart';
+import '../../components/progress_dialogs/PregressDialog.dart';
+import '../../data/SurveySingletonModel.dart';
+import '../../data/db/entities/task.dart';
 import '../../utils/Colors.dart';
 
 class PrioritiesScreen extends StatefulWidget {
@@ -18,29 +29,45 @@ class PrioritiesScreen extends StatefulWidget {
 }
 
 class _PrioritiesScreenState extends State<PrioritiesScreen> {
+  final PrioritiesViewModel controller =
+      Get.put(PrioritiesViewModel(Get.find()));
+
+  late final SurveyType surveyType;
+  late final int outletId;
+
+  @override
+  void initState() {
+    List<dynamic> args = Get.arguments;
+    outletId = args[0];
+    surveyType = args[1];
+    init();
+    setObservers();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<PrioritiesViewModel>(
-      builder: (context, prioritiesViewModel, child) {
-        return Scaffold(
-          backgroundColor: Colors.grey.shade200,
-          drawer: NavDrawer(
-            baseContext: context,
-          ),
-          appBar: AppBar(
-              foregroundColor: Colors.white,
-              backgroundColor: primaryColor,
-              // leading: IconButton(
-              //     onPressed: () {},
-              //     icon: const Icon(
-              //       Icons.menu,
-              //       color: Colors.white,
-              //     )),
-              title: Text(
-                "EDS Survey",
-                style: GoogleFonts.roboto(color: Colors.white),
-              )),
-          body: Column(
+    return Scaffold(
+      backgroundColor: Colors.grey.shade200,
+      drawer: NavDrawer(
+        baseContext: context,
+      ),
+      appBar: AppBar(
+          foregroundColor: Colors.white,
+          backgroundColor: primaryColor,
+          // leading: IconButton(
+          //     onPressed: () {},
+          //     icon: const Icon(
+          //       Icons.menu,
+          //       color: Colors.white,
+          //     )),
+          title: Text(
+            "EDS Survey",
+            style: GoogleFonts.roboto(color: Colors.white),
+          )),
+      body: Stack(
+        children: [
+          Column(
             children: [
               Container(
                 color: Colors.white,
@@ -59,7 +86,8 @@ class _PrioritiesScreenState extends State<PrioritiesScreen> {
                     ),
                     IconButton(
                         onPressed: () {
-                          prioritiesViewModel.addNewTask("task");
+                          controller
+                              .addNewTask(Task(taskId: 1, taskName: null));
                         },
                         icon: const Icon(
                           Icons.add_circle,
@@ -93,7 +121,7 @@ class _PrioritiesScreenState extends State<PrioritiesScreen> {
                           "Target Date",
                           style: GoogleFonts.roboto(
                               color: Colors.black87,
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold),
                         )),
                     const Expanded(child: SizedBox())
@@ -102,23 +130,18 @@ class _PrioritiesScreenState extends State<PrioritiesScreen> {
               ),
               Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: ListView.builder(
-                                    itemCount: prioritiesViewModel.tasks.length,
-                                    itemBuilder: (context, index) {
-                    List<String> tasks = prioritiesViewModel.tasks;
-                    return PrioritiesListItem(
-                      tasks: tasks,
-                      delete: () {
-                        prioritiesViewModel.deleteTaskAtPosition(index);
-                      },
-                    );
-                                    },
-                                  ),
-                  )),
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Obx(
+                  () => PrioritiesList(
+                    taskTypes: controller.tasksTypes.value,
+                    tasks: controller.tasks.value,
+                    surveyType: surveyType,
+                  ),
+                ),
+              )),
               CustomButton(
-                onTap: () {},
-                text: "Next",
+                onTap: () => onNextClick(context),
+                text: surveyType == SurveyType.SURVEY_WITH ? "Finish" : "Next",
                 enabled: true,
                 fontSize: 22,
                 horizontalPadding: 10,
@@ -128,8 +151,143 @@ class _PrioritiesScreenState extends State<PrioritiesScreen> {
               ),
             ],
           ),
-        );
-      },
+          Obx(
+            () => controller.isLoading().value
+                ? const SimpleProgressDialog()
+                : const SizedBox(),
+          )
+        ],
+      ),
     );
+  }
+
+  void init() {
+    if (surveyType == SurveyType.MARKET_VISIT) {
+      controller.loadMVTaskTypes(outletId);
+    } else {
+      controller.loadWWTaskTypes(outletId);
+    }
+  }
+
+  void onNextClick(BuildContext context) {
+    List<Task> tasks = controller.tasks.value;
+
+    if (tasks.isNotEmpty) {
+      for (Task task in tasks) {
+        if (task.taskDate == null || task.remarks == null) {
+          showToastMessage("Please enter task data");
+          return;
+        }
+      }
+    } else {
+      showToastMessage("Please add tasks");
+      return;
+    }
+
+    if (surveyType == SurveyType.MARKET_VISIT) {
+      SurveySingletonModel.getInstance().setTasks(tasks);
+      Get.toNamed(Routes.surveyFeedback, arguments: [outletId, surveyType]);
+    } else {
+      //low memory dialog
+      if (WorkWithSingletonModel.getInstance().getOutletId() == null ||
+          WorkWithSingletonModel.getInstance().getOutletId() == 0) {
+        //Low memory dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Low Memory Resources"),
+            content: const Text(
+                "Your device memory is running low. Please click ok to refresh"),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    return;
+                  },
+                  child: const Text("Ok"))
+            ],
+          ),
+        );
+        return;
+      }
+
+      //finish survey verification
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Finish Survey!"),
+          content: const Text(
+              "Are you sure you want to complete the survey for this outlet?"),
+          actions: [
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+                return;
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "No",
+                  style: GoogleFonts.roboto(
+                      color: primaryColor,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14),
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            InkWell(
+              onTap: () {
+                if (checkTasks(tasks)) {
+                  try {
+                    Navigator.of(context).pop();
+                    controller.priorityRemarksDataSet();
+                  } catch (e) {
+                    showToastMessage(
+                        "Something went Wrong.Please try again later");
+                  }
+                } else {
+                  showToastMessage("Please enter correct data");
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Yes",
+                  style: GoogleFonts.roboto(
+                      color: primaryColor,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  bool checkTasks(List<Task> tasks) {
+    for (Task task in tasks) {
+      if (task.taskDate == null || task.remarks == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void setObservers() {
+    debounce(controller.getMessage(), (event) {
+      showToastMessage(event.peekContent());
+    }, time: const Duration(milliseconds: 200));
+
+    debounce(controller.getPostWorkWithSaved(), (aBoolean) {
+      if (aBoolean) {
+        Get.until((route) => Get.currentRoute == Routes.outletList);
+        WorkWithSingletonModel.getInstance().reset();
+      }
+    }, time: const Duration(milliseconds: 200));
   }
 }

@@ -55,9 +55,17 @@ dependencies:
   json_annotation: ^4.8.1
   connectivity_plus: ^5.0.2
   package_info_plus: ^4.2.0
+  floor: ^1.4.2
+  sqflite: ^2.3.2
+  get_it: ^7.6.7
+  location: ^5.0.3
+  get: ^4.6.6
+  bitmap: ^0.2.0
+  path_provider: ^2.1.2
 
 dev_dependencies:
   build_runner: ^2.4.8
+  floor_generator: ^1.4.2
   flutter_test:
     sdk: flutter
 

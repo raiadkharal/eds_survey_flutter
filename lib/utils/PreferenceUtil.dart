@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:eds_survey/models/work_status.dart';
+import 'package:eds_survey/data/models/Configuration.dart';
+import 'package:eds_survey/data/models/WorkStatus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenceUtil {
@@ -11,8 +12,22 @@ class PreferenceUtil {
   static const String _keyUsername = "username";
   static const String _keyPassword = "password";
   static const String _keySyncData = "sync_date";
+  static const String _keyConfig = "config";
+  static const String _targetOutletsMV = "target_outlets_mv";
+  static const String _targetOutletsWW = "target_outlets_ww";
+  static const String _outletStatus = "outlet_status";
+
 
   PreferenceUtil._(this._sharedPreferences);
+
+  static PreferenceUtil getInstanceSync(SharedPreferences sharedPreferences){
+    if (_instance == null) {
+      return _instance =
+          PreferenceUtil._(sharedPreferences);
+    } else {
+      return _instance!;
+    }
+  }
 
   static Future<PreferenceUtil> getInstance() async {
     if (_instance == null) {
@@ -29,7 +44,9 @@ class PreferenceUtil {
   }
 
   void saveToken(String? token) {
-    _sharedPreferences.setString(_keyToken, token!);
+    if (token != null) {
+      _sharedPreferences.setString(_keyToken, token);
+    }
   }
 
   String getToken() {
@@ -37,28 +54,34 @@ class PreferenceUtil {
   }
 
   void saveUserName(String? username) {
-    _sharedPreferences.setString(_keyUsername, username!);
+    if (username != null) {
+      _sharedPreferences.setString(_keyUsername, username);
+    }
   }
 
   String getUsername() {
-    return _sharedPreferences.getString(_keyUsername) ?? "";
+    return "hassanali";
+    // return _sharedPreferences.getString(_keyUsername) ?? "";
   }
 
   void savePassword(String? password) {
-    _sharedPreferences.setString(_keyPassword, password!);
+    if (password != null) {
+      _sharedPreferences.setString(_keyPassword, password);
+    }
   }
 
   String getPassword() {
-    return _sharedPreferences.getString(_keyPassword) ?? "";
+    return "hassanali1122";
+    // return _sharedPreferences.getString(_keyPassword) ?? "";
   }
 
   WorkStatus getWorkSyncData() {
     final statusStr = _sharedPreferences.getString(_keySyncData) ?? "";
-    
-    if(statusStr.isEmpty){
+
+    if (statusStr.isEmpty) {
       return WorkStatus(0);
     }
-    
+
     // Parse string to work status object and return
     WorkStatus workStatus = WorkStatus.fromJson(jsonDecode(statusStr));
     return workStatus;
@@ -69,4 +92,58 @@ class PreferenceUtil {
 
     _sharedPreferences.setString(_keySyncData, statusStr);
   }
+
+  void saveConfig(Configuration? config) {
+    var configStr = "";
+    if (config != null) {
+      configStr = jsonEncode(config);
+    }
+    _sharedPreferences.setString(_keyConfig, configStr);
+  }
+
+  Configuration getConfig() {
+    final configStr = _sharedPreferences.getString(_keyConfig) ?? "";
+
+    if (configStr.isEmpty) {
+      return Configuration();
+    }
+
+    // Parse string to configuration string to configuration object
+    Configuration config = Configuration.fromJson(jsonDecode(configStr));
+    return config;
+  }
+
+  void setMVTargetOutlets(int? value) {
+    if (value != null) {
+      _sharedPreferences.setInt(_targetOutletsMV, value);
+    }
+  }
+
+  int getMVTargetOutlets() {
+    return _sharedPreferences.getInt(_targetOutletsMV) ?? 0;
+  }
+
+  void setWWTargetOutlets(int? value) {
+    if (value != null) {
+      _sharedPreferences.setInt(_targetOutletsWW, value);
+    }
+  }
+
+  int getWWTargetOutlets() {
+    return _sharedPreferences.getInt(_targetOutletsWW) ?? 0;
+  }
+
+  bool isTestUser() {
+    // return true;
+    return getUsername().startsWith("_");
+  }
+
+  void setOutletStatus(int value) {
+    _sharedPreferences.setInt(_outletStatus, value);
+  }
+
+  int getOutletStatus() {
+    return _sharedPreferences.getInt(_outletStatus) ?? 1;
+  }
+
 }

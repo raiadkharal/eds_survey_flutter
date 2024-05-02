@@ -1,6 +1,7 @@
 
 import 'package:eds_survey/data_source/remote/response/ApiResponse.dart';
-import 'package:eds_survey/models/LoggedInUser.dart';
+
+import '../../data/models/LoggedInUser.dart';
 
 
 abstract class LoginResult{

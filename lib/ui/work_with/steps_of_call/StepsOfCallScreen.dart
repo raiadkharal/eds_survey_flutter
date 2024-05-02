@@ -1,28 +1,44 @@
+import 'package:eds_survey/Route.dart';
+import 'package:eds_survey/ui/work_with/execution_standards/ExecutionStandardsScreen.dart';
 import 'package:eds_survey/ui/work_with/execution_standards/QuestionListItem.dart';
+import 'package:eds_survey/ui/work_with/remarks/RemarksScreen.dart';
 import 'package:eds_survey/ui/work_with/steps_of_call/StepsOfCallListItem.dart';
+import 'package:eds_survey/ui/work_with/steps_of_call/StepsOfCallViewModel.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart';
 
-import '../../../components/buttons/custom_button.dart';
-import '../../../components/navigation_drawer/nav_drawer.dart';
+import '../../../components/buttons/CustomButton.dart';
+import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../../utils/Colors.dart';
+import '../../../utils/Enums.dart';
 
-class StepOfCallScreen extends StatelessWidget {
+class StepOfCallScreen extends StatefulWidget {
+
   const StepOfCallScreen({super.key});
 
   @override
+  State<StepOfCallScreen> createState() => _StepOfCallScreenState();
+}
+
+class _StepOfCallScreenState extends State<StepOfCallScreen> {
+  final StepsOfCallViewModel controller = Get.put(StepsOfCallViewModel());
+
+  late final SurveyType surveyType;
+  late final int outletId;
+  @override
+  void initState() {
+    List<dynamic> args = Get.arguments;
+    outletId = args[0];
+    surveyType = args[1];
+
+    setObservers();
+
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    List<String> questionsList = [
-      "Prepare for Call",
-      "Greet the Customer",
-      "Stock check",
-      "Merchandising",
-      "Suggest the order",
-      "Presentation",
-      "Curbside DE-Brief",
-      "Confirm Order",
-    ];
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       drawer: NavDrawer(
@@ -62,15 +78,24 @@ class StepOfCallScreen extends StatelessWidget {
           ),
           Expanded(
               child: ListView.builder(
-            itemCount: questionsList.length,
+            itemCount: controller.questionsList.length,
             itemBuilder: (context, index) {
               return StepsCallListItem(
-                text: questionsList[index],
+                text: controller.questionsList[index],
+                onChanged: (value) {
+                  if (value == Verify.yes) {
+                    controller.addResponse(index, "YES");
+                  } else if (value == Verify.no) {
+                    controller.addResponse(index, "NO");
+                  } else {
+                    controller.addResponse(index, null);
+                  }
+                },
               );
             },
           )),
           CustomButton(
-            onTap: () {},
+            onTap: () => controller.validate(),
             text: "Next",
             enabled: true,
             fontSize: 22,
@@ -82,5 +107,13 @@ class StepOfCallScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void setObservers() {
+    debounce(controller.navigate, (aBoolean){
+      if(aBoolean) {
+        Get.toNamed(Routes.remarks,arguments: [outletId,surveyType]);
+      }
+    },time: const Duration(milliseconds: 200));
   }
 }

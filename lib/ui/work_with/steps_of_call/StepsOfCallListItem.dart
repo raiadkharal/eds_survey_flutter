@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../utils/Enums.dart';
+import '../execution_standards/QuestionListItem.dart';
+
 class StepsCallListItem extends StatefulWidget {
   final String text;
-  const StepsCallListItem({super.key, required this.text});
+  final Function(Verify) onChanged;
+  const StepsCallListItem({super.key, required this.text, required this.onChanged});
 
   @override
   State<StepsCallListItem> createState() => _StepsCallListItemState();
 }
 
 class _StepsCallListItemState extends State<StepsCallListItem> {
-  Options? _selectedValue;
+  Verify? _selectedValue;
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +35,15 @@ class _StepsCallListItemState extends State<StepsCallListItem> {
             children: [
               Row(
                 children: [
-                  Radio<Options>(
-                    value: Options.yes,
+                  Radio<Verify>(
+                    value: Verify.yes,
                     activeColor: Colors.blueAccent,
                     groupValue: _selectedValue,
                     onChanged: (value) {
                       setState(() {
                         _selectedValue = value;
                       });
+                      widget.onChanged(value!);
                     },
                   ),
                   Text(
@@ -49,14 +54,15 @@ class _StepsCallListItemState extends State<StepsCallListItem> {
               ),
               Row(
                 children: [
-                  Radio<Options>(
-                    value: Options.no,
+                  Radio<Verify>(
+                    value: Verify.no,
                     activeColor: Colors.blueAccent,
                     groupValue: _selectedValue,
                     onChanged: (value) {
                       setState(() {
                         _selectedValue = value;
                       });
+                      widget.onChanged(value!);
                     },
                   ),
                   Text(
@@ -72,5 +78,3 @@ class _StepsCallListItemState extends State<StepsCallListItem> {
     );
   }
 }
-
-enum Options { yes, no }

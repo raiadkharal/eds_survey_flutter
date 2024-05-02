@@ -1,17 +1,49 @@
-import 'package:eds_survey/components/textfields/custom_text_field.dart';
+import 'package:eds_survey/components/textfields/CustomTextField.dart';
+import 'package:eds_survey/ui/market_visit/feedback/SurveyFeedbackScreen.dart';
 import 'package:eds_survey/ui/work_with/execution_standards/QuestionListItem.dart';
+import 'package:eds_survey/ui/work_with/remarks/RemarksViewModel.dart';
 import 'package:eds_survey/ui/work_with/steps_of_call/StepsOfCallListItem.dart';
+import 'package:eds_survey/utils/Enums.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart';
 
-import '../../../components/buttons/custom_button.dart';
-import '../../../components/navigation_drawer/nav_drawer.dart';
+import '../../../Route.dart';
+import '../../../components/buttons/CustomButton.dart';
+import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../../utils/Colors.dart';
 
-class RemarksScreen extends StatelessWidget {
+class RemarksScreen extends StatefulWidget {
+
   const RemarksScreen({super.key});
 
+  @override
+  State<RemarksScreen> createState() => _RemarksScreenState();
+}
+
+class _RemarksScreenState extends State<RemarksScreen> {
+  final RemarksViewModel controller = Get.put(RemarksViewModel());
+
+  late final SurveyType surveyType;
+  late final int outletId;
+
+  final TextEditingController _stcController =
+      TextEditingController(text: "0.0/8.0");
+
+  final TextEditingController _esController =
+      TextEditingController(text: "0.0/7.0");
+
+  @override
+  void initState() {
+    List<dynamic> args = Get.arguments;
+    outletId = args[0];
+    surveyType = args[1];
+
+    setObservers();
+    controller.getTotal();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,29 +85,35 @@ class RemarksScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: TextField(
-              decoration: InputDecoration(
-                  filled: true,
-                  contentPadding: const EdgeInsets.all(16),
-                  fillColor: Colors.grey.shade300,
-                  hintText: "Total( For 8 Steps Of Call)",
-                  hintStyle: GoogleFonts.roboto(color: Colors.blueAccent)),
-            ),
+            child:TextField(
+                controller: _stcController,
+                style: GoogleFonts.roboto(color: Colors.black87),
+                decoration: InputDecoration(
+                    filled: true,
+                    enabled: false,
+                    contentPadding: const EdgeInsets.all(8.0),
+                    fillColor: Colors.grey.shade300,
+                    label: const Text("Total( For 8 Steps Of Call)"),
+                    labelStyle: GoogleFonts.roboto(color: Colors.blueAccent)),
+              ),
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: TextField(
-              decoration: InputDecoration(
-                  filled: true,
-                  contentPadding: const EdgeInsets.all(16),
-                  fillColor: Colors.grey.shade300,
-                  hintText: "Total( For Execution Standards)",
-                  hintStyle: GoogleFonts.roboto(color: Colors.blueAccent)),
-            ),
+            child:  TextField(
+                controller: _esController,
+                style: GoogleFonts.roboto(color: Colors.black87),
+                decoration: InputDecoration(
+                    filled: true,
+                    enabled: false,
+                    contentPadding: const EdgeInsets.all(8.0),
+                    fillColor: Colors.grey.shade300,
+                    label: const Text("Total( For Execution Standards)"),
+                    labelStyle: GoogleFonts.roboto(color: Colors.blueAccent)),
+              ),
           ),
           const Expanded(child: SizedBox()),
           CustomButton(
-            onTap: () {},
+            onTap: () => controller.validate(),
             text: "Next",
             enabled: true,
             fontSize: 22,
@@ -87,5 +125,19 @@ class RemarksScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void setObservers() {
+    debounce(controller.navigate, (aBoolean) {
+      if (aBoolean) {
+        Get.toNamed(Routes.surveyFeedback, arguments: [
+          outletId,
+          surveyType
+        ]);
+      }
+    },time: const Duration(milliseconds: 200));
+
+    debounce(controller.stc, (total) => _stcController.text = total,time: const Duration(milliseconds: 200));
+    debounce(controller.es, (total) => _esController.text = total,time: const Duration(milliseconds: 200));
   }
 }

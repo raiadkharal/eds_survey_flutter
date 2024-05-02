@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../components/dropdowns/simple_dropdown.dart';
+import '../../../components/dropdowns/SimpleDropdownButton.dart';
 import '../../../utils/Colors.dart';
 
 class CoolerQuestionListItem extends StatelessWidget {
   final String text;
+  final List<String> options;
+  final Function(String)? onChanged;
 
-  const CoolerQuestionListItem({super.key, required this.text});
+  const CoolerQuestionListItem({super.key, required this.text, required this.options, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +29,13 @@ class CoolerQuestionListItem extends StatelessWidget {
                   fontSize: 16),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
-            child: CustomSimpleDropdownButton(
-              options: ['Item1', 'Item2', 'Item3'],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: SimpleDropdownButton(
+              options: options,
               isExpanded: false,
+              underLined: false,
+              onChanged: onChanged,
             ),
           )
         ],

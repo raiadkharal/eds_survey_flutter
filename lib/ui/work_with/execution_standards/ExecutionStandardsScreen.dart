@@ -1,26 +1,43 @@
+import 'package:eds_survey/Route.dart';
+import 'package:eds_survey/data/MarketVisitResponse.dart';
+import 'package:eds_survey/ui/work_with/execution_standards/ExecutionStandardsViewModel.dart';
 import 'package:eds_survey/ui/work_with/execution_standards/QuestionListItem.dart';
+import 'package:eds_survey/ui/work_with/remarks/RemarksScreen.dart';
+import 'package:eds_survey/ui/work_with/steps_of_call/StepsOfCallScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../components/buttons/custom_button.dart';
-import '../../../components/navigation_drawer/nav_drawer.dart';
+import '../../../components/buttons/CustomButton.dart';
+import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../../utils/Colors.dart';
+import '../../../utils/Enums.dart';
 
-class ExecutionStandards extends StatelessWidget {
-  const ExecutionStandards({super.key});
+class ExecutionStandardsScreen extends StatefulWidget {
+  const ExecutionStandardsScreen({super.key});
 
   @override
+  State<ExecutionStandardsScreen> createState() => _ExecutionStandardsScreenState();
+}
+
+class _ExecutionStandardsScreenState extends State<ExecutionStandardsScreen> {
+  final ExecutionStandardsViewModel controller =
+      Get.put(ExecutionStandardsViewModel());
+
+  late final SurveyType surveyType;
+  late final int outletId;
+
+
+  @override
+  void initState() {
+    List<dynamic> args = Get.arguments;
+    outletId = args[0];
+    surveyType = args[1];
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    List<String> questionsList = [
-      "Prepare for Call",
-      "Greet the Customer",
-      "Stock check",
-      "Merchandising",
-      "Suggest the order",
-      "Presentation",
-      "Curbside DE-Brief",
-      "Confirm Order",
-    ];
+    setObservers();
 
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
@@ -61,22 +78,43 @@ class ExecutionStandards extends StatelessWidget {
           ),
           Expanded(
               child: ListView.builder(
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return QuestionListItem(text: questionsList[index],);
-            },
-          )),
-          const Expanded(child: SizedBox()),
+                itemCount: controller.questionList.length,
+                itemBuilder: (context, index) {
+                  return QuestionListItem(
+                    text: controller.questionList[index],
+                    onChanged: (value) {
+                      if (value == Verify.yes) {
+                        controller.addResponse(index, "YES");
+                      } else if (value == Verify.no) {
+                        controller.addResponse(index, "NO");
+                      } else {
+                        controller.addResponse(index, null);
+                      }
+                    },
+                  );
+                },
+              ),
+              ),
           CustomButton(
-            onTap: () {},
+            onTap:() => controller.validate(),
             text: "Next",
             enabled: true,
             fontSize: 22,
             horizontalPadding: 10,
           ),
-          const SizedBox(height: 10,)
+          const SizedBox(
+            height: 10,
+          )
         ],
       ),
     );
+  }
+
+  void setObservers() {
+    ever(controller.navigate, (aBoolean) {
+      if (aBoolean) {
+        Get.toNamed(Routes.stepsOfCall,arguments: [outletId,surveyType]);
+      }
+    });
   }
 }

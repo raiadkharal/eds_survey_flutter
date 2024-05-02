@@ -1,14 +1,32 @@
+import 'package:eds_survey/Route.dart';
 import 'package:eds_survey/ui/market_visit/coolers_verification/CoolerVerificationScreen.dart';
+import 'package:eds_survey/ui/market_visit/customer_service/CustomerServiceViewModel.dart';
+import 'package:eds_survey/ui/market_visit/stock_information/StockInformationScreen.dart';
+import 'package:eds_survey/utils/Constants.dart';
+import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../components/buttons/custom_button.dart';
-import '../../../components/dropdowns/simple_dropdown.dart';
-import '../../../components/navigation_drawer/nav_drawer.dart';
+import '../../../components/buttons/CustomButton.dart';
+import '../../../components/dropdowns/SimpleDropdownButton.dart';
+import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
+import '../../../data/MarketVisitResponse.dart';
 import '../../../utils/Colors.dart';
+import '../../../utils/Enums.dart';
 
-class CustomerServiceScreen extends StatelessWidget {
-  CustomerServiceScreen({super.key});
+class CustomerServiceScreen extends StatefulWidget {
+  const CustomerServiceScreen({super.key,});
+
+  @override
+  State<CustomerServiceScreen> createState() => _CustomerServiceScreenState();
+}
+
+class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
+  final CustomerServiceViewModel controller = Get.put(CustomerServiceViewModel());
+
+  late final int outletId;
+  late final SurveyType surveyType;
 
   final List<String> questions = [
     "Is delivery made on time",
@@ -17,6 +35,24 @@ class CustomerServiceScreen extends StatelessWidget {
     "Shopkeeper receiving Order SMS Alert"
   ];
 
+  String cs1DmotPepsi="";
+
+  String cS1ItdaPepsi="";
+
+  String cS1ChitPepsi="";
+
+  String cS1SaopPepsi="";
+
+
+  @override
+  void initState() {
+    List<dynamic> args =Get.arguments;
+    outletId=args[0];
+    surveyType=args[1];
+
+    setObservers();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,11 +143,27 @@ class CustomerServiceScreen extends StatelessWidget {
                                       fontSize: 16),
                                 ),
                               ),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                                child: CustomSimpleDropdownButton(
-                                  options: ['Item1', 'Item2', 'Item3'],
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
+                                child: SimpleDropdownButton(
+                                  options: (index == 0 || index == 2)
+                                      ? Constants.confirmation
+                                      : Constants.verify,
                                   isExpanded: false,
+                                  underLined: false,
+                                  onChanged: (value) {
+                                    switch(index){
+                                      case 0: cs1DmotPepsi=value;
+                                      break;
+                                      case 1: cS1ItdaPepsi=value;
+                                      break;
+                                      case 2: cS1ChitPepsi=value;
+                                      break;
+                                      case 3: cS1SaopPepsi=value;
+                                      break;
+                                    }
+                                  },
                                 ),
                               )
                             ],
@@ -125,13 +177,7 @@ class CustomerServiceScreen extends StatelessWidget {
             ),
           ),
           CustomButton(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CoolerVerificationScreen(),
-                  ));
-            },
+            onTap:() => onNextClick(),
             text: "Next",
             enabled: true,
             fontSize: 22,
@@ -140,5 +186,31 @@ class CustomerServiceScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void onNextClick(){
+    List<MarketVisitResponse> marketVisitResponseList = [];
+
+    if (cs1DmotPepsi.isNotEmpty && cS1ItdaPepsi.isNotEmpty && cS1ChitPepsi.isNotEmpty && cS1SaopPepsi.isNotEmpty) {
+      marketVisitResponseList.add(MarketVisitResponse("CS", "CS_DT", cs1DmotPepsi));
+      marketVisitResponseList.add(MarketVisitResponse("CS", "CS_IG", cS1ItdaPepsi));
+      marketVisitResponseList.add(MarketVisitResponse("CS", "CS_CCT", cS1ChitPepsi));
+      marketVisitResponseList.add(MarketVisitResponse("CS", "CS_SA", cS1SaopPepsi));
+      controller.csDataSet(marketVisitResponseList);
+    } else {
+     showToastMessage("Please select Option");
+    }
+  }
+
+  void setObservers() {
+    ever(controller.cs1DataSaved, (aBoolean) {
+      if(aBoolean){
+
+        //TODO-implement check for engro
+        // if (config.getTenantId() == 2)
+
+       Get.toNamed(Routes.stockInformation,arguments: [outletId,surveyType]);
+      }
+    });
   }
 }

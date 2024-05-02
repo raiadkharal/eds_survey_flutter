@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:eds_survey/components/buttons/custom_button.dart';
+import 'package:eds_survey/components/buttons/CustomButton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:signature/signature.dart';
 
-import '../../components/navigation_drawer/nav_drawer.dart';
+import '../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../utils/Colors.dart';
 
 class SignatureScreen extends StatefulWidget {
