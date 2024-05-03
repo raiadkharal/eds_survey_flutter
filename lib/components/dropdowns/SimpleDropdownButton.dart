@@ -4,15 +4,17 @@ import 'package:google_fonts/google_fonts.dart';
 class SimpleDropdownButton extends StatefulWidget {
   final List<String> options;
   final bool isExpanded;
-  final bool underLined;
+  final double textSize;
+  final String? hintText;
+  final bool borderOutlined;
   final Function(String)? onChanged;
 
   const SimpleDropdownButton(
       {super.key,
       required this.options,
       this.isExpanded = true,
-      this.underLined = true,
-      this.onChanged});
+      this.borderOutlined = true,
+      this.onChanged, this.textSize=14.0, this.hintText});
 
   @override
   State<SimpleDropdownButton> createState() => _SimpleDropdownExpiredStockState();
@@ -23,16 +25,9 @@ class _SimpleDropdownExpiredStockState extends State<SimpleDropdownButton> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<String>(
+    return DropdownButtonFormField<String>(
       alignment: AlignmentDirectional.centerEnd,
-      value: selectedValue,
       isExpanded: widget.isExpanded,
-      underline: widget.underLined
-          ? Container(
-              color: Colors.grey,
-              height: 1,
-            )
-          : const SizedBox(),
       items: widget.options.map((option) {
         return DropdownMenuItem(
             alignment: AlignmentDirectional.centerStart,
@@ -45,6 +40,16 @@ class _SimpleDropdownExpiredStockState extends State<SimpleDropdownButton> {
               ),
             ));
       }).toList(),
+      decoration: InputDecoration(
+        hintText: widget.hintText??"",
+          hintStyle: GoogleFonts.roboto(
+              color: Colors.black54),
+          focusedBorder: widget.borderOutlined?
+          const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)):InputBorder.none,
+          focusColor: Colors.grey,
+          isDense: true,
+          border: widget.borderOutlined?
+          const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)):InputBorder.none,),
       onChanged: (value) {
         setState(() {
           selectedValue = value!;

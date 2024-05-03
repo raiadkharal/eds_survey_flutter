@@ -34,7 +34,7 @@ class CoolerQuestionListItem extends StatelessWidget {
             child: SimpleDropdownButton(
               options: options,
               isExpanded: false,
-              underLined: false,
+              borderOutlined: false,
               onChanged: onChanged,
             ),
           )

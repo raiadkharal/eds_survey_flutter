@@ -151,7 +151,7 @@ class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
                                       ? Constants.confirmation
                                       : Constants.verify,
                                   isExpanded: false,
-                                  underLined: false,
+                                  borderOutlined: false,
                                   onChanged: (value) {
                                     switch(index){
                                       case 0: cs1DmotPepsi=value;

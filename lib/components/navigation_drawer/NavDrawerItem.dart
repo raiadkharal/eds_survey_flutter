@@ -1,3 +1,4 @@
+import 'package:eds_survey/Route.dart';
 import 'package:eds_survey/ui/home/HomeViewModel.dart';
 import 'package:eds_survey/ui/login/LoginScreen.dart';
 import 'package:eds_survey/utils/PreferenceUtil.dart';
@@ -31,9 +32,10 @@ class _NavDrawerItemListState extends State<NavDrawerItemList> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           menuItem(1, "My Account", FontAwesomeIcons.solidUserCircle),
-          menuItem(2, "Check for Update", Icons.refresh),
-          menuItem(3, "Version", Icons.abc),
-          menuItem(4, "Logout", Icons.login_outlined),
+          menuItem(2, "Outlet Request", FontAwesomeIcons.file),
+          menuItem(3, "Check for Update", Icons.refresh),
+          menuItem(4, "Version", Icons.abc),
+          menuItem(5, "Logout", Icons.login_outlined),
         ],
       ),
     );
@@ -66,12 +68,16 @@ class _NavDrawerItemListState extends State<NavDrawerItemList> {
         Fluttertoast.showToast(msg: "Account");
         break;
       case 2:
-        Fluttertoast.showToast(msg: "Update");
+        Navigator.of(context).pop();
+        Get.toNamed(Routes.outletRequest);
         break;
       case 3:
-        Fluttertoast.showToast(msg: "Version");
+        Fluttertoast.showToast(msg: "Update");
         break;
       case 4:
+        Fluttertoast.showToast(msg: "Version");
+        break;
+      case 5:
         showDialog(
           context: context,
           builder: (context) {

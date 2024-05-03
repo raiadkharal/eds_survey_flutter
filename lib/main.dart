@@ -9,9 +9,12 @@ import 'package:eds_survey/ui/market_visit/gandola/GandolaScreen.dart';
 import 'package:eds_survey/ui/market_visit/load_outlets/LoadOutletsScreen.dart';
 import 'package:eds_survey/ui/market_visit/stock_information/StockInformationScreen.dart';
 import 'package:eds_survey/ui/market_visit/stock_information/StockInformationViewModel.dart';
+import 'package:eds_survey/ui/new_outlet_request/NewOutletRequestScreen.dart';
 import 'package:eds_survey/ui/outlet/merchandising/MerchandisingScreen.dart';
 import 'package:eds_survey/ui/outlet/outlet_list/OutletsScreen.dart';
 import 'package:eds_survey/ui/outlet/summary/OutletSummaryScreen.dart';
+import 'package:eds_survey/ui/outlet_request/OutletRequestScreen.dart';
+import 'package:eds_survey/ui/outlet_request/draft/DraftScreen.dart';
 import 'package:eds_survey/ui/priorities/PrioritiesScreen.dart';
 import 'package:eds_survey/ui/upload/UploadScreen.dart';
 import 'package:eds_survey/ui/work_with/execution_standards/ExecutionStandardsScreen.dart';
@@ -75,6 +78,10 @@ class MyApp extends StatelessWidget {
             name: Routes.remarks, page: () => const RemarksScreen(),transition: Transition.rightToLeft),
         GetPage(
             name: Routes.upload, page: () => const UploadScreen(),transition: Transition.rightToLeft),
+        GetPage(
+            name: Routes.outletRequest, page: () => const OutletRequestScreen(),transition: Transition.rightToLeft),
+        GetPage(
+            name: Routes.newOutletRequest, page: () => const NewOutletRequestScreen(),transition: Transition.rightToLeft),
 
       ],
     );

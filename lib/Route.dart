@@ -17,4 +17,6 @@ class Routes{
   static const String remarks = "/remarks";
   static const String stepsOfCall = "/stepsOfCall";
   static const String upload = "/upload";
+  static const String outletRequest = "/outletRequest";
+  static const String newOutletRequest = "/newOutletRequest";
 }

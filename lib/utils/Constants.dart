@@ -7,6 +7,7 @@ class Constants {
   static const String GENERIC_ERROR2 = "Something went wrong, Please try again!";
   static const String LOADED = "Loaded Successfully!";
   static String ERROR_DAY_NO_STARTED = "You have not even started your day";
+  static const String PHONE_NUMBER_HELPER_TEXT="923XXXXXXXXX";
 
    static const int MERCHANDISE_BEFORE_IMAGE = 0;
    static const int MERCHANDISE_AFTER_IMAGE = 1;
