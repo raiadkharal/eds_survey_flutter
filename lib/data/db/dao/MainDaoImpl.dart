@@ -23,7 +23,10 @@ import 'package:eds_survey/utils/Utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../models/DocumentTable.dart';
 import '../entities/market_visit.dart';
+import '../entities/outlet_request/OutletTable.dart';
+import '../entities/outlet_request/RequestForm.dart';
 
 class MainDaoImpl extends MainDao {
   final Database _database;
@@ -446,7 +449,6 @@ class MainDaoImpl extends MainDao {
     return result.map((json) => WTaskType.fromJson(json)).toList();
   }
 
-
   @override
   Future<int> workWithOutletCount(int routeId) async {
     final List<Map<String, dynamic>> result = await _database
@@ -511,7 +513,7 @@ class MainDaoImpl extends MainDao {
   }
 
   @override
-  void insertMarketVisitData(MarketVisit marketVisit) async{
+  void insertMarketVisitData(MarketVisit marketVisit) async {
     _database.insert("MarketVisit", marketVisit.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
@@ -526,9 +528,8 @@ class MainDaoImpl extends MainDao {
     );
   }
 
-
   @override
-  void updateMarketSurvey(MarketVisit marketVisit) async{
+  void updateMarketSurvey(MarketVisit marketVisit) async {
     _database.update(
       "MarketVisit",
       marketVisit.toJson(),
@@ -536,7 +537,6 @@ class MainDaoImpl extends MainDao {
       whereArgs: [marketVisit.outletId],
     );
   }
-
 
   @override
   void updatePreWorkWith(WorkWithPre workWithPre) {
@@ -549,7 +549,7 @@ class MainDaoImpl extends MainDao {
   }
 
   @override
-  Future<MarketVisit> findMarketVisitById(int outletId) async{
+  Future<MarketVisit> findMarketVisitById(int outletId) async {
     final List<Map<String, dynamic>> results = await _database.query(
       'MarketVisit',
       where: 'outletId = ?',
@@ -566,58 +566,159 @@ class MainDaoImpl extends MainDao {
   }
 
   @override
-  Future<List<Product>?> getAllSkus() async{
+  Future<List<Product>?> getAllSkus() async {
     final result = await _database.rawQuery("Select * from LookUpData");
     LookUpData lookUpData = LookUpData.fromJson(result.first);
     return lookUpData.products;
   }
 
   @override
-  Future<LookUpData> getBrandsAndPackages() async{
+  Future<LookUpData> getBrandsAndPackages() async {
     final result = await _database.rawQuery("Select * from LookUpData");
     LookUpData lookUpData = LookUpData.fromJson(result.first);
     return lookUpData;
   }
 
   @override
-  Future<List<WorkWithPost>> getAllPostWork() async{
-   final result = await _database.query("WorkWithPost");
+  Future<List<WorkWithPost>> getAllPostWork() async {
+    final result = await _database.query("WorkWithPost");
 
-   return result.map((e) => WorkWithPost.fromJson(e)).toList();
+    return result.map((e) => WorkWithPost.fromJson(e)).toList();
   }
 
   @override
-  Future<List<WorkWithPre>> getAllPreWork() async{
+  Future<List<WorkWithPre>> getAllPreWork() async {
     final result = await _database.query("WorkWithPre");
 
     return result.map((e) => WorkWithPre.fromJson(e)).toList();
   }
 
   @override
-  Future<List<MarketVisit>> getMarketSurveys() async{
+  Future<List<MarketVisit>> getMarketSurveys() async {
     final result = await _database.query("MarketVisit");
 
     return result.map((e) => MarketVisit.fromJson(e)).toList();
   }
 
   @override
-  Future<List<MarketVisit>> getUnSyncedSurveys() async{
-    final result = await _database.rawQuery("SELECT * FROM MarketVisit WHERE synced==0");
+  Future<List<MarketVisit>> getUnSyncedSurveys() async {
+    final result =
+        await _database.rawQuery("SELECT * FROM MarketVisit WHERE synced==0");
 
     return result.map((e) => MarketVisit.fromJson(e)).toList();
   }
 
   @override
   Future<List<WorkWithPre>> getAllUnSyncedPreWork() async {
-    final result = await _database.rawQuery("SELECT * FROM WorkWithPre WHERE synced==0");
+    final result =
+        await _database.rawQuery("SELECT * FROM WorkWithPre WHERE synced==0");
 
     return result.map((e) => WorkWithPre.fromJson(e)).toList();
   }
 
   @override
-  Future<List<WorkWithPost>> getAllUnSyncedPostWork() async{
-    final result = await _database.rawQuery("SELECT * FROM WorkWithPost WHERE synced==0");
+  Future<List<WorkWithPost>> getAllUnSyncedPostWork() async {
+    final result =
+        await _database.rawQuery("SELECT * FROM WorkWithPost WHERE synced==0");
 
     return result.map((e) => WorkWithPost.fromJson(e)).toList();
+  }
+
+  @override
+  Future<void> updateRequest(RequestForm outletRequestForm) async {
+    try {
+      _database.update(
+        "RequestForm",
+        outletRequestForm.toJson(),
+        where: 'formId = ?',
+        whereArgs: [outletRequestForm.formId],
+      );
+    } catch (e) {
+      showToastMessage(e.toString());
+    }
+  }
+
+  @override
+  Future<void> addRequest(RequestForm outletRequestForm) async {
+    try {
+      _database.insert("RequestForm", outletRequestForm.toJson(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    } catch (e) {
+      showToastMessage(e.toString());
+    }
+  }
+
+  @override
+  Future<List<RequestForm>> getDraftForm(int formId) async {
+    final result = await _database
+        .query("RequestForm", where: 'requesTypeId = ?', whereArgs: [formId]);
+
+    return result.map((e) => RequestForm.fromJson(e)).toList();
+  }
+
+  @override
+  Future<List<RequestForm>> getRevertedForms(int formId, int revertedId) async {
+    final result = await _database.query("DocumentTable",
+        where: 'requesTypeId = ? and workflowStateId = ?',
+        whereArgs: [formId, revertedId]);
+
+    return result.map((e) => RequestForm.fromJson(e)).toList();
+  }
+
+  @override
+  Future<List<RequestForm>> getSyncedForms(revertedId, int formId) async {
+    final result = await _database.query("DocumentTable",
+        where: 'requesTypeId = ? and workflowStateId != ?',
+        whereArgs: [formId, revertedId]);
+
+    return result.map((e) => RequestForm.fromJson(e)).toList();
+  }
+
+  @override
+  Future<void> insertDocuments(List<DocumentTable>? documentTableList) async {
+    if (documentTableList != null && documentTableList.isNotEmpty) {
+      for (DocumentTable document in documentTableList) {
+        _database.insert("DocumentTable", document.toJson(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+    }
+  }
+
+  @override
+  Future<void> insertOutletTable(List<OutletTable>? outlets) async {
+    if (outlets != null) {
+      for (OutletTable outlet in outlets) {
+        _database.insert("OutletTable", outlet.toJson(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+    }
+  }
+
+  @override
+  Future<void> deleteOutlets() async {
+    _database.delete("DocumentTable");
+  }
+
+  @override
+  Future<void> deleteDocuments() async {
+    _database.delete("OutletTable");
+  }
+
+  @override
+  Future<void> deleteRequestForm(RequestForm requestForm) async {
+    try {
+      _database.delete("RequestForm",
+          where: "formId = ?", whereArgs: [requestForm.formId]);
+    }catch(e){
+      showToastMessage(e.toString());
+    }
+  }
+
+  @override
+  Future<List<RequestForm>> getAllUnSyncedRequestForms(int requestId) async{
+      final result = await _database.query(
+          "RequestForm", where: "requesTypeId = ?", whereArgs: [requestId]);
+
+      return result.map((e) => RequestForm.fromJson(e)).toList();
   }
 }

@@ -155,18 +155,19 @@ class _CoolerVerificationScreenState extends State<CoolerVerificationScreen> {
                           text: questions[index],
                           options: index <= 1 ? verify : percentage,
                           onChanged: (value) {
+                            String parsedValue =value as String;
                             switch (index) {
                               case 0:
-                                cVcwPepsi = value;
+                                cVcwPepsi =parsedValue;
                                 break;
                               case 1:
-                                cVccPepsiString = value;
+                                cVccPepsiString = parsedValue;
                                 break;
                               case 2:
-                                cVcClPepsi = value;
+                                cVcClPepsi = parsedValue;
                                 break;
                               case 3:
-                                cVcCiPepsi = value;
+                                cVcCiPepsi = parsedValue;
                                 break;
                             }
                           },

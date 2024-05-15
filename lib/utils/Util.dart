@@ -14,6 +14,7 @@ class Util {
   static const String DATE_FORMAT_3 = "MMM-dd";
   static const String DATE_FORMAT_5 = "hh:mm a";
   static const String DATE_FORMAT_4 = "MM/dd/yyyy hh:mm a";
+  static const String DATE_FORMAT_6 = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
   static Future<Uint8List?> getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);

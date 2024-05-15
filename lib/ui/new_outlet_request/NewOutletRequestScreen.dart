@@ -1,4 +1,6 @@
+import 'package:eds_survey/data/models/FormOneModel.dart';
 import 'package:eds_survey/ui/new_outlet_request/form_one/FormOne.dart';
+import 'package:eds_survey/ui/new_outlet_request/form_one/FormOneViewModel.dart';
 import 'package:eds_survey/ui/new_outlet_request/form_two/FormTwo.dart';
 import 'package:eds_survey/ui/outlet_request/draft/DraftScreen.dart';
 import 'package:eds_survey/ui/outlet_request/reverted/RevertedScreen.dart';
@@ -16,9 +18,10 @@ class NewOutletRequestScreen extends StatefulWidget {
 
 class _NewOutletRequestScreenState extends State<NewOutletRequestScreen> {
   final List<Widget> pages = [
-    FormOne(),
-    FormTwo(),
+    const FormOne(),
+    const FormTwo(),
   ];
+  late PageController _pageController;
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +30,15 @@ class _NewOutletRequestScreenState extends State<NewOutletRequestScreen> {
         foregroundColor: Colors.black,
         backgroundColor: Colors.white,
         actions: [
-          IconButton(
-              onPressed: () {
-                showToastMessage("Sync clicked");
-              },
-              icon: const Icon(Icons.sync)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.sync)),
           TextButton(
               onPressed: () {
-                showToastMessage("ok clicked");
+               // FormOneModel? formOneModel = _formOne.getFormOneModel();
+               // if(formOneModel==null){
+               //   showToastMessage("Form is null");
+               // }else{
+               //   showToastMessage("Form one saved");
+               // }
               },
               child: Text(
                 "OK",

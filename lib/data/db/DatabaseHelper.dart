@@ -1,23 +1,11 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static const _databaseVersion = 1;
+  static const _databaseVersion = 2;
   static const _databaseName = "eds_survey";
 
   DatabaseHelper._privateConstructor();
-
-  // static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
-  //
-  // // only have a single app-wide reference to the database
-  // static Database? _database;
-
-  // // only have a single app-wide reference to the database
-  // Future<Database> get database async {
-  //   if (_database != null) return _database!;
-  //   _database = await _initDatabase();
-  //   return _database!;
-  // }
 
   // this opens the database (and creates it if it doesn't exist)
   static Future<Database> initDatabase() async {
@@ -31,7 +19,8 @@ class DatabaseHelper {
       onUpgrade: (db, oldVersion, newVersion) async {
         await upgradeTables(db);
       },
-      onDowngrade: (db, oldVersion, newVersion) async=>  await upgradeTables(db),
+      onDowngrade: (db, oldVersion, newVersion) async =>
+          await upgradeTables(db),
     );
   }
 
@@ -76,6 +65,194 @@ class DatabaseHelper {
         'CREATE TABLE IF NOT EXISTS `WorkWithPost` (`outletId` INTEGER NOT NULL, `synced` INTEGER, `data` TEXT, PRIMARY KEY (`outletId`))');
     await database.execute(
         'CREATE TABLE IF NOT EXISTS `MarketVisit` (`outletId` INTEGER NOT NULL, `synced` INTEGER, `data` TEXT, PRIMARY KEY (`outletId`))');
+    await database.execute('''
+CREATE TABLE IF NOT EXISTS 'RequestForm' ('form_id' INTEGER PRIMARY KEY AUTOINCREMENT,
+    'id' INTEGER,
+    'code' INTEGER,
+    'workflowId' INTEGER,
+    'outletId' INTEGER,
+    'outletCode' TEXT,
+    'outletName' TEXT,
+    'outletStatus' TEXT,
+    'outletAddress' TEXT,
+    'contactPerson' TEXT,
+    'contactPersonPhone' TEXT,
+    'routeName' TEXT,
+    'routeId' INTEGER,
+    'destinationOutletId' INTEGER,
+    'organizationId' INTEGER,
+    'distributionId' INTEGER,
+    'actionId' INTEGER,
+    'requestedById' INTEGER,
+    'competitorExist' INTEGER,
+    'refferedBy' TEXT,
+    'requestDate' TEXT,
+    'createdDate' TEXT,
+    'ytdSalesVolume' INTEGER,
+    'agreedYTDSalesVolume' INTEGER,
+    'cnicFrontImageFilePath' TEXT,
+    'cnicBackImageFilePath' TEXT,
+    'outletImage' TEXT,
+    'outletImagePath' TEXT,
+    'eSignatureFilePath' TEXT,
+    'mdeSignature' TEXT,
+    'distributionName' TEXT,
+    'longitude' REAL,
+    'latitude' REAL,
+    'comments' TEXT,
+    'assignedToId' INTEGER,
+    'assignedTo' TEXT,
+    'assets' TEXT,
+    'success' TEXT,
+    'errorMessage' TEXT,
+    'errorCode' INTEGER,
+    'requestedBy' INTEGER,
+    'requesTypeId' INTEGER,
+    'retrievalTypeId' INTEGER,
+    'vpoClassification' TEXT,
+    'vpoClassificationId' INTEGER,
+    'location' TEXT,
+    'ownerName' TEXT,
+    'ownerFatherName' TEXT,
+    'ownerCNIC' TEXT,
+    'phoneNumber' TEXT,
+    'cityId' INTEGER,
+    'outletTypeId' INTEGER,
+    'marketeTypeId' INTEGER,
+    'tradeClassificationId' INTEGER,
+    'outletClassificationId' INTEGER,
+    'channelId' INTEGER,
+    'isCompetitorExist' INTEGER,
+    'radius' REAL,
+    'contactPerson1' TEXT,
+    'contactPerson1CellNumber' TEXT,
+    'contactPerson2' TEXT,
+    'contactPerson2CellNumber' TEXT,
+    'contactPerson3' TEXT,
+    'contactPerson3CellNumber' TEXT,
+    'pjPs' TEXT,
+    'isPJPFixed' INTEGER,
+    'colorCode' INTEGER,
+    'issuanceCategoryId' INTEGER,
+    'workflowStateId' INTEGER,
+    'workflowState' TEXT,
+    'unit' TEXT,
+    'reason' TEXT,
+    'reasonId' INTEGER,
+    'issuanceCategory' TEXT,
+    'scanningAssets' TEXT,
+    'requestStatus' INTEGER
+);
+''');
+
+    await database.execute('''
+CREATE TABLE IF NOT EXISTS 'DocumentTable' ('document_id' INTEGER PRIMARY KEY AUTOINCREMENT,
+    'id' INTEGER,
+    'code' INTEGER,
+    'workflowId' INTEGER,
+    'outletId' INTEGER,
+    'outletCode' TEXT,
+    'outletName' TEXT,
+    'outletStatus' TEXT,
+    'outletAddress' TEXT,
+    'contactPerson' TEXT,
+    'contactPersonPhone' TEXT,
+    'routeName' TEXT,
+    'routeId' INTEGER,
+    'destinationOutletId' INTEGER,
+    'organizationId' INTEGER,
+    'distributionId' INTEGER,
+    'actionId' INTEGER,
+    'requestedById' INTEGER,
+    'competitorExist' INTEGER,
+    'refferedBy' TEXT,
+    'requestDate' TEXT,
+    'createdDate' TEXT,
+    'ytdSalesVolume' INTEGER,
+    'agreedYTDSalesVolume' INTEGER,
+    'cnicFrontImageFilePath' TEXT,
+    'cnicBackImageFilePath' TEXT,
+    'outletImage' TEXT,
+    'outletImagePath' TEXT,
+    'eSignatureFilePath' TEXT,
+    'mdeSignature' TEXT,
+    'distributionName' TEXT,
+    'longitude' REAL,
+    'latitude' REAL,
+    'comments' TEXT,
+    'assignedToId' INTEGER,
+    'assignedTo' TEXT,
+    'assets' TEXT,
+    'success' TEXT,
+    'errorMessage' TEXT,
+    'errorCode' INTEGER,
+    'requestedBy' INTEGER,
+    'requesTypeId' INTEGER,
+    'retrievalTypeId' INTEGER,
+    'vpoClassification' TEXT,
+    'vpoClassificationId' INTEGER,
+    'location' TEXT,
+    'ownerName' TEXT,
+    'ownerFatherName' TEXT,
+    'ownerCNIC' TEXT,
+    'phoneNumber' TEXT,
+    'cityId' INTEGER,
+    'outletTypeId' INTEGER,
+    'marketeTypeId' INTEGER,
+    'tradeClassificationId' INTEGER,
+    'outletClassificationId' INTEGER,
+    'channelId' INTEGER,
+    'isCompetitorExist' INTEGER,
+    'radius' REAL,
+    'contactPerson1' TEXT,
+    'contactPerson1CellNumber' TEXT,
+    'contactPerson2' TEXT,
+    'contactPerson2CellNumber' TEXT,
+    'contactPerson3' TEXT,
+    'contactPerson3CellNumber' TEXT,
+    'pjPs' TEXT,
+    'isPJPFixed' INTEGER,
+    'colorCode' INTEGER,
+    'issuanceCategoryId' INTEGER,
+    'workflowStateId' INTEGER,
+    'workflowState' TEXT,
+    'unit' TEXT,
+    'reason' TEXT,
+    'reasonId' INTEGER,
+    'issuanceCategory' TEXT,
+    'scanningAssets' TEXT,
+    'requestStatus' INTEGER
+);
+''');
+
+    await database.execute('''CREATE TABLE IF NOT EXISTS `OutletTable` (
+    `outlet_id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `routeId` INTEGER,
+    `routeName` TEXT,
+    `outletId` INTEGER,
+    `outletCode` TEXT,
+    `outletName` TEXT,
+    `location` TEXT,
+    `address` TEXT,
+    `lastScaniningDate` TEXT,
+    `ownerFatherName` TEXT,
+    `contactPerson1` TEXT,
+    `contactPerson1CellNumber` TEXT,
+    `contactNumber` TEXT,
+    `cnic` TEXT,
+    `ownerName` TEXT,
+    `distributionId` INTEGER,
+    `distributionName` TEXT,
+    `organizationId` INTEGER,
+    `organizationName` TEXT,
+    `unitId` INTEGER,
+    `unitName` TEXT,
+    `agreedYTDSalesVolume` INTEGER,
+    `ytdSalesVolume` TEXT,
+    `longitude` REAL,
+    `lattitude` REAL
+);
+''');
   }
 
   static upgradeTables(Database database) async {
@@ -100,6 +277,9 @@ class DatabaseHelper {
     await database.execute('DROP TABLE IF EXISTS `WorkWithPre`');
     await database.execute('DROP TABLE IF EXISTS `WorkWithPost`');
     await database.execute('DROP TABLE IF EXISTS `MarketVisit`');
+    await database.execute('DROP TABLE IF EXISTS `RequestForm`');
+    await database.execute('DROP TABLE IF EXISTS `DocumentTable`');
+    await database.execute('DROP TABLE IF EXISTS `OutletTable`');
 
     //create new tables
     await createTables(database);

@@ -60,7 +60,7 @@ class PreferenceUtil {
   }
 
   String getUsername() {
-    return "hassanali";
+    return "u_1018@hbl.com";
     // return _sharedPreferences.getString(_keyUsername) ?? "";
   }
 
@@ -71,7 +71,7 @@ class PreferenceUtil {
   }
 
   String getPassword() {
-    return "hassanali1122";
+    return "Pass@word1";
     // return _sharedPreferences.getString(_keyPassword) ?? "";
   }
 

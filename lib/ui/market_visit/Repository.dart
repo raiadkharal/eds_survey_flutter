@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -10,11 +11,13 @@ import 'package:eds_survey/data/db/entities/designation.dart';
 import 'package:eds_survey/data/db/entities/look_up_data.dart';
 import 'package:eds_survey/data/db/entities/market_visit.dart';
 import 'package:eds_survey/data/db/entities/outlet.dart';
+import 'package:eds_survey/data/db/entities/outlet_request/RequestForm.dart';
 import 'package:eds_survey/data/db/entities/task_type.dart';
 import 'package:eds_survey/data/db/entities/workwith/Psr.dart';
 import 'package:eds_survey/data/models/BaseResponse.dart';
 import 'package:eds_survey/data/models/Configuration.dart';
 import 'package:eds_survey/data/models/Product.dart';
+import 'package:eds_survey/data/models/Request.dart';
 import 'package:eds_survey/data/models/SurveyModel.dart';
 import 'package:eds_survey/data/models/WorkStatus.dart';
 import 'package:eds_survey/data_source/remote/ApiService.dart';
@@ -26,9 +29,11 @@ import 'package:eds_survey/utils/NetworkManager.dart';
 import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../data/db/entities/distribution.dart';
 import '../../data/db/entities/merchandise.dart';
+import '../../data/db/entities/outlet_request/OutletTable.dart';
 import '../../data/db/entities/route.dart';
 import '../../data/db/entities/workwith/WDistribution.dart';
 import '../../data/db/entities/workwith/WOutlet.dart';
@@ -36,7 +41,9 @@ import '../../data/db/entities/workwith/WRoute.dart';
 import '../../data/db/entities/workwith/WTaskType.dart';
 import '../../data/db/entities/workwith/WorkWithPost.dart';
 import '../../data/db/entities/workwith/WorkWithPre.dart';
+import '../../data/models/DocumentTable.dart';
 import '../../data/models/MerchandisingImage.dart';
+import '../../data/models/RoutesModel.dart';
 import '../../utils/PreferenceUtil.dart';
 import '../../utils/Util.dart';
 
@@ -48,15 +55,22 @@ class Repository extends GetxController {
   late RxBool _isLoading;
   late RxBool _postWorkWithSaved;
   late RxBool _surveySaved;
+  late RxBool _outletRequestSaved;
   late Rx<Event<bool>> _surveySavedWithEvent;
   late Rx<Event<String>> _msg;
+  final RxMap<String, dynamic> _hashMapMutableLiveData =
+      RxMap<String, Object>();
+
+  late Rx<RoutesModel> _routesModelMutableLiveData;
 
   Repository._(this._mainDao, this._preferenceUtil, this._apiService) {
     _isLoading = false.obs;
     _postWorkWithSaved = false.obs;
+    _outletRequestSaved = false.obs;
     _surveySaved = false.obs;
     _surveySavedWithEvent = Event(false).obs;
     _msg = Event("").obs;
+    _routesModelMutableLiveData = Rx<RoutesModel>(RoutesModel());
   }
 
   static Repository getInstance(
@@ -180,31 +194,32 @@ class Repository extends GetxController {
     String finalJson = jsonEncode(workWith.toJson());
     debugPrint("After: $finalJson");
 
-    NetworkManager.getInstance().isConnectedToInternet().then((aBoolean) async{
+    NetworkManager.getInstance().isConnectedToInternet().then((aBoolean) async {
       if (aBoolean) {
         final accessToken = _preferenceUtil.getToken();
 
-       final response = await _apiService.saveWorkWith(workWithModel, accessToken);
+        final response =
+            await _apiService.saveWorkWith(workWithModel, accessToken);
 
-          if (response.status == RequestStatus.SUCCESS) {
-            try {
-              BaseResponse baseResponse =
-                  BaseResponse.fromJson(jsonDecode(response.data));
-              if (bool.parse(baseResponse.success ?? "true")) {
-                onUploadPostWorkWith(
-                    baseResponse, true, workWithModel.getOutletId());
-              } else {
-                setLoading(false);
-                setError(baseResponse.errorMessage);
-              }
-            } catch (e) {
+        if (response.status == RequestStatus.SUCCESS) {
+          try {
+            BaseResponse baseResponse =
+                BaseResponse.fromJson(jsonDecode(response.data));
+            if (bool.parse(baseResponse.success ?? "true")) {
+              onUploadPostWorkWith(
+                  baseResponse, true, workWithModel.getOutletId());
+            } else {
               setLoading(false);
-              showToastMessage("Something went wrong.Please try again later");
+              setError(baseResponse.errorMessage);
             }
-          } else {
+          } catch (e) {
             setLoading(false);
-            setError(response.message);
+            showToastMessage("Something went wrong.Please try again later");
           }
+        } else {
+          setLoading(false);
+          setError(response.message);
+        }
       } else {
         onUploadPostWorkWith(
             BaseResponse.success("true"), false, workWithModel.getOutletId());
@@ -288,9 +303,13 @@ class Repository extends GetxController {
 
   RxBool isLoading() => _isLoading;
 
+  RxBool isOutletRequestSaved() => _outletRequestSaved;
+
   RxBool postWorkWithSaved() => _postWorkWithSaved;
 
   RxBool surveySaved() => _surveySaved;
+
+  Rx<RoutesModel> getRoutesLiveData() => _routesModelMutableLiveData;
 
   void setPostWorkWithSaved(bool value) {
     _postWorkWithSaved.value = value;
@@ -308,6 +327,7 @@ class Repository extends GetxController {
   }
 
   Rx<Event<bool>> getSurveySavedWithEvent() => _surveySavedWithEvent;
+
 
   Rx<Event<String>> getMessage() => _msg;
 
@@ -424,6 +444,8 @@ class Repository extends GetxController {
   void saveMarketVisitInDb(MarketVisit marketVisit) =>
       _mainDao.insertMarketVisitData(marketVisit);
 
+  RxMap<String, dynamic> getHashMapLiveData() => _hashMapMutableLiveData;
+
   void onUpload(
       BaseResponse orderResponseModel, bool isSaveOnline, int? outletId) {
     if (!bool.parse(orderResponseModel.success ?? "true")) {
@@ -488,4 +510,134 @@ class Repository extends GetxController {
   Future<LookUpData> getBrandsAndPackages() {
     return _mainDao.getBrandsAndPackages();
   }
+
+  void addRequest(RequestForm outletRequestForm) {
+    _mainDao
+        .addRequest(outletRequestForm)
+        .whenComplete(() => setRequestSaved(true));
+  }
+
+  void updateRequest(RequestForm outletRequestForm) {
+    _mainDao.updateRequest(outletRequestForm);
+  }
+
+  Future<List<RequestForm>> getDraftForms(int formId) {
+    return _mainDao.getDraftForm(formId);
+  }
+
+  Future<List<RequestForm>> getRevertedForms(int formId, int revertedId) {
+    return _mainDao.getRevertedForms(formId, revertedId);
+  }
+
+  Future<List<RequestForm>> getSyncedForms(revertedId, int formId) {
+    return _mainDao.getSyncedForms(revertedId, formId);
+  }
+
+  Future<void> postOutletRequest(
+      Request request, RequestForm? requestForm) async {
+    setLoading(true);
+
+    bool isOnline = await NetworkManager.getInstance().isConnectedToInternet();
+
+    Map<String, dynamic> hashMap = {};
+    try {
+      if (isOnline) {
+        String accessToken = _preferenceUtil.getToken();
+
+        final response =
+            await _apiService.postOutletRequest(accessToken, request);
+
+        if (response.status == RequestStatus.SUCCESS) {
+          setLoading(false);
+
+          //parse response json to dart model
+          Request request = Request.fromJson(jsonDecode(response.data));
+
+          hashMap["success"] = request.success;
+          hashMap["data"] = request;
+          hashMap["requestForm"] = requestForm;
+          hashMap["errorMessage"] = request.errorMessage;
+          _hashMapMutableLiveData(hashMap);
+        } else {
+          setLoading(false);
+          setError(response.message.toString());
+        }
+      } else {
+        setLoading(false);
+        setError(Constants.NETWORK_ERROR);
+      }
+    } catch (e) {
+      setLoading(false);
+      setError(Constants.GENERIC_ERROR2);
+    }
+  }
+
+  setRequestSaved(bool value) {
+    _outletRequestSaved(value);
+    _outletRequestSaved.refresh();
+  }
+
+  void getRoutesModel() async {
+    NetworkManager.getInstance().isConnectedToInternet().then((isOnline) async {
+      if (isOnline) {
+        try {
+          PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+          // Map<String, dynamic> map = {};
+          // map['operationTypeId'] = isStart ? "1" : "2";
+          // map['statusForApp'] = "2";
+          // map['appVersion'] = "2";
+
+          String accessToken = _preferenceUtil.getToken();
+
+          final response = await _apiService.getRoutesModel(
+              accessToken, packageInfo.buildNumber);
+
+          if (response.status == RequestStatus.SUCCESS) {
+            setLoading(false);
+
+            //parse data into model
+            //TODO- add empty response data check here and update catch block
+            RoutesModel routesModel =
+                RoutesModel.fromJson(jsonDecode(response.data));
+
+            setLoading(false);
+            setProgressMsg(Constants.LOADED);
+            setRoutesLiveData(routesModel);
+          }
+        } catch (e) {
+          setLoading(false);
+          setProgressMsg(Constants.LOADED);
+          setError(Constants.GENERIC_ERROR2);
+        }
+      }
+    });
+  }
+
+  void setRoutesLiveData(RoutesModel routesModel) {
+    _routesModelMutableLiveData(routesModel);
+    _routesModelMutableLiveData.refresh();
+  }
+
+  void deleteTables(bool getRouteTables) async {
+    if (getRouteTables) {
+      _mainDao.deleteDocuments();
+      _mainDao.deleteOutlets();
+    } else {}
+  }
+
+  void addDocuments(List<DocumentTable>? documents) {
+    _mainDao.insertDocuments(documents);
+  }
+
+  void addOutlets(List<OutletTable>? outlets) {
+    _mainDao.insertOutletTable(outlets);
+  }
+
+  void deleteRequestForm(RequestForm requestForm) {
+    _mainDao.deleteRequestForm(requestForm);
+  }
+
+  Future<List<RequestForm>> getAllUnSyncedRequestForms(int requestId) async =>
+      _mainDao.getAllUnSyncedRequestForms(requestId);
 }

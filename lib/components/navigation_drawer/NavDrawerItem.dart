@@ -1,7 +1,9 @@
 import 'package:eds_survey/Route.dart';
 import 'package:eds_survey/ui/home/HomeViewModel.dart';
 import 'package:eds_survey/ui/login/LoginScreen.dart';
+import 'package:eds_survey/utils/Constants.dart';
 import 'package:eds_survey/utils/PreferenceUtil.dart';
+import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,10 +24,16 @@ class NavDrawerItemList extends StatefulWidget {
 
 class _NavDrawerItemListState extends State<NavDrawerItemList> {
 
+  final PreferenceUtil _preferenceUtil = Get.find<PreferenceUtil>();
+
+
+  bool isDayStarted() {
+    return _preferenceUtil.getWorkSyncData().isDayStarted;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
       padding: const EdgeInsets.only(top: 15.0),
       // margin: const EdgeInsets.only(left: 10),
       child: Column(
@@ -42,24 +50,21 @@ class _NavDrawerItemListState extends State<NavDrawerItemList> {
   }
 
   Widget menuItem(int id, String title, IconData icon) {
-    return Material(
-      color: Colors.white,
-      child: InkWell(
-          onTap: () {
-            navigate(id);
-          },
-          child: ListTile(
-            leading: Icon(
-              icon,
-              size: 20,
-              color: Colors.black,
-            ),
-            title: Text(
-              title,
-              style: GoogleFonts.roboto(color: Colors.black, fontSize: 16),
-            ),
-          )),
-    );
+    return InkWell(
+        onTap: () {
+          navigate(id);
+        },
+        child: ListTile(
+          leading: Icon(
+            icon,
+            size: 20,
+            color: Colors.black,
+          ),
+          title: Text(
+            title,
+            style: GoogleFonts.roboto(color: Colors.black, fontSize: 16),
+          ),
+        ));
   }
 
   void navigate(int id) {
@@ -68,8 +73,12 @@ class _NavDrawerItemListState extends State<NavDrawerItemList> {
         Fluttertoast.showToast(msg: "Account");
         break;
       case 2:
-        Navigator.of(context).pop();
-        Get.toNamed(Routes.outletRequest);
+        if(isDayStarted()) {
+          Navigator.of(context).pop();
+          Get.toNamed(Routes.outletRequest);
+        }else{
+          showToastMessage(Constants.ERROR_DAY_NO_STARTED);
+        }
         break;
       case 3:
         Fluttertoast.showToast(msg: "Update");
@@ -87,19 +96,6 @@ class _NavDrawerItemListState extends State<NavDrawerItemList> {
           },
         );
         break;
-      // //logout tab
-      //   case 5:
-      //     Navigator.of(widget.context).pop();
-      //     showDialog(
-      //       context: widget.context,
-      //       builder: (context) {
-      //         return LogoutConfirmationDialog(
-      //           onConfirm: logout,
-      //           onCancel: () => Navigator.of(context).pop(),
-      //         );
-      //       },
-      //     );
-      //     break;
     }
   }
 

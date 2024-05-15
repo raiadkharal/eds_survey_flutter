@@ -1,5 +1,7 @@
 import 'package:eds_survey/data/db/entities/look_up_data.dart';
 import 'package:eds_survey/data/db/entities/merchandise.dart';
+import 'package:eds_survey/data/db/entities/outlet_request/OutletTable.dart';
+import 'package:eds_survey/data/db/entities/outlet_request/RequestForm.dart';
 import 'package:eds_survey/data/db/entities/workwith/Psr.dart';
 import 'package:eds_survey/data/db/entities/workwith/WDistribution.dart';
 import 'package:eds_survey/data/db/entities/workwith/WRoute.dart';
@@ -10,6 +12,7 @@ import 'package:eds_survey/data/db/entities/workwith/WorkWithPre.dart';
 import 'package:eds_survey/data/models/Product.dart';
 import 'package:eds_survey/data/models/WOutletModel.dart';
 
+import '../../models/DocumentTable.dart';
 import '../entities/asset_entity.dart';
 import '../entities/asset_missing_reason.dart';
 import '../entities/designation.dart';
@@ -191,6 +194,29 @@ abstract class MainDao {
   Future<List<WorkWithPre>> getAllUnSyncedPreWork();
 
   Future<List<WorkWithPost>> getAllUnSyncedPostWork();
+
+  Future<void> addRequest(RequestForm outletRequestForm);
+  Future<void> updateRequest(RequestForm outletRequestForm);
+
+  Future<List<RequestForm>> getDraftForm(int formId);
+
+  Future<List<RequestForm>> getRevertedForms(int formId, int revertedId);
+
+  Future<List<RequestForm>> getSyncedForms(revertedId, int formId);
+
+
+  Future<void> insertDocuments(List<DocumentTable>? documentTableList);
+
+  Future<void> insertOutletTable(List<OutletTable>? outlets);
+
+  Future<void> deleteDocuments();
+
+  Future<void> deleteOutlets();
+
+  Future<void> deleteRequestForm(RequestForm requestForm);
+
+  Future<List<RequestForm>> getAllUnSyncedRequestForms(int requestId);
+
 
 // Future<void> insertDesignations(List<Designation> designations);
 //

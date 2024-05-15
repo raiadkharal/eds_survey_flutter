@@ -142,6 +142,5 @@ class LoginScreen extends GetView<LoginViewModel> {
 
   navigateToMainScreen(BuildContext context) {
    Get.offAndToNamed(Routes.home);
-    // Get.to(PrioritiesScreen(outletId: 0));
   }
 }

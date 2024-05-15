@@ -6,3 +6,9 @@ enum SurveyType {
   SURVEY_WITH
 }
 enum Verify { yes, no }
+
+enum ImageType {
+  CNIC_FRONT,
+  CNIC_BACK,
+  OUTLET
+}

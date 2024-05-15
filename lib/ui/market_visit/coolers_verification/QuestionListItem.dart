@@ -7,7 +7,7 @@ import '../../../utils/Colors.dart';
 class CoolerQuestionListItem extends StatelessWidget {
   final String text;
   final List<String> options;
-  final Function(String)? onChanged;
+  final Function(dynamic)? onChanged;
 
   const CoolerQuestionListItem({super.key, required this.text, required this.options, this.onChanged});
 

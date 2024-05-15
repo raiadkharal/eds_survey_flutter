@@ -12,7 +12,6 @@ class NavDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Drawer(
-      backgroundColor: Colors.white,
       child: SingleChildScrollView(
         child: Column(
           children: [

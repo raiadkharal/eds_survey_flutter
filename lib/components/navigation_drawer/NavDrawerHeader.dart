@@ -17,9 +17,10 @@ class NavDrawerHeader extends StatelessWidget {
     return Container(
       color: primaryColor,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      height: 200,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
@@ -29,9 +30,10 @@ class NavDrawerHeader extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.account_circle_rounded,
-                  size: 72,
+                  size: 120,
                   color: Colors.grey,
                 ),
+                const SizedBox(height: 10,),
                 Text(
                   _preferenceUtil.getUsername(),
                   style: GoogleFonts.roboto(fontSize: 20, color: Colors.white),

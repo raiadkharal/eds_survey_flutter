@@ -1,3 +1,4 @@
+import 'package:eds_survey/data/db/entities/outlet_request/RequestForm.dart';
 import 'package:eds_survey/utils/Colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class OutletRequestItem extends StatelessWidget {
-  const OutletRequestItem({super.key});
+  final RequestForm requestForm;
+  const OutletRequestItem({super.key, required this.requestForm});
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +18,8 @@ class OutletRequestItem extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("shop name",style: GoogleFonts.roboto(color: Colors.black,fontSize:18,fontWeight:FontWeight.w500)),
-          Text("shop address",style: GoogleFonts.roboto(color: Colors.grey,fontSize:14)),
+          Text(requestForm.outletName??"",style: GoogleFonts.roboto(color: Colors.black,fontSize:18,fontWeight:FontWeight.w500)),
+          Text(requestForm.outletAddress??"",style: GoogleFonts.roboto(color: Colors.grey,fontSize:14)),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
@@ -43,7 +45,7 @@ class OutletRequestItem extends StatelessWidget {
                     alignment: Alignment.center,
                     color: primaryColor,
                     child: Text(
-                      "REVERTED",
+                      "DRAFT",
                       style: GoogleFonts.roboto(color: Colors.white),
                       textAlign: TextAlign.center,
                     ),

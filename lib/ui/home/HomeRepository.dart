@@ -7,10 +7,13 @@ import 'package:eds_survey/data/db/dao/MainDaoImpl.dart';
 import 'package:eds_survey/data/db/entities/market_visit.dart';
 import 'package:eds_survey/data/db/entities/merchandise.dart';
 import 'package:eds_survey/data/db/entities/outlet.dart';
+import 'package:eds_survey/data/db/entities/outlet_request/OutletTable.dart';
 import 'package:eds_survey/data/db/entities/workwith/WOutlet.dart';
 import 'package:eds_survey/data/models/BaseResponse.dart';
+import 'package:eds_survey/data/models/DocumentTable.dart';
 import 'package:eds_survey/data/models/LogModel.dart';
 import 'package:eds_survey/data/models/MainModel.dart';
+import 'package:eds_survey/data/models/RoutesModel.dart';
 import 'package:eds_survey/data/models/SurveyModel.dart';
 import 'package:eds_survey/data/models/WorkStatus.dart';
 import 'package:eds_survey/data/models/WorkWithResponseModel.dart';
@@ -40,6 +43,7 @@ import '../../utils/Event.dart';
 import '../../utils/Util.dart';
 
 class HomeRepository extends GetxController {
+
   static HomeRepository? _instance;
   final ApiService _apiService;
   final PreferenceUtil _preferenceUtil;
@@ -52,6 +56,7 @@ class HomeRepository extends GetxController {
   final Rx<Event<String>> _msg = Event("").obs;
   final Rx<Event<String>> _progressMsg = Event("").obs;
   late RxBool _uploadCompleted;
+ late Rx<RoutesModel> _routesModelMutableLiveData;
 
   int _remainingTasks = 0, _totalTasks = 0;
 
@@ -67,6 +72,7 @@ class HomeRepository extends GetxController {
     _uploadCompleted = false.obs;
     _isMarketVisitsOutletsLoaded = false.obs;
     _isWorkWithOutletsLoaded = false.obs;
+    _routesModelMutableLiveData = Rx<RoutesModel>(RoutesModel());
   }
 
   void getToken() async {
@@ -125,7 +131,7 @@ class HomeRepository extends GetxController {
     Map<String, dynamic> map = {};
     map['operationTypeId'] = isStart ? "1" : "2";
     map['statusForApp'] = "2";
-    map['appVersion'] = "2";
+    map['appVersion'] = packageInfo.buildNumber;
 
     String accessToken = _preferenceUtil.getToken();
     _apiService.updateStartEndStatus(map, accessToken).then((response) {
@@ -184,8 +190,11 @@ class HomeRepository extends GetxController {
           setLoading(true);
           String accessToken = _preferenceUtil.getToken();
           final response = await _apiService.loadData(accessToken);
-          var mainModel = MainModel.fromJson(jsonDecode(response.data));
+
           if (response.status == RequestStatus.SUCCESS) {
+
+            var mainModel = MainModel.fromJson(jsonDecode(response.data));
+
             if (bool.parse(mainModel.success ?? "true")) {
               onDataLoaded(mainModel, onDayStart);
             } else {
@@ -283,9 +292,12 @@ class HomeRepository extends GetxController {
       String accessToken = _preferenceUtil.getToken();
 
       final response = await _apiService.loadWorkWithData(accessToken);
-      var mainModel = WorkWithResponseModel.fromJson(jsonDecode(response.data));
+
 
       if (response.status == RequestStatus.SUCCESS) {
+
+        var mainModel = WorkWithResponseModel.fromJson(jsonDecode(response.data));
+
         if (bool.parse(mainModel.success ?? "true")) {
           onWorkWithDataLoaded(mainModel, isStart);
         } else {
@@ -336,9 +348,10 @@ class HomeRepository extends GetxController {
           _homeDao.insertPsr(response.psrs!);
         }
       }).whenComplete(() {
-        setLoading(false);
-        setMessage(Constants.LOADED);
-        _onDayStart.value = isStart;
+        // setLoading(false);
+        // setMessage(Constants.LOADED);
+        // _onDayStart.value = isStart;
+        getRoutesModel(isStart);
         _preferenceUtil.setWWTargetOutlets(response.getTargetOutlets() ?? 0);
       }).onError((error, stackTrace) {
         setLoading(false);
@@ -401,7 +414,7 @@ class HomeRepository extends GetxController {
                 _homeDao.insertOutlets(outlets.outlets
                     ?.map((e) => Outlet.fromJson(e.toJson()))
                     .toList());
-               setMarketVisitsLoaded(true);
+                setMarketVisitsLoaded(true);
               }
             } else {
               onError(outlets.errorMessage);
@@ -478,6 +491,8 @@ class HomeRepository extends GetxController {
   RxBool isWorkWithOutletsLoaded() => _isWorkWithOutletsLoaded;
 
   Rx<Event<String>> getMessage() => _msg;
+
+  Rx<RoutesModel> getRoutesLiveData()=>_routesModelMutableLiveData;
 
   bool isDayStarted() {
     return _preferenceUtil.getWorkSyncData().isDayStarted;
@@ -757,27 +772,27 @@ class HomeRepository extends GetxController {
 
         final accessToken = _preferenceUtil.getToken();
 
-       final response =await _apiService
-            .saveWorkWith(workWithSingletonModel, accessToken);
+        final response =
+            await _apiService.saveWorkWith(workWithSingletonModel, accessToken);
 
-          if (response.status == RequestStatus.SUCCESS) {
-            BaseResponse baseResponse =
-                BaseResponse.fromJson(json.decode(response.data));
-            if (bool.parse(baseResponse.success ?? "true")) {
-              workWithPost.synced = true;
-              if (workWithSingletonModel.getOutletId() != null) {
-                _homeDao.deleteAllMerchandiseByOutlet(
-                    workWithSingletonModel.getOutletId()!);
-                deleteAllImageFiles(workWithSingletonModel.getOutletId()!);
-              }
-            } else {
-              setLoading(false);
-              onError(baseResponse.errorMessage);
+        if (response.status == RequestStatus.SUCCESS) {
+          BaseResponse baseResponse =
+              BaseResponse.fromJson(json.decode(response.data));
+          if (bool.parse(baseResponse.success ?? "true")) {
+            workWithPost.synced = true;
+            if (workWithSingletonModel.getOutletId() != null) {
+              _homeDao.deleteAllMerchandiseByOutlet(
+                  workWithSingletonModel.getOutletId()!);
+              deleteAllImageFiles(workWithSingletonModel.getOutletId()!);
             }
           } else {
             setLoading(false);
-            onError(response.message);
+            onError(baseResponse.errorMessage);
           }
+        } else {
+          setLoading(false);
+          onError(response.message);
+        }
       }
     }
     return workWiths;
@@ -791,5 +806,75 @@ class HomeRepository extends GetxController {
   void setWorkWithOutletsLoaded(bool value) {
     _isWorkWithOutletsLoaded.value = value;
     _isWorkWithOutletsLoaded.refresh();
+  }
+
+  void setRoutesLiveData(RoutesModel routesModel){
+    _routesModelMutableLiveData(routesModel);
+    _routesModelMutableLiveData.refresh();
+  }
+
+  void getRoutesModel(bool isStart) async {
+    NetworkManager.getInstance().isConnectedToInternet().then((isOnline) async {
+      if (isOnline) {
+        try {
+          PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+          // Map<String, dynamic> map = {};
+          // map['operationTypeId'] = isStart ? "1" : "2";
+          // map['statusForApp'] = "2";
+          // map['appVersion'] = "2";
+
+          String accessToken = _preferenceUtil.getToken();
+
+          final response = await _apiService.getRoutesModel(accessToken, packageInfo.buildNumber);
+
+          if (response.status == RequestStatus.SUCCESS) {
+            setLoading(false);
+
+            //parse data into model
+            //TODO- add empty response data check here and update catch block
+            RoutesModel routesModel =
+                RoutesModel.fromJson(jsonDecode(response.data));
+            if (bool.parse(routesModel.success ?? "true")) {
+              if (routesModel.outlets != null) {
+
+                setLoading(false);
+                setMessage(Constants.LOADED);
+                _onDayStart.value = isStart;
+                setRoutesLiveData(routesModel);
+
+              } else {
+                onError(routesModel.errorMessage);
+              }
+            } else {
+              setLoading(false);
+              onError(response.message);
+            }
+          }
+        } catch (e) {
+          setLoading(false);
+          setMessage(Constants.LOADED);
+          _onDayStart.value = isStart;
+          onError(Constants.GENERIC_ERROR2);
+        }
+      }
+    });
+  }
+
+  void deleteTables(bool getRouteTables) async{
+    if(getRouteTables){
+      _homeDao.deleteDocuments();
+      _homeDao.deleteOutlets();
+    }else{
+
+    }
+  }
+
+  void addDocuments(List<DocumentTable>? documents) {
+    _homeDao.insertDocuments(documents);
+  }
+
+  void addOutlets(List<OutletTable>? outlets) {
+    _homeDao.insertOutletTable(outlets);
   }
 }

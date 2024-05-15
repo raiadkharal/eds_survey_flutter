@@ -19,4 +19,6 @@ class Routes{
   static const String upload = "/upload";
   static const String outletRequest = "/outletRequest";
   static const String newOutletRequest = "/newOutletRequest";
+  static const String outletRequestFormOne = "/outletRequestFormOne";
+  static const String outletRequestFormTwo = "/outletRequestFormTwo";
 }

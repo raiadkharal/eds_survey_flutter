@@ -7,12 +7,14 @@ import 'package:eds_survey/data_source/remote/response/ApiResponse.dart';
 import 'package:eds_survey/utils/Constants.dart';
 import 'package:http/http.dart' as http;
 
+import '../../data/models/Request.dart';
+
 class ApiService extends ApiInterface {
   //Engro testing url
-  static const _baseUrl = "http://101.50.85.136:84/api/";
+  // static const _baseUrl = "http://101.50.85.136:84/api/";
 
   //pepsi testing url
-  // static const _baseUrl = "http://101.50.85.136:81/api/";
+  static const _baseUrl = "http://101.50.85.136:81/api/";
 
   //pepsi production
   // static const _baseUrl = "https://edshblapi.azurewebsites.net/";
@@ -124,6 +126,36 @@ class ApiService extends ApiInterface {
     return makePostRequest("api/MarketVisit/PostOutletMarketVisit",
         json.encode(surveyModel.toJson()), headers, null);
   }
+
+
+  @override
+  Future<ApiResponse> getRoutesModel(String accessToken, String appVersion) async{
+    final headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken"
+    };
+
+    final queryParameters = {
+      'appVersion': appVersion,
+    };
+
+    return makeGetRequest("AMRoute/GetRouteInformation", headers, queryParameters);
+  }
+
+
+  @override
+  Future<ApiResponse> postOutletRequest(String accessToken, Request request) {
+    final headers = {
+      "Content-Type": "application/json;charset=UTF-8",
+      "Authorization": "Bearer $accessToken"
+    };
+
+    return makePostRequest("AMRequest/PostOutletRequest", jsonEncode(request.toJson()), headers, null);
+  }
+
+
+
+
 
   @override
   Future<ApiResponse> makeGetRequest(String path, Map<String, String> headers,

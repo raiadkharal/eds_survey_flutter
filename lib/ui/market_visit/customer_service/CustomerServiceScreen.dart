@@ -153,14 +153,15 @@ class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
                                   isExpanded: false,
                                   borderOutlined: false,
                                   onChanged: (value) {
+                                    String parsedValue =value as String;
                                     switch(index){
-                                      case 0: cs1DmotPepsi=value;
+                                      case 0: cs1DmotPepsi=parsedValue;
                                       break;
-                                      case 1: cS1ItdaPepsi=value;
+                                      case 1: cS1ItdaPepsi=parsedValue;
                                       break;
-                                      case 2: cS1ChitPepsi=value;
+                                      case 2: cS1ChitPepsi=parsedValue;
                                       break;
-                                      case 3: cS1SaopPepsi=value;
+                                      case 3: cS1SaopPepsi=parsedValue;
                                       break;
                                     }
                                   },

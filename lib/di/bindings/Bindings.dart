@@ -29,13 +29,13 @@ class SurveyBinding implements Bindings {
         permanent: true);
     Get.put<PreferenceUtil>(PreferenceUtil.getInstanceSync(Get.find()),
         permanent: true);
+    Get.put<Repository>(
+        Repository.getInstance(Get.find(), Get.find(), Get.find()),
+        permanent: true);
     Get.put<HomeRepository>(
         HomeRepository.singleInstance(Get.find(), Get.find(), Get.find()),
         permanent: true);
-    Get.put<HomeViewModel>(HomeViewModel(Get.find(), Get.find()),
-        permanent: true);
-    Get.put<Repository>(
-        Repository.getInstance(Get.find(), Get.find(), Get.find()),
+    Get.put<HomeViewModel>(HomeViewModel(Get.find<HomeRepository>(), Get.find<PreferenceUtil>(),Get.find<Repository>()),
         permanent: true);
     Get.put<OutletsViewModel>(OutletsViewModel(Get.find()), permanent: true);
     Get.put<SurveyViewModel>(SurveyViewModel(Get.find(), Get.find()),
