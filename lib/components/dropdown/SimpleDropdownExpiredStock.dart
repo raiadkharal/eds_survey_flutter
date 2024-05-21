@@ -39,6 +39,8 @@ class _SimpleDropdownButtonState extends State<SimpleDropdownExpiredStock> {
       child: DropdownButton<LookUpObject>(
         value: selectedValue,
         isExpanded: widget.isExpanded,
+        isDense: true,
+        menuMaxHeight: 400,
         hint: Text(
           widget.hint,
           style: GoogleFonts.roboto(color: Colors.black54, fontSize: 14),
@@ -53,8 +55,11 @@ class _SimpleDropdownButtonState extends State<SimpleDropdownExpiredStock> {
           return DropdownMenuItem(
               enabled: widget.enabled,
               value: option,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(
-                option.value ?? "",
+                option.value?? "",
+                textAlign: TextAlign.end,
+                overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.roboto(color: Colors.black54, fontSize: 14),
               ));
         }).toList(),

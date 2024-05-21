@@ -17,9 +17,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../components/buttons/CustomButton.dart';
+import '../../../components/button/CustomButton.dart';
 import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
-import '../../../components/progress_dialogs/PregressDialog.dart';
+import '../../../components/progress_dialog/PregressDialog.dart';
 import '../../../utils/Colors.dart';
 import '../../../utils/Utils.dart';
 

@@ -11,16 +11,9 @@ class StockInformationViewModel extends GetxController {
 
   Rx<List<String>> selectedItems = RxList<String>().obs;
 
-  // List<CheckBoxModel> checkList1 = [
-  //   CheckBoxModel("250ml RB", false),
-  //   CheckBoxModel("250ml CAN", false),
-  //   CheckBoxModel("300ml Can", false),
-  //   CheckBoxModel("345ml", false),
-  // ];
-
   StockInformationViewModel(this._repository);
 
-  Future<List<String>?> loadSkus(){
+  Future<List<String>?> loadSkus() {
     return _repository.getAllSkus();
   }
 
@@ -29,25 +22,47 @@ class StockInformationViewModel extends GetxController {
   RxBool sIDataSaved = false.obs;
 
   void addMarketVisitResponse(String value, int index) {
-    switch (index) {
-      case 0:
+    //remove response if already added same in the list
+    removeResponse(MarketVisitResponse("SI", "SI_C${index + 1}", value))
+        .whenComplete(
+      () {
         marketVisitResponseList
             .add(MarketVisitResponse("SI", "SI_C${index + 1}", value));
-        break;
-      case 1:
-        marketVisitResponseList
-            .add(MarketVisitResponse("SI", "SI_C${index + 1}", value));
-        break;
-      case 2:
-        marketVisitResponseList
-            .add(MarketVisitResponse("SI", "SI_C${index + 1}", value));
-        break;
-    }
+      },
+    );
+
+    // switch (index) {
+    //   case 0:
+    //
+    //
+    //     break;
+    //   case 1:
+    //   //remove response if already added same in the list
+    //     removeResponse(MarketVisitResponse("SI", "SI_C${index + 1}", value));
+    //     marketVisitResponseList
+    //         .add(MarketVisitResponse("SI", "SI_C${index + 1}", value));
+    //     break;
+    //   case 2:
+    //   //remove response if already added same in the list
+    //     removeResponse(MarketVisitResponse("SI", "SI_C${index + 1}", value));
+    //     marketVisitResponseList
+    //         .add(MarketVisitResponse("SI", "SI_C${index + 1}", value));
+    //     break;
+    // }
   }
 
-  void setData() {
-    SurveySingletonModel.getInstance().addResponses(marketVisitResponseList);
-    setsIDataSaved(true);
+  void setData() async {
+    //delete all the stock information responses if already have
+    SurveySingletonModel.getInstance()
+        .removeMarketVisitResponsesByCode("SI_C1")
+        .whenComplete(
+      () {
+        //add responses to survey model
+        SurveySingletonModel.getInstance()
+            .addResponses(marketVisitResponseList);
+        setsIDataSaved(true);
+      },
+    );
   }
 
   void setsIDataSaved(bool value) {
@@ -101,6 +116,14 @@ class StockInformationViewModel extends GetxController {
               .getMarketVisitResponses()
               .remove(marketVisitResponse);
         }
+      }
+    }
+  }
+
+  Future<void> removeResponse(MarketVisitResponse visitResponse) async {
+    for (MarketVisitResponse response in marketVisitResponseList) {
+      if (response.isEqual(visitResponse)) {
+        marketVisitResponseList.remove(response);
       }
     }
   }

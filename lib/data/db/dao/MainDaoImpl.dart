@@ -573,7 +573,7 @@ class MainDaoImpl extends MainDao {
   }
 
   @override
-  Future<LookUpData> getBrandsAndPackages() async {
+  Future<LookUpData> getLookUpData() async {
     final result = await _database.rawQuery("Select * from LookUpData");
     LookUpData lookUpData = LookUpData.fromJson(result.first);
     return lookUpData;

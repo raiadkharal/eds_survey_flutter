@@ -31,7 +31,7 @@ class ExpiredStockViewModel extends GetxController {
   }
 
   void getBrandsAndPackages() async{
-    _repository.getBrandsAndPackages().then((lookUpData) {
+    _repository.getLookUpData().then((lookUpData) {
       packages.addAll(lookUpData.packages??[]);
       brands.addAll(lookUpData.brands??[]);
     });

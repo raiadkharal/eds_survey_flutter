@@ -7,6 +7,7 @@ import 'package:eds_survey/ui/market_visit/coolers_verification/CoolerVerificati
 import 'package:eds_survey/ui/market_visit/coolers_verification/QuestionListItem.dart';
 import 'package:eds_survey/ui/market_visit/expired_stock/ExpiredStockScreen.dart';
 import 'package:eds_survey/ui/market_visit/stock_information/StockInformationScreen.dart';
+import 'package:eds_survey/utils/Constants.dart';
 import 'package:eds_survey/utils/PreferenceUtil.dart';
 import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../components/buttons/CustomButton.dart';
-import '../../../components/dropdowns/SimpleDropdownButton.dart';
+import '../../../components/button/CustomButton.dart';
+import '../../../components/dropdown/SimpleDropdownButton.dart';
 import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../../data/MarketVisitResponse.dart';
 import '../../../utils/Colors.dart';
@@ -43,17 +44,6 @@ class _CoolerVerificationScreenState extends State<CoolerVerificationScreen> {
   late final SurveyType surveyType;
 
   bool isEngroUser = false;
-
-  final List<String> verify = ["", "Yes", "No"];
-
-  final List<String> percentage = [
-    "",
-    "0-20%",
-    "21-40%",
-    "41-60%",
-    "61-80%",
-    "81-100%"
-  ];
 
   String cVcCiPepsi = "";
 
@@ -153,7 +143,7 @@ class _CoolerVerificationScreenState extends State<CoolerVerificationScreen> {
                       itemBuilder: (context, index) {
                         return CoolerQuestionListItem(
                           text: questions[index],
-                          options: index <= 1 ? verify : percentage,
+                          options: index <= 1 ? Constants.verify : Constants.percentage,
                           onChanged: (value) {
                             String parsedValue =value as String;
                             switch (index) {

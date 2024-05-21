@@ -25,6 +25,9 @@ class Task {
   @JsonKey(name: 'remarks')
   String? remarks;
 
+  @JsonKey(name: "missingSkus")
+  String? missingSkus;
+
   Task({
     required this.taskId,
     this.taskName,
@@ -32,7 +35,8 @@ class Task {
     this.outletId,
     this.completedDate,
     this.status,
-    this.remarks
+    this.remarks,
+    this.missingSkus
   });
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);

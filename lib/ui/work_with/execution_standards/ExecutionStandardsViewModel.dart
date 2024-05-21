@@ -51,7 +51,7 @@ class ExecutionStandardsViewModel extends GetxController {
     }
   }
 
-  void validate() {
+  void onNextClick() {
     if (responseList.length < 7 || _containsNull(responseList)) {
       showToastMessage("Please Complete Form Values");
     } else {

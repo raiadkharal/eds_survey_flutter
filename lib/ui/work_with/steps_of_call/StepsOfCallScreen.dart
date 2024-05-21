@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart';
 
-import '../../../components/buttons/CustomButton.dart';
+import '../../../components/button/CustomButton.dart';
 import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../../utils/Colors.dart';
 import '../../../utils/Enums.dart';

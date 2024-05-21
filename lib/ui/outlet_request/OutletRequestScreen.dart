@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../components/progress_dialogs/PregressDialog.dart';
+import '../../components/progress_dialog/PregressDialog.dart';
 import '../../data/db/entities/outlet_request/RequestForm.dart';
 import '../../data/models/Request.dart';
 

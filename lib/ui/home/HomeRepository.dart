@@ -192,7 +192,6 @@ class HomeRepository extends GetxController {
           final response = await _apiService.loadData(accessToken);
 
           if (response.status == RequestStatus.SUCCESS) {
-
             var mainModel = MainModel.fromJson(jsonDecode(response.data));
 
             if (bool.parse(mainModel.success ?? "true")) {
@@ -256,11 +255,22 @@ class HomeRepository extends GetxController {
         }
       }).then((value) {
         LookUpData lookUpData = LookUpData();
+
         lookUpData.packages = response.packages;
         lookUpData.brands = response.brands;
         lookUpData.products = response.products;
+        lookUpData.vpo_classification=response.vpo_classification;
+        lookUpData.outlet_classification=response.outlet_classification;
+        lookUpData.trade_classification=response.trade_classification;
+        lookUpData.channels=response.channels;
+        lookUpData.cities=response.cities;
+        lookUpData.outletTypes=response.outletTypes;
+        lookUpData.market_types=response.market_types;
+
         _homeDao.insertPackagesAndBrands(lookUpData);
+
         _preferenceUtil.saveConfig(response.configuration);
+
       }).whenComplete(() {
         _preferenceUtil.setMVTargetOutlets(response.targetOutlets ?? 0);
         fetchWorkWith(loadedOnDayStart);

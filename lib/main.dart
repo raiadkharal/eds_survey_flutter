@@ -1,4 +1,5 @@
 import 'package:eds_survey/Route.dart';
+import 'package:eds_survey/ui/SplashScreen.dart';
 import 'package:eds_survey/ui/home/HomeScreen.dart';
 import 'package:eds_survey/ui/login/LoginScreen.dart';
 import 'package:eds_survey/ui/market_visit/coolers_verification/CoolerVerificationScreen.dart';
@@ -46,6 +47,8 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: "/",
       getPages: [
+        GetPage(
+            name: Routes.splash, page: () => const SplashScreen(),transition: Transition.fade),
         GetPage(
             name: Routes.login, page: () => LoginScreen(),transition: Transition.rightToLeft),
         GetPage(

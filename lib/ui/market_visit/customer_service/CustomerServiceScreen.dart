@@ -1,4 +1,7 @@
 import 'package:eds_survey/Route.dart';
+import 'package:eds_survey/components/dropdown/SimpleDropdownExpiredStock.dart';
+import 'package:eds_survey/components/dropdown/customer_service_dropdown.dart';
+import 'package:eds_survey/ui/market_visit/Repository.dart';
 import 'package:eds_survey/ui/market_visit/coolers_verification/CoolerVerificationScreen.dart';
 import 'package:eds_survey/ui/market_visit/customer_service/CustomerServiceViewModel.dart';
 import 'package:eds_survey/ui/market_visit/stock_information/StockInformationScreen.dart';
@@ -8,22 +11,25 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../components/buttons/CustomButton.dart';
-import '../../../components/dropdowns/SimpleDropdownButton.dart';
+import '../../../components/button/CustomButton.dart';
+import '../../../components/dropdown/SimpleDropdownButton.dart';
 import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../../data/MarketVisitResponse.dart';
 import '../../../utils/Colors.dart';
 import '../../../utils/Enums.dart';
 
 class CustomerServiceScreen extends StatefulWidget {
-  const CustomerServiceScreen({super.key,});
+  const CustomerServiceScreen({
+    super.key,
+  });
 
   @override
   State<CustomerServiceScreen> createState() => _CustomerServiceScreenState();
 }
 
 class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
-  final CustomerServiceViewModel controller = Get.put(CustomerServiceViewModel());
+  final CustomerServiceViewModel controller =
+      Get.put(CustomerServiceViewModel(Get.find<Repository>()));
 
   late final int outletId;
   late final SurveyType surveyType;
@@ -35,24 +41,24 @@ class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
     "Shopkeeper receiving Order SMS Alert"
   ];
 
-  String cs1DmotPepsi="";
+  String cs1DmotPepsi = "";
 
-  String cS1ItdaPepsi="";
+  String cS1ItdaPepsi = "";
 
-  String cS1ChitPepsi="";
+  String cS1ChitPepsi = "";
 
-  String cS1SaopPepsi="";
-
+  String cS1SaopPepsi = "";
 
   @override
   void initState() {
-    List<dynamic> args =Get.arguments;
-    outletId=args[0];
-    surveyType=args[1];
+    List<dynamic> args = Get.arguments;
+    outletId = args[0];
+    surveyType = args[1];
 
     setObservers();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,7 +118,9 @@ class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
                         Padding(
                           padding: const EdgeInsets.only(right: 16.0),
                           child: Text(
-                            "PEPSI",
+                            controller.getConfiguration().tenantId == 2
+                                ? "ENGRO"
+                                : "PEPSI",
                             style: GoogleFonts.roboto(
                                 color: Colors.black,
                                 fontSize: 15,
@@ -128,10 +136,11 @@ class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
                       itemCount: questions.length,
                       itemBuilder: (context, index) {
                         return Padding(
-                          padding: const EdgeInsets.only(top: 20.0),
+                          padding: const EdgeInsets.only(top: 16.0),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               SizedBox(
                                 width: 200,
@@ -146,23 +155,26 @@ class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10.0),
-                                child: SimpleDropdownButton(
-                                  options: (index == 0 || index == 2)
+                                child: CustomerServiceDropdown(
+                                  options: index == 0 || index == 2
                                       ? Constants.confirmation
                                       : Constants.verify,
                                   isExpanded: false,
-                                  borderOutlined: false,
+                                  underLined: false,
                                   onChanged: (value) {
-                                    String parsedValue =value as String;
-                                    switch(index){
-                                      case 0: cs1DmotPepsi=parsedValue;
-                                      break;
-                                      case 1: cS1ItdaPepsi=parsedValue;
-                                      break;
-                                      case 2: cS1ChitPepsi=parsedValue;
-                                      break;
-                                      case 3: cS1SaopPepsi=parsedValue;
-                                      break;
+                                    switch (index) {
+                                      case 0:
+                                        cs1DmotPepsi = value;
+                                        break;
+                                      case 1:
+                                        cS1ItdaPepsi = value;
+                                        break;
+                                      case 2:
+                                        cS1ChitPepsi = value;
+                                        break;
+                                      case 3:
+                                        cS1SaopPepsi = value;
+                                        break;
                                     }
                                   },
                                 ),
@@ -178,7 +190,7 @@ class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
             ),
           ),
           CustomButton(
-            onTap:() => onNextClick(),
+            onTap: () => onNextClick(),
             text: "Next",
             enabled: true,
             fontSize: 22,
@@ -189,28 +201,34 @@ class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
     );
   }
 
-  void onNextClick(){
+  void onNextClick() {
     List<MarketVisitResponse> marketVisitResponseList = [];
 
-    if (cs1DmotPepsi.isNotEmpty && cS1ItdaPepsi.isNotEmpty && cS1ChitPepsi.isNotEmpty && cS1SaopPepsi.isNotEmpty) {
-      marketVisitResponseList.add(MarketVisitResponse("CS", "CS_DT", cs1DmotPepsi));
-      marketVisitResponseList.add(MarketVisitResponse("CS", "CS_IG", cS1ItdaPepsi));
-      marketVisitResponseList.add(MarketVisitResponse("CS", "CS_CCT", cS1ChitPepsi));
-      marketVisitResponseList.add(MarketVisitResponse("CS", "CS_SA", cS1SaopPepsi));
+    if (cs1DmotPepsi.isNotEmpty &&
+        cS1ItdaPepsi.isNotEmpty &&
+        cS1ChitPepsi.isNotEmpty &&
+        cS1SaopPepsi.isNotEmpty) {
+      marketVisitResponseList
+          .add(MarketVisitResponse("CS", "CS_DT", cs1DmotPepsi));
+      marketVisitResponseList
+          .add(MarketVisitResponse("CS", "CS_IG", cS1ItdaPepsi));
+      marketVisitResponseList
+          .add(MarketVisitResponse("CS", "CS_CCT", cS1ChitPepsi));
+      marketVisitResponseList
+          .add(MarketVisitResponse("CS", "CS_SA", cS1SaopPepsi));
       controller.csDataSet(marketVisitResponseList);
     } else {
-     showToastMessage("Please select Option");
+      showToastMessage("Please select Option");
     }
   }
 
   void setObservers() {
     ever(controller.cs1DataSaved, (aBoolean) {
-      if(aBoolean){
-
+      if (aBoolean) {
         //TODO-implement check for engro
         // if (config.getTenantId() == 2)
 
-       Get.toNamed(Routes.stockInformation,arguments: [outletId,surveyType]);
+        Get.toNamed(Routes.stockInformation, arguments: [outletId, surveyType]);
       }
     });
   }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:async'; // for simulating a delay
 
 void main() {
   runApp(MyApp());
@@ -8,103 +11,72 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MyHomePage(),
+      home: ImageCaptureScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class ImageCaptureScreen extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _ImageCaptureScreenState createState() => _ImageCaptureScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  late PageController _pageController;
-  String formDataFromForm1 = '';
-  String formDataFromForm2 = '';
+class _ImageCaptureScreenState extends State<ImageCaptureScreen> {
+  bool _isLoading = false;
+  File? _image;
 
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _getImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Simulate image processing delay
+      await processImage(File(pickedFile.path));
+
+      setState(() {
+        _image = File(pickedFile.path);
+        _isLoading = false;
+      });
+    }
   }
 
-  void updateFormData(String data, int formNumber) {
-    setState(() {
-      if (formNumber == 1) {
-        formDataFromForm1 = data;
-      } else if (formNumber == 2) {
-        formDataFromForm2 = data;
-      }
-    });
+  Future<void> processImage(File image) async {
+    // Simulating a delay for image processing
+    await Future.delayed(Duration(seconds: 3));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sync Forms'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.sync),
-            onPressed: () {
-              // Do something with the form data
-              print('Form 1 data: $formDataFromForm1');
-              print('Form 2 data: $formDataFromForm2');
-            },
-          ),
-        ],
+        title: Text('Image Capture and Processing'),
       ),
-      body: PageView(
-        controller: _pageController,
-        children: [
-          FormWidget(
-            formNumber: 1,
-            onFormDataChanged: (data) => updateFormData(data, 1),
-          ),
-          FormWidget(
-            formNumber: 2,
-            onFormDataChanged: (data) => updateFormData(data, 2),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class FormWidget extends StatefulWidget {
-  final int formNumber;
-  final Function(String) onFormDataChanged;
-
-  FormWidget({required this.formNumber, required this.onFormDataChanged});
-
-  @override
-  _FormWidgetState createState() => _FormWidgetState();
-}
-
-class _FormWidgetState extends State<FormWidget> {
-  final TextEditingController _controller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        controller: _controller,
-        onChanged: (value) {
-          widget.onFormDataChanged(value);
-        },
-        decoration: InputDecoration(
-          labelText: 'Form ${widget.formNumber}',
-          border: OutlineInputBorder(),
+      body: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            if (_image == null)
+              Text('No image selected.')
+            else
+              Image.file(_image!),
+            if (_isLoading)
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                child: CircularProgressIndicator(),
+              ),
+          ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _getImage,
+        tooltip: 'Capture Image',
+        child: Icon(Icons.camera_alt),
+      ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }

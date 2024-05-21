@@ -1,3 +1,5 @@
+import '../data/models/outlet_request/LookUpDataObject.dart';
+
 class Constants {
   static const homeButtonsPadding = 8.0;
 
@@ -16,9 +18,16 @@ class Constants {
 
   static const int ENGRO_USER_ID = 2;
 
-  static final valid = ["", "Yes", "No"];
-  static final verify = ["", "Yes", "No"];
-  static final confirmation = ["", "Yes", "No", "Sometimes", "Majority"];
+  static final valid = [ "","Yes", "No"];
+  static final verify = ["","Yes", "No"];
+  static final confirmation = ["","Yes", "No", "Sometimes", "Majority"];
+
+  static final List<LookUpDataObject> competitorCooler = [
+    LookUpDataObject(value: "Yes"),
+    LookUpDataObject(value: "No")
+  ];
+
+
   static final percentage = [
     "",
     "0-20%",

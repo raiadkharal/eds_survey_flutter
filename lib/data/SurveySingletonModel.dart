@@ -7,8 +7,6 @@ import 'MarketVisitResponse.dart';
 import 'db/entities/pack_mapping.dart';
 import 'db/entities/task.dart';
 
-part 'SurveySingletonModel.g.dart';
-
 @JsonSerializable()
 class SurveySingletonModel {
   DateTime? _startDateTime;
@@ -40,7 +38,6 @@ class SurveySingletonModel {
 
   SurveySingletonModel._internal();
 
-  SurveySingletonModel();
 
   void reset() {
     _startDateTime = null;
@@ -198,7 +195,7 @@ class SurveySingletonModel {
         _marketVisitResponses.add(response);
         _questionsCode.add(response.questionCode);
       } else {
-        if (getMarketVisitResponses().isNotEmpty) {
+        if (  getMarketVisitResponses().isNotEmpty) {
           _marketVisitResponses[_questionsCode.indexOf(response.questionCode)] =
               response;
         }
@@ -227,6 +224,15 @@ class SurveySingletonModel {
     }
   }
 
+
+  Future<void> removeMarketVisitResponsesByCode(String code) async{
+    for(MarketVisitResponse response in _marketVisitResponses){
+      if(response.questionCode==code){
+        _marketVisitResponses.remove(response);
+        _questionsCode.remove(response.questionCode);
+      }
+    }
+  }
 
   List<MarketVisitResponse> getMarketVisitResponses() {
     return _marketVisitResponses;
@@ -280,7 +286,7 @@ class SurveySingletonModel {
     return _customerSignature;
   }
 
-  factory SurveySingletonModel.fromJson(Map<String, dynamic> json) => _$SurveySingletonModelFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SurveySingletonModelToJson(this);
+  // factory SurveySingletonModel.fromJson(Map<String, dynamic> json) => _$SurveySingletonModelFromJson(json);
+  //
+  // Map<String, dynamic> toJson() => _$SurveySingletonModelToJson(this);
 }

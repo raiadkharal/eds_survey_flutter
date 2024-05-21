@@ -17,8 +17,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../components/ImageSectionView.dart';
-import '../../../components/progress_dialogs/PregressDialog.dart';
-import '../../../components/textfields/UnderlinedTextField.dart';
+import '../../../components/progress_dialog/PregressDialog.dart';
+import '../../../components/textfield/UnderlinedTextField.dart';
 import '../../../data/db/entities/outlet_request/RequestForm.dart';
 import '../../../data/models/Request.dart';
 import '../../../data/models/RequestFormSingleton.dart';
@@ -81,8 +81,8 @@ class _FormTwoState extends State<FormTwo> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        foregroundColor: Colors.black,
         backgroundColor: Colors.white,
+        scrolledUnderElevation: 0.0,
         actions: [
           IconButton(
               onPressed: () {
@@ -130,7 +130,7 @@ class _FormTwoState extends State<FormTwo> {
                                 children: <Widget>[
                                   UnderlinedTextField(
                                     controller: _ownerNameController,
-                                    hintText: 'Owner Name',
+                                    labelText: 'Owner Name',
                                     validator: (value) {
                                       if (value.isEmpty) {
                                         return "Enter Owner Name";
@@ -140,7 +140,7 @@ class _FormTwoState extends State<FormTwo> {
                                   ),
                                   UnderlinedTextField(
                                     controller: _ownerFNameController,
-                                    hintText: 'Owner Father Name',
+                                    labelText: 'Owner Father Name',
                                     validator: (value) {
                                       if (value.isEmpty) {
                                         return "Enter Owner Father Name";
@@ -150,7 +150,7 @@ class _FormTwoState extends State<FormTwo> {
                                   ),
                                   UnderlinedTextField(
                                     controller: _cnicController,
-                                    hintText: 'CNIC',
+                                    labelText: 'CNIC',
                                     maxLength: 13,
                                     keyboardType: TextInputType.number,
                                     validator: (value) {
@@ -162,7 +162,7 @@ class _FormTwoState extends State<FormTwo> {
                                   ),
                                   UnderlinedTextField(
                                     controller: _cellNumController,
-                                    hintText: 'Contact Person Phone',
+                                    labelText: 'Contact Person Phone',
                                     helperText:
                                         Constants.PHONE_NUMBER_HELPER_TEXT,
                                     maxLength: 12,
@@ -176,7 +176,7 @@ class _FormTwoState extends State<FormTwo> {
                                   ),
                                   UnderlinedTextField(
                                     controller: _contactPerson1Controller,
-                                    hintText: 'Contact Person',
+                                    labelText: 'Contact Person',
                                     validator: (value) {
                                       if (value.isEmpty) {
                                         return "Enter Contact Person";
@@ -187,7 +187,7 @@ class _FormTwoState extends State<FormTwo> {
                                   UnderlinedTextField(
                                     controller:
                                         _contactPersonCellNum1Controller,
-                                    hintText: 'Contact Person 1 Phone',
+                                    labelText: 'Contact Person 1 Phone',
                                     helperText:
                                         Constants.PHONE_NUMBER_HELPER_TEXT,
                                     maxLength: 12,
@@ -201,7 +201,7 @@ class _FormTwoState extends State<FormTwo> {
                                   ),
                                   UnderlinedTextField(
                                     controller: _contactPerson2Controller,
-                                    hintText: 'Contact Person 2',
+                                    labelText: 'Contact Person 2',
                                     validator: (value) {
                                       if (value.isEmpty) {
                                         return "Enter Contact Person 2";
@@ -212,7 +212,7 @@ class _FormTwoState extends State<FormTwo> {
                                   UnderlinedTextField(
                                     controller:
                                         _contactPersonCellNum2Controller,
-                                    hintText: 'Contact Person 2 Phone',
+                                    labelText: 'Contact Person 2 Phone',
                                     helperText:
                                         Constants.PHONE_NUMBER_HELPER_TEXT,
                                     maxLength: 12,
@@ -226,7 +226,7 @@ class _FormTwoState extends State<FormTwo> {
                                   ),
                                   UnderlinedTextField(
                                     controller: _contactPerson3Controller,
-                                    hintText: 'Contact Person 3',
+                                    labelText: 'Contact Person 3',
                                     validator: (value) {
                                       if (value.isEmpty) {
                                         return "Enter Contact Person 3";
@@ -237,7 +237,7 @@ class _FormTwoState extends State<FormTwo> {
                                   UnderlinedTextField(
                                     controller:
                                         _contactPersonCellNum3Controller,
-                                    hintText: 'Contact Person 3 Phone',
+                                    labelText: 'Contact Person 3 Phone',
                                     keyboardType: TextInputType.phone,
                                     helperText:
                                         Constants.PHONE_NUMBER_HELPER_TEXT,

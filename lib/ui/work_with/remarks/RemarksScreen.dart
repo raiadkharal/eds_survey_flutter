@@ -1,4 +1,4 @@
-import 'package:eds_survey/components/textfields/CustomTextField.dart';
+import 'package:eds_survey/components/textfield/CustomTextField.dart';
 import 'package:eds_survey/ui/market_visit/feedback/SurveyFeedbackScreen.dart';
 import 'package:eds_survey/ui/work_with/execution_standards/QuestionListItem.dart';
 import 'package:eds_survey/ui/work_with/remarks/RemarksViewModel.dart';
@@ -10,7 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart';
 
 import '../../../Route.dart';
-import '../../../components/buttons/CustomButton.dart';
+import '../../../components/button/CustomButton.dart';
 import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../../utils/Colors.dart';
 

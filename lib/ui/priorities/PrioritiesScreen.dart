@@ -1,5 +1,5 @@
 import 'package:eds_survey/Route.dart';
-import 'package:eds_survey/components/buttons/CustomButton.dart';
+import 'package:eds_survey/components/button/CustomButton.dart';
 import 'package:eds_survey/data/WorkWithSingletonModel.dart';
 import 'package:eds_survey/data/db/entities/task_type.dart';
 import 'package:eds_survey/ui/market_visit/feedback/SurveyFeedbackScreen.dart';
@@ -16,7 +16,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/navigation_drawer/MyNavigationDrawer.dart';
-import '../../components/progress_dialogs/PregressDialog.dart';
+import '../../components/progress_dialog/PregressDialog.dart';
 import '../../data/SurveySingletonModel.dart';
 import '../../data/db/entities/task.dart';
 import '../../utils/Colors.dart';

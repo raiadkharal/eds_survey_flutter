@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:eds_survey/data/models/BaseResponse.dart';
 import 'package:eds_survey/data/models/OutletModel.dart';
 import 'package:eds_survey/data/models/Product.dart';
@@ -15,6 +17,7 @@ import '../db/entities/task.dart';
 import '../db/entities/task_type.dart';
 import 'Configuration.dart';
 import 'LookUpObject.dart';
+import 'outlet_request/LookUpDataObject.dart';
 
 part 'MainModel.g.dart';
 
@@ -71,6 +74,27 @@ class MainModel extends BaseResponse {
 
   @JsonKey(name: 'products')
   List<Product>? products;
+
+  @JsonKey(name: 'vpoClassifications')
+  List<LookUpDataObject>? vpo_classification;
+
+  @JsonKey(name: 'tradeClassifications')
+  List<LookUpDataObject>? trade_classification;
+
+  @JsonKey(name: 'outletClassifications')
+  List<LookUpDataObject>? outlet_classification;
+
+  @JsonKey(name: 'channels')
+  List<LookUpDataObject>? channels;
+
+  @JsonKey(name: 'marketeTypes')
+  List<LookUpDataObject>? market_types;
+
+  @JsonKey(name: 'cities')
+  List<LookUpDataObject>? cities;
+
+  @JsonKey(name: 'outletTypes')
+  List<LookUpDataObject>? outletTypes;
 
   factory MainModel.fromJson(Map<String, dynamic> json) =>
       _$MainModelFromJson(json);

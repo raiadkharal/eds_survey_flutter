@@ -1,5 +1,6 @@
 import 'package:eds_survey/Route.dart';
-import 'package:eds_survey/components/progress_dialogs/PregressDialog.dart';
+import 'package:eds_survey/components/dialog/sku_avalability/sku_availability_dialog.dart';
+import 'package:eds_survey/components/progress_dialog/PregressDialog.dart';
 import 'package:eds_survey/data/models/WorkStatus.dart';
 import 'package:eds_survey/di/bindings/Bindings.dart';
 import 'package:eds_survey/ui/home/HomeViewModel.dart';
@@ -13,7 +14,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../components/buttons/HomeButton.dart';
+import '../../components/button/HomeButton.dart';
 import '../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../data/db/entities/outlet_request/RequestForm.dart';
 import '../../utils/Util.dart';
@@ -38,8 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int counterMultipleApi = 0;
 
-  int clickCode=Constants.NEW_OUTLET_REQUEST;
-
+  int clickCode = Constants.NEW_OUTLET_REQUEST;
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +231,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }, time: const Duration(milliseconds: 200));
 
-
     debounce(controller.getMessage(), (value) {
       showToastMessage(value.peekContent());
     }, time: const Duration(milliseconds: 200));
@@ -275,7 +274,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                                 child: Text(
                                   "Ok",
-                                  style: GoogleFonts.roboto(color: Colors.black),
+                                  style:
+                                      GoogleFonts.roboto(color: Colors.black),
                                 )),
                           ],
                         )
@@ -338,7 +338,5 @@ class _HomeScreenState extends State<HomeScreen> {
     }, time: const Duration(milliseconds: 200));
   }
 
-  void multipleSyncWithCallBack(int counterMultipleApi, int clickCode) {
-
-  }
+  void multipleSyncWithCallBack(int counterMultipleApi, int clickCode) {}
 }

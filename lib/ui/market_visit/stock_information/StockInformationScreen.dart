@@ -1,5 +1,5 @@
 import 'package:eds_survey/Route.dart';
-import 'package:eds_survey/components/progress_dialogs/PregressDialog.dart';
+import 'package:eds_survey/components/progress_dialog/PregressDialog.dart';
 import 'package:eds_survey/ui/market_visit/coolers_verification/CoolerVerificationScreen.dart';
 import 'package:eds_survey/ui/market_visit/expired_stock/ExpiredStockScreen.dart';
 import 'package:eds_survey/ui/market_visit/stock_information/StockInformationViewModel.dart';
@@ -8,8 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../components/buttons/CustomButton.dart';
+import '../../../components/button/CustomButton.dart';
 import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
+import '../../../data/MarketVisitResponse.dart';
 import '../../../utils/Colors.dart';
 import '../../../utils/Enums.dart';
 
@@ -26,10 +27,6 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
 
   late final int outletId;
   late final SurveyType surveyType;
-
-  // final List<String> checkList1 = ["250ml RB1", "250ml CAN1", "300ml Can1"];
-  // final List<String> checkList2 = ["250ml RB", "250ml CAN", "300ml Can"];
-  // final List<String> checkList3 = ["250ml RB3", "250ml CAN3", "300ml Can3"];
 
   @override
   void initState() {
@@ -48,13 +45,6 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
       appBar: AppBar(
           foregroundColor: Colors.white,
           backgroundColor: primaryColor,
-          // leading: IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(
-          //     icon: const Icon(
-          //       Icons.menu,
-          //       color: Colors.white,
-          //     )),
           title: Text(
             "EDS Survey",
             style: GoogleFonts.roboto(color: Colors.white),
@@ -130,8 +120,12 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
                                               .contains(item),
                                           onChanged: (value) {
                                             controller.toggleItem(item);
-                                            controller.addMarketVisitResponse(
-                                                item, index);
+                                            if(value??false) {
+                                              controller.addMarketVisitResponse(
+                                                  item, index);
+                                            }else{
+                                              controller.removeResponse(MarketVisitResponse("SI", "SI_C${index + 1}", item));
+                                            }
                                           }),
                                     ),
                                     Text(
@@ -157,18 +151,7 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
             },
           )),
           CustomButton(
-            onTap: () {
-              if (controller.validate()) {
-                controller.setData();
-
-                Get.toNamed(Routes.coolerVerification,
-                    arguments: [outletId, surveyType])?.then((value) {
-                  controller.onResumed();
-                });
-              } else {
-                showToastMessage("Please select option");
-              }
-            },
+            onTap: ()=>onNextClick(),
             text: "Next",
             enabled: true,
             fontSize: 22,
@@ -177,5 +160,18 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
         ],
       ),
     );
+  }
+
+  void onNextClick() {
+    if (controller.validate()) {
+      controller.setData();
+
+      Get.toNamed(Routes.coolerVerification,
+          arguments: [outletId, surveyType])?.then((value) {
+        controller.onResumed();
+      });
+    } else {
+      showToastMessage("Please select option");
+    }
   }
 }

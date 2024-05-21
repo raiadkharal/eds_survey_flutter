@@ -2,7 +2,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static const _databaseVersion = 2;
+  static const _databaseVersion = 3;
   static const _databaseName = "eds_survey";
 
   DatabaseHelper._privateConstructor();
@@ -28,7 +28,7 @@ class DatabaseHelper {
     await database.execute(
         'CREATE TABLE IF NOT EXISTS `Route` (`routeId` INTEGER, `routeName` TEXT, `distributionId` INTEGER, PRIMARY KEY (`routeId`))');
     await database.execute(
-        'CREATE TABLE IF NOT EXISTS `LookUpData` (`id` INTEGER NOT NULL, `packages` TEXT, `brands` TEXT, `products` TEXT, PRIMARY KEY (`id`))');
+        'CREATE TABLE IF NOT EXISTS `LookUpData` (`id` INTEGER NOT NULL, `packages` TEXT, `brands` TEXT, `products` TEXT, `vpo_classification` TEXT, `trade_classification` TEXT, `outlet_classification` TEXT, `channels` TEXT, `market_types` TEXT, `cities` TEXT, `outletTypes` TEXT,PRIMARY KEY (`id`))');
     await database.execute(
         'CREATE TABLE IF NOT EXISTS `Merchandise` (`outletId` INTEGER, `merchandiseImages` TEXT, PRIMARY KEY (`outletId`))');
     await database.execute(

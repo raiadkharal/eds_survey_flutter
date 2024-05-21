@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:eds_survey/components/buttons/CustomButton.dart';
+import 'package:eds_survey/components/button/CustomButton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

@@ -1,13 +1,16 @@
 import 'package:eds_survey/data/MarketVisitResponse.dart';
+import 'package:eds_survey/data/models/Configuration.dart';
+import 'package:eds_survey/ui/market_visit/Repository.dart';
 import 'package:get/get.dart';
 
 import '../../../data/SurveySingletonModel.dart';
 
 class CustomerServiceViewModel extends GetxController{
 
+  final Repository _repository;
   RxBool cs1DataSaved =false.obs;
 
-  CustomerServiceViewModel(){
+  CustomerServiceViewModel(this._repository){
     cs1DataSaved=false.obs;
   }
 
@@ -20,5 +23,9 @@ class CustomerServiceViewModel extends GetxController{
   void setCs1DataSaved(bool value){
     cs1DataSaved.value=value;
     cs1DataSaved.refresh();
+  }
+
+  Configuration getConfiguration() {
+    return _repository.getConfiguration();
   }
 }

@@ -22,6 +22,7 @@ class ImageSectionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -58,6 +59,10 @@ class ImageSectionView extends StatelessWidget {
             ),
           ),
         ),
+       /* Padding(
+          padding: const EdgeInsets.symmetric(vertical: 3.0),
+          child: const Text("Error Text here",style: TextStyle(color: Color.fromARGB(255, 200, 0, 0),fontSize: 12),textAlign: TextAlign.start,),
+        )*/
       ],
     );
   }

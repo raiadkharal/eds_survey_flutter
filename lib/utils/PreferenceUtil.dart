@@ -60,8 +60,8 @@ class PreferenceUtil {
   }
 
   String getUsername() {
-    return "u_1018@hbl.com";
-    // return _sharedPreferences.getString(_keyUsername) ?? "";
+    // return "u_1018@hbl.com";
+    return _sharedPreferences.getString(_keyUsername) ?? "";
   }
 
   void savePassword(String? password) {
@@ -71,8 +71,8 @@ class PreferenceUtil {
   }
 
   String getPassword() {
-    return "Pass@word1";
-    // return _sharedPreferences.getString(_keyPassword) ?? "";
+    // return "Pass@word1";
+    return _sharedPreferences.getString(_keyPassword) ?? "";
   }
 
   WorkStatus getWorkSyncData() {
@@ -134,8 +134,8 @@ class PreferenceUtil {
   }
 
   bool isTestUser() {
-    // return true;
-    return getUsername().startsWith("_");
+    // return false;
+    return getUsername().startsWith("u_");
   }
 
   void setOutletStatus(int value) {

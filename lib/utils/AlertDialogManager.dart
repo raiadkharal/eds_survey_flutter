@@ -19,6 +19,7 @@ class AlertDialogManager {
 
   void showLocationMissMatchAlertDialog(
       BuildContext context, LatLng currentLocation, LatLng outletLocation) {
+
     double distance = Util.checkMetre(currentLocation, outletLocation);
 
     String totalDistance = "$distance meters";
@@ -30,75 +31,79 @@ class AlertDialogManager {
       context: context,
       builder: (context) => AlertDialog(
         title: Text("Location Mismatch!", style: GoogleFonts.roboto()),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
-                      flex: 3,
-                      child: Text("Outlet Location: ",
-                          style: GoogleFonts.roboto())),
-                  Expanded(
-                      flex: 5,
-                      child: Text(
-                          "${outletLocation.latitude.toStringAsFixed(5)} / ${outletLocation.longitude.toStringAsFixed(5)}",
-                          textAlign: TextAlign.start,
-                          style: GoogleFonts.roboto()))
-                ],
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(
+                        flex: 3,
+                        child: Text("Outlet Location: ",
+                            style: GoogleFonts.roboto())),
+                    Expanded(
+                        flex: 5,
+                        child: Text(
+                            "${outletLocation.latitude.toStringAsFixed(5)} / ${outletLocation.longitude.toStringAsFixed(5)}",
+                            textAlign: TextAlign.start,
+                            style: GoogleFonts.roboto()))
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
-                      flex: 3,
-                      child:
-                          Text("Your Location: ", style: GoogleFonts.roboto())),
-                  Expanded(
-                      flex: 5,
-                      child: Text(
-                          "${currentLocation.latitude.toStringAsFixed(5)} / ${currentLocation.longitude.toStringAsFixed(5)}",
-                          textAlign: TextAlign.start,
-                          style: GoogleFonts.roboto()))
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(
+                        flex: 3,
+                        child:
+                            Text("Your Location: ", style: GoogleFonts.roboto())),
+                    Expanded(
+                        flex: 5,
+                        child: Text(
+                            "${currentLocation.latitude.toStringAsFixed(5)} / ${currentLocation.longitude.toStringAsFixed(5)}",
+                            textAlign: TextAlign.start,
+                            style: GoogleFonts.roboto()))
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
-                      flex: 3,
-                      child: Text("Distance: ", style: GoogleFonts.roboto())),
-                  Expanded(
-                      flex: 5,
-                      child: Text(totalDistance,
-                          textAlign: TextAlign.start,
-                          style: GoogleFonts.roboto()))
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(
+                        flex: 3,
+                        child: Text("Distance: ", style: GoogleFonts.roboto())),
+                    Expanded(
+                        flex: 5,
+                        child: Text(totalDistance,
+                            textAlign: TextAlign.start,
+                            style: GoogleFonts.roboto()))
+                  ],
+                ),
               ),
-            ),
-          ],
+              Container(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Ok", style: GoogleFonts.roboto(color:Colors.grey.shade800,fontSize: 18))),
+              )
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Ok", style: GoogleFonts.roboto(color:Colors.grey.shade800)))
-        ],
       ),
     );
   }

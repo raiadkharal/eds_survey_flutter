@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../Route.dart';
-import '../../../components/buttons/CustomButton.dart';
+import '../../../components/button/CustomButton.dart';
 import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../../data/SurveySingletonModel.dart';
 import '../../../utils/Colors.dart';
@@ -53,12 +53,6 @@ class _GandolaScreenState extends State<GandolaScreen> {
       appBar: AppBar(
           foregroundColor: Colors.white,
           backgroundColor: primaryColor,
-          // leading: IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(
-          //       Icons.menu,
-          //       color: Colors.white,
-          //     )),
           title: Text(
             "EDS Survey",
             style: GoogleFonts.roboto(color: Colors.white),
@@ -117,6 +111,7 @@ class _GandolaScreenState extends State<GandolaScreen> {
                           onChanged: (value) {
                             controller.setGandolaSelectedValue(value!);
                             controller.isGandola.value = true;
+                            controller.setQuestionOneResponse(value);
                           },
                         ),
                       ),
@@ -132,6 +127,7 @@ class _GandolaScreenState extends State<GandolaScreen> {
                             onChanged: (value) {
                               controller.setGandolaSelectedValue(value!);
                               controller.isGandola.value = false;
+                              controller.setQuestionOneResponse(value);
                             },
                           ),
                         )),
@@ -185,6 +181,7 @@ class _GandolaScreenState extends State<GandolaScreen> {
                                       controller.selectedIntegrity.value,
                                       onChanged: (value) {
                                         controller.setSelectedIntegrity(value!);
+                                        controller.setQuestionTwoResponse(value);
                                       },
                                     )),
                                   );

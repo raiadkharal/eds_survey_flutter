@@ -1,6 +1,6 @@
 import 'package:eds_survey/Route.dart';
-import 'package:eds_survey/components/dropdowns/SimpleDropdownExpiredStock.dart';
-import 'package:eds_survey/components/progress_dialogs/PregressDialog.dart';
+import 'package:eds_survey/components/dropdown/SimpleDropdownExpiredStock.dart';
+import 'package:eds_survey/components/progress_dialog/PregressDialog.dart';
 import 'package:eds_survey/ui/market_visit/expired_stock/ExpiredStockViewModel.dart';
 import 'package:eds_survey/ui/market_visit/feedback/SurveyFeedbackScreen.dart';
 import 'package:eds_survey/ui/priorities/PrioritiesScreen.dart';
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../components/buttons/CustomButton.dart';
+import '../../../components/button/CustomButton.dart';
 import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
 import '../../../data/MarketVisitResponse.dart';
 import '../../../data/SurveySingletonModel.dart';
@@ -418,12 +418,6 @@ class _ExpiredStockScreenState extends State<ExpiredStockScreen> {
     String quantityText3 = questionThreeController.text;
 
     if (controller.expiredStock.value == ExpiredStock.yes) {
-      if (quantityText.isNotEmpty && pack1 != null && brand1 != null) {
-        marketVisitResponses.add(pack1!);
-        marketVisitResponses.add(brand1!);
-        marketVisitResponses
-            .add(MarketVisitResponse("ES", "ES_Q1", quantityText));
-      }
 
       if (quantityText2.isNotEmpty && pack2 != null && brand2 != null) {
         marketVisitResponses.add(pack2!);
@@ -437,11 +431,19 @@ class _ExpiredStockScreenState extends State<ExpiredStockScreen> {
         marketVisitResponses.add(brand3!);
         marketVisitResponses
             .add(MarketVisitResponse("ES", "ES_Q3", quantityText3));
+      }
+
+      if (quantityText.isNotEmpty && pack1 != null && brand1 != null) {
+        marketVisitResponses.add(pack1!);
+        marketVisitResponses.add(brand1!);
+        marketVisitResponses
+            .add(MarketVisitResponse("ES", "ES_Q1", quantityText));
 
         expiredMethod(context);
       } else {
         showToastMessage("Please select option");
       }
+
     } else {
       if (expiredStockResponse != null) {
         marketVisitResponses.add(expiredStockResponse!);

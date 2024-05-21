@@ -1,4 +1,4 @@
-import 'package:eds_survey/components/progress_dialogs/PregressDialog.dart';
+import 'package:eds_survey/components/progress_dialog/PregressDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

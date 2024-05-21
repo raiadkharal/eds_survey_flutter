@@ -28,7 +28,7 @@ class MerchandisingViewModel extends GetxController {
 
   MerchandisingViewModel(this._repository);
 
-  saveImages(String? imagePath, int type) {
+  Future<void> saveImages(String? imagePath, int type) async{
     imagesCount++;
     MerchandisingImage item = MerchandisingImage();
     item.id = imagesCount;
@@ -37,11 +37,12 @@ class MerchandisingViewModel extends GetxController {
     item.type = type;
 
     listImages.add(item);
+
     debugPrint("imagePath:: $imagePath");
     setEnableNextButton(type);
   }
 
-  removeMerchandiseImage(MerchandisingImage image) {
+  Future<void> removeMerchandiseImage(MerchandisingImage image) async{
     listImages.remove(image);
     setImageLiveData();
   }
@@ -71,7 +72,7 @@ class MerchandisingViewModel extends GetxController {
     return merchandiseData;
   }
 
-  void setEnableNextButton(int type) {
+  void  setEnableNextButton(int type) {
     enableAfterMerchandiseButton.value = false;
     enableAfterMerchandiseButton.refresh();
     if (listImages.length > 1 && type == 1) {

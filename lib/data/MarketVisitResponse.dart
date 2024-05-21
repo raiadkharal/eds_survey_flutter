@@ -24,4 +24,15 @@ class MarketVisitResponse {
   factory MarketVisitResponse.fromJson(Map<String, dynamic> json) => _$MarketVisitResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$MarketVisitResponseToJson(this);
+
+
+  bool isEqual(MarketVisitResponse other) {
+    // Compare simple properties
+    if (questionCode != other.questionCode || response != other.response||type !=other.type) {
+      return false;
+    }
+
+    return true;
+  }
+
 }

@@ -30,12 +30,6 @@ class GandolaViewModel extends GetxController {
   void setQuestionTwoResponse(String response)=>
     questionTwoResponse = MarketVisitResponse("G" , "G_GI" ,response);
 
-
-  void setGandola(bool value){
-    isGandola.value=value;
-    isGandola.refresh();
-  }
-
 }
 
 enum Gandola { Yes, No }

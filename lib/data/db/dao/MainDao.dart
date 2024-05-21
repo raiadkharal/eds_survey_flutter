@@ -183,7 +183,7 @@ abstract class MainDao {
 
   Future<List<Product>?> getAllSkus();
 
-  Future<LookUpData> getBrandsAndPackages();
+  Future<LookUpData> getLookUpData();
 
   Future<List<MarketVisit>> getMarketSurveys();
   Future<List<WorkWithPre>> getAllPreWork();

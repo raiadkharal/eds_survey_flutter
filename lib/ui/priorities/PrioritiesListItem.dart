@@ -1,3 +1,4 @@
+import 'package:eds_survey/components/dialog/sku_avalability/sku_availability_dialog.dart';
 import 'package:eds_survey/data/db/entities/task_type.dart';
 import 'package:eds_survey/data/db/entities/workwith/WTaskType.dart';
 import 'package:eds_survey/ui/priorities/PrioritiesViewModel.dart';
@@ -9,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart';
 import 'package:intl/intl.dart';
-import '../../components/dropdowns/OutlinedCustomDropdownMenu.dart';
+import '../../components/dropdown/OutlinedCustomDropdownMenu.dart';
 import '../../data/db/entities/task.dart';
 
 class PrioritiesList extends StatefulWidget {
@@ -20,7 +21,8 @@ class PrioritiesList extends StatefulWidget {
   const PrioritiesList({
     super.key,
     required this.taskTypes,
-    required this.tasks, required this.surveyType,
+    required this.tasks,
+    required this.surveyType,
   });
 
   @override
@@ -47,14 +49,32 @@ class _PrioritiesListState extends State<PrioritiesList> {
                 Expanded(
                     flex: 7,
                     child: OutlineCustomDropDownMenu(
-                      options: widget.taskTypes??[],
+                      options: widget.taskTypes ?? [],
                       onChanged: (taskType) {
-                        task.remarks = taskType.taskType;
-                        task.taskId = taskType.taskTypeId ?? 0;
-                        controller.updateTask(widget.tasks[index]);
+                        if (taskType.taskTypeId != null) {
+                          if ((taskType.taskTypeId == 3 ||taskType.taskTypeId == 13)) {
+
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                content: SkuAvailabilityDialog(onSave: (selectedMissingSkus){
+                                  task.remarks = taskType.taskType;
+                                  task.taskId = taskType.taskTypeId ?? 0;
+                                  task.missingSkus=selectedMissingSkus;
+                                  controller.updateTask(widget.tasks[index]);
+                                },),
+                              ),
+                            );
+                          }
+                        } else {
+                          task.remarks = taskType.taskType;
+                          task.taskId = taskType.taskTypeId ?? 0;
+                          controller.updateTask(widget.tasks[index]);
+                        }
                       },
                       selectedValue: widget.taskTypes?.firstWhereOrNull(
-                          (element) => element.taskTypeId == task.taskId), surveyType: widget.surveyType,
+                          (element) => element.taskTypeId == task.taskId),
+                      surveyType: widget.surveyType,
                     )),
                 const SizedBox(
                   width: 10,
@@ -82,10 +102,12 @@ class _PrioritiesListState extends State<PrioritiesList> {
                                     color: Colors.grey, fontSize: 14),
                               ),
                             ),
-                            Container(height: 1,color: Colors.grey,)
+                            Container(
+                              height: 1,
+                              color: Colors.grey,
+                            )
                           ],
-                        )
-                        ),
+                        )),
                   ),
                 ),
                 const SizedBox(

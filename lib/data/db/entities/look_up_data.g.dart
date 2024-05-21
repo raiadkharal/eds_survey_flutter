@@ -17,6 +17,30 @@ LookUpData _$LookUpDataFromJson(Map<String, dynamic> json) => LookUpData(
       products: (jsonDecode(json['products']) as List<dynamic>?)
           ?.map((e) => Product.fromJson(e as Map<String, dynamic>))
           .toList(),
+      vpo_classification:
+          (jsonDecode(json['vpo_classification']) as List<dynamic>?)
+              ?.map((e) => LookUpDataObject.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      trade_classification:
+          (jsonDecode(json['trade_classification']) as List<dynamic>?)
+              ?.map((e) => LookUpDataObject.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      outlet_classification:
+          (jsonDecode(json['outlet_classification']) as List<dynamic>?)
+              ?.map((e) => LookUpDataObject.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      channels: (jsonDecode(json['channels']) as List<dynamic>?)
+          ?.map((e) => LookUpDataObject.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      market_types: (jsonDecode(json['market_types']) as List<dynamic>?)
+          ?.map((e) => LookUpDataObject.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      cities: (jsonDecode(json['cities']) as List<dynamic>?)
+          ?.map((e) => LookUpDataObject.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      outletTypes: (jsonDecode(json['outletTypes']) as List<dynamic>?)
+          ?.map((e) => LookUpDataObject.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$LookUpDataToJson(LookUpData instance) =>
@@ -25,4 +49,11 @@ Map<String, dynamic> _$LookUpDataToJson(LookUpData instance) =>
       'packages': jsonEncode(instance.packages),
       'brands': jsonEncode(instance.brands),
       'products': jsonEncode(instance.products),
+      'vpo_classification': jsonEncode(instance.vpo_classification),
+      'trade_classification': jsonEncode(instance.trade_classification),
+      'outlet_classification': jsonEncode(instance.outlet_classification),
+      'channels': jsonEncode(instance.channels),
+      'market_types': jsonEncode(instance.market_types),
+      'cities': jsonEncode(instance.cities),
+      'outletTypes': jsonEncode(instance.outletTypes),
     };

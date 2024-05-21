@@ -1,29 +1,21 @@
 import 'package:eds_survey/Route.dart';
-import 'package:eds_survey/components/dropdowns/OutlinedCustomDropdownMenu.dart';
-import 'package:eds_survey/components/dropdowns/SimpleDropdownButton.dart';
-import 'package:eds_survey/components/progress_dialogs/PregressDialog.dart';
-import 'package:eds_survey/components/textfields/UnderlinedTextField.dart';
+import 'package:eds_survey/components/dropdown/SimpleDropdownButton.dart';
+import 'package:eds_survey/components/progress_dialog/PregressDialog.dart';
+import 'package:eds_survey/components/textfield/UnderlinedTextField.dart';
 import 'package:eds_survey/data/models/FormOneModel.dart';
-import 'package:eds_survey/data/models/LookUpObject.dart';
+import 'package:eds_survey/ui/market_visit/Repository.dart';
 import 'package:eds_survey/ui/new_outlet_request/form_one/FormOneViewModel.dart';
 import 'package:eds_survey/utils/Colors.dart';
 import 'package:eds_survey/utils/Constants.dart';
-import 'package:eds_survey/utils/Enums.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../../../data/models/Configuration.dart';
-import '../../../data/models/PJPModel.dart';
-import '../../../utils/Util.dart';
+import '../../../data/models/outlet_request/LookUpDataObject.dart';
 import '../../../utils/Utils.dart';
 
 class FormOne extends StatefulWidget {
@@ -38,10 +30,10 @@ class FormOne extends StatefulWidget {
 
 class _FormOneState extends State<FormOne> {
   final FormOneViewModel controller =
-  Get.put<FormOneViewModel>(FormOneViewModel());
+      Get.put<FormOneViewModel>(FormOneViewModel(Get.find<Repository>()));
 
-  FormOneSingletonModel formOneSingletonModel = FormOneSingletonModel
-      .getInstance();
+  FormOneSingletonModel formOneSingletonModel =
+      FormOneSingletonModel.getInstance();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -59,16 +51,15 @@ class _FormOneState extends State<FormOne> {
 
   final TextEditingController _latLngController = TextEditingController();
 
-  LookUpObject? _vpoClassification,
+  String? _competitorsCooler, _journeyPlan;
+  LookUpDataObject? _vpoClassification,
       _city,
       _route,
       _outletType,
       _marketType,
       _outletClassification,
       _channelType,
-      _segment,
-      _competitorsCooler,
-      _journeyPlan=LookUpObject(key: 0,value: "");
+      _segment;
 
   late GoogleMapController _controller;
 
@@ -79,20 +70,25 @@ class _FormOneState extends State<FormOne> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        scrolledUnderElevation: 0.0,
         title: Text(
           "OUTLET REQUEST",
           style: GoogleFonts.roboto(color: Colors.black),
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        //validate form and navigate to second form
-        if (validateAndSaveFormData()) {
-          Get.toNamed(Routes.outletRequestFormTwo);
-        }
-
-      },
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          //validate form and navigate to second form
+          if (validateAndSaveFormData()) {
+            Get.toNamed(Routes.outletRequestFormTwo);
+          }
+        },
         backgroundColor: primaryColor,
-        child: const Icon(Icons.arrow_forward, color: Colors.white,),),
+        child: const Icon(
+          Icons.arrow_forward,
+          color: Colors.white,
+        ),
+      ),
       body: Stack(
         children: [
           Padding(
@@ -119,7 +115,7 @@ class _FormOneState extends State<FormOne> {
                                     children: [
                                       UnderlinedTextField(
                                         controller: _shopNameController,
-                                        hintText: 'Shop Name',
+                                        labelText: 'Shop Name',
                                         validator: (value) {
                                           if (value.isEmpty) {
                                             return "Please enter shop name";
@@ -129,7 +125,8 @@ class _FormOneState extends State<FormOne> {
                                       ),
                                       UnderlinedTextField(
                                         controller: _addressController,
-                                        hintText: 'Complete Address (min 25 characters',
+                                        labelText:
+                                            'Complete Address (min 25 characters',
                                         validator: (value) {
                                           if (value.isEmpty ||
                                               value.length <= 25) {
@@ -140,7 +137,7 @@ class _FormOneState extends State<FormOne> {
                                       ),
                                       UnderlinedTextField(
                                         controller: _landMarkController,
-                                        hintText: 'Landmark',
+                                        labelText: 'Landmark',
                                         validator: (value) {
                                           if (value.isEmpty) {
                                             return "Enter Landmark";
@@ -150,7 +147,7 @@ class _FormOneState extends State<FormOne> {
                                       ),
                                       UnderlinedTextField(
                                         controller: _agreedSalesController,
-                                        hintText: 'Agreed Sales',
+                                        labelText: 'Agreed Sales',
                                         keyboardType: TextInputType.number,
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -161,7 +158,7 @@ class _FormOneState extends State<FormOne> {
                                       ),
                                       UnderlinedTextField(
                                         controller: _shopRadiusController,
-                                        hintText: 'Shop Radius',
+                                        labelText: 'Shop Radius',
                                         keyboardType: TextInputType.number,
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -171,158 +168,205 @@ class _FormOneState extends State<FormOne> {
                                         },
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0),
-                                        child: SimpleDropdownButton(
-                                            options: controller.items,
-                                            hintText: "VPO Classification",
+                                        padding:
+                                            const EdgeInsets.only(top: 10.0),
+                                        child: Obx(
+                                          () => SimpleDropdownButton(
+                                              options: controller
+                                                      .getLookUpData()
+                                                      .value
+                                                      ?.vpo_classification ??
+                                                  [],
+                                              labelText: "VPO Classification",
+                                              textSize: 18,
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return "Enter VPO Classification";
+                                                }
+                                                return null;
+                                              },
+                                              onChanged: (value) {
+                                                LookUpDataObject object =
+                                                    value as LookUpDataObject;
+                                                _vpoClassification = object;
+                                              }),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 10.0),
+                                        child: Obx(
+                                          () => SimpleDropdownButton(
+                                              options: controller
+                                                      .getLookUpData()
+                                                      .value
+                                                      ?.cities ??
+                                                  [],
+                                              labelText: "City",
+                                              textSize: 18,
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return "Enter City Name";
+                                                }
+                                                return null;
+                                              },
+                                              onChanged: (value) {
+                                                LookUpDataObject object =
+                                                    value as LookUpDataObject;
+                                                _city = object;
+                                              }),
+                                        ),
+                                      ),
+                                      Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 10.0),
+                                          child: Obx(
+                                            () => SimpleDropdownButton(
+                                              options: controller
+                                                      .getRoutes()
+                                                      .value ??
+                                                  [],
+                                              labelText: "Routes",
+                                              textSize: 18,
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return "Enter Route";
+                                                }
+                                                return null;
+                                              },
+                                              onChanged: (value) => _route =
+                                                  value as LookUpDataObject,
+                                            ),
+                                          )),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 10.0),
+                                        child: Obx(
+                                          () => SimpleDropdownButton(
+                                            options: controller
+                                                    .getLookUpData()
+                                                    .value
+                                                    ?.outletTypes ??
+                                                [],
+                                            labelText: "Outlet Type",
                                             textSize: 18,
                                             validator: (value) {
                                               if (value == null ||
                                                   value.isEmpty) {
-                                                return "Enter VPO Classification";
+                                                return "Enter Outlet Type";
                                               }
                                               return null;
                                             },
-                                            onChanged: (value) {
-                                              LookUpObject object = value as LookUpObject;
-                                              _vpoClassification = object;
-                                            }
+                                            onChanged: (value) => _outletType =
+                                                value as LookUpDataObject,
+                                          ),
                                         ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0),
-                                        child: SimpleDropdownButton(
-                                            options: controller.items,
-                                            hintText: "City",
+                                        padding:
+                                            const EdgeInsets.only(top: 10.0),
+                                        child: Obx(
+                                          () => SimpleDropdownButton(
+                                            options: controller
+                                                    .getLookUpData()
+                                                    .value
+                                                    ?.market_types ??
+                                                [],
+                                            labelText: "Market Type",
                                             textSize: 18,
                                             validator: (value) {
                                               if (value == null ||
                                                   value.isEmpty) {
-                                                return "Enter City Name";
+                                                return "Enter Market Type";
                                               }
                                               return null;
                                             },
-                                            onChanged: (value) {
-                                              LookUpObject object = value as LookUpObject;
-                                              _city = object;
-                                            }
+                                            onChanged: (value) => _marketType =
+                                                value as LookUpDataObject,
+                                          ),
                                         ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0),
-                                        child: SimpleDropdownButton(
-                                          options: controller.items,
-                                          hintText: "Routes",
-                                          textSize: 18,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return "Enter Route";
-                                            }
-                                            return null;
-                                          },
-                                          onChanged: (value) => _route = value as LookUpObject,
+                                        padding:
+                                            const EdgeInsets.only(top: 10.0),
+                                        child: Obx(
+                                          () => SimpleDropdownButton(
+                                            options: controller
+                                                    .getLookUpData()
+                                                    .value
+                                                    ?.outlet_classification ??
+                                                [],
+                                            labelText: "Outlet Classification",
+                                            textSize: 18,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return "Enter Outlet Classification";
+                                              }
+                                              return null;
+                                            },
+                                            onChanged: (value) =>
+                                                _outletClassification =
+                                                    value as LookUpDataObject,
+                                          ),
                                         ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0),
-                                        child: SimpleDropdownButton(
-                                          options: controller.items,
-                                          hintText: "Outlet Type",
-                                          textSize: 18,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return "Enter Outlet Type";
-                                            }
-                                            return null;
-                                          },
-                                          onChanged: (value) =>
-                                          _outletType = value as LookUpObject,
+                                        padding:
+                                            const EdgeInsets.only(top: 10.0),
+                                        child: Obx(
+                                          () => SimpleDropdownButton(
+                                            options: controller
+                                                    .getLookUpData()
+                                                    .value
+                                                    ?.channels ??
+                                                [],
+                                            labelText: "Channel Type",
+                                            textSize: 18,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return "Enter Channel Type";
+                                              }
+                                              return null;
+                                            },
+                                            onChanged: (value) => _channelType =
+                                                value as LookUpDataObject,
+                                          ),
                                         ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0),
-                                        child: SimpleDropdownButton(
-                                          options: controller.items,
-                                          hintText: "Market Type",
-                                          textSize: 18,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return "Enter Market Type";
-                                            }
-                                            return null;
-                                          },
-                                          onChanged: (value) =>
-                                          _marketType = value as LookUpObject,
-                                        ),
-                                      ),
+                                          padding:
+                                              const EdgeInsets.only(top: 10.0),
+                                          child: Obx(
+                                            () => SimpleDropdownButton(
+                                              options: controller
+                                                      .getLookUpData()
+                                                      .value
+                                                      ?.channels ??
+                                                  [],
+                                              labelText: "Segment",
+                                              textSize: 18,
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return "Enter Segment";
+                                                }
+                                                return null;
+                                              },
+                                              onChanged: (value) => _segment =
+                                                  value as LookUpDataObject,
+                                            ),
+                                          )),
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0),
+                                        padding:
+                                            const EdgeInsets.only(top: 10.0),
                                         child: SimpleDropdownButton(
-                                          options: controller.items,
-                                          hintText: "Outlet Classification",
-                                          textSize: 18,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return "Enter Outlet Classification";
-                                            }
-                                            return null;
-                                          },
-                                          onChanged: (value) =>
-                                          _outletClassification = value as LookUpObject,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0),
-                                        child: SimpleDropdownButton(
-                                          options: controller.items,
-                                          hintText: "Channel Type",
-                                          textSize: 18,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return "Enter Channel Type";
-                                            }
-                                            return null;
-                                          },
-                                          onChanged: (value) =>
-                                          _channelType = value as LookUpObject,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0),
-                                        child: SimpleDropdownButton(
-                                          options: controller.items,
-                                          hintText: "Segment",
-                                          textSize: 18,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return "Enter Segment";
-                                            }
-                                            return null;
-                                          },
-                                          onChanged: (value) =>
-                                          _segment = value as LookUpObject,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0),
-                                        child: SimpleDropdownButton(
-                                          options: controller.items,
-                                          hintText: "Competitor Cooler",
+                                          options: controller.competitorCooler,
+                                          labelText: "Competitor Cooler",
                                           textSize: 18,
                                           validator: (value) {
                                             if (value == null ||
@@ -332,104 +376,98 @@ class _FormOneState extends State<FormOne> {
                                             return null;
                                           },
                                           onChanged: (value) =>
-                                          _competitorsCooler = value as LookUpObject,
+                                              _competitorsCooler =
+                                                  (value as LookUpDataObject).value,
                                         ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0),
+                                        padding:
+                                            const EdgeInsets.only(top: 10.0),
                                         child: SimpleDropdownButton(
-                                          options: controller.items,
-                                          hintText: "Journey Plan",
-                                          textSize: 18,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return "Enter Journey Plan";
-                                            }
-                                            return null;
-                                          },
-                                          onChanged: (value) =>
-                                          _journeyPlan = value as LookUpObject,
-                                        ),
+                                            options: controller.journeyPlan,
+                                            labelText: "Journey Plan",
+                                            textSize: 18,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return "Enter Journey Plan";
+                                              }
+                                              return null;
+                                            },
+                                            onChanged: (value) {
+                                              _journeyPlan = (value as LookUpDataObject).value;
+                                              controller.setJourneyPlan(_journeyPlan??"");
+                                            }),
                                       ),
                                       //Fixed Journey plan selection
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            bottom: 16.0),
-                                        child: Wrap(
-                                          alignment: WrapAlignment.start,
-                                          children: controller.weekDays
-                                              .map((choice) =>
-                                              Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 40,
-                                                    width: 40,
-                                                    child: Obx(
-                                                          () =>
-                                                          Checkbox(
-                                                            value: controller
-                                                                .selectedJourneyPlanDays
-                                                                .value
-                                                                .contains(
-                                                                choice),
-                                                            onChanged: (
-                                                                value) =>
-                                                                controller
-                                                                    .toggleItem(
-                                                                    choice),
-                                                          ),
-                                                    ),
-                                                  ),
-                                                  Text(choice)
-                                                ],
-                                              ))
-                                              .toList(),
-                                        ),
-                                      ),
+                                      Obx(
+                                          () =>
+                                              controller.selectedJourneyPlan
+                                                          .value ==
+                                                      "Fixed"
+                                                  ? Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              bottom: 16.0),
+                                                      child: Wrap(
+                                                        alignment:
+                                                            WrapAlignment.start,
+                                                        children:
+                                                            controller.weekDays
+                                                                .map(
+                                                                    (choice) =>
+                                                                        Row(
+                                                                          mainAxisSize:
+                                                                              MainAxisSize.min,
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceEvenly,
+                                                                          children: [
+                                                                            SizedBox(
+                                                                              height: 40,
+                                                                              width: 40,
+                                                                              child: Obx(
+                                                                                () => Checkbox(
+                                                                                  value: controller.selectedJourneyPlanDays.value.contains(choice),
+                                                                                  onChanged: (value) => controller.toggleItem(choice),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            Text(choice)
+                                                                          ],
+                                                                        ))
+                                                                .toList(),
+                                                      ),
+                                                    )
+                                                  : const SizedBox()),
+
                                       UnderlinedTextField(
                                         controller: _commentController,
-                                        hintText: 'Comment',
+                                        labelText: 'Comment',
                                       ),
                                       Row(
-                                        crossAxisAlignment: CrossAxisAlignment
-                                            .center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: [
                                           Expanded(
                                             child: Obx(
-                                                  () =>
-                                                  UnderlinedTextField(
-                                                    controller: _latLngController,
-                                                    enabled: false,
-                                                    hintText: controller
-                                                        .currentLocation
-                                                        .value !=
+                                              () => UnderlinedTextField(
+                                                controller: _latLngController,
+                                                enabled: false,
+                                                labelText: "Geo Coordinates",
+                                                helperText: controller
+                                                            .currentLocation
+                                                            .value
+                                                            ?.accuracy !=
                                                         null
-                                                        ? "${controller
-                                                        .currentLocation.value
-                                                        ?.latitude}/${controller
-                                                        .currentLocation.value
-                                                        ?.longitude}"
-                                                        : "Geo Coordinates",
-                                                    helperText: controller
-                                                        .currentLocation
-                                                        .value?.accuracy !=
-                                                        null
-                                                        ? "Accuracy: ${controller
-                                                        .currentLocation.value
-                                                        ?.accuracy} meters"
-                                                        : "Accuracy: 0.0 meters",
-                                                    validator: (value) {
-                                                      if (value.isEmpty) {
-                                                        return "Enter Geo Coordinates";
-                                                      }
-                                                      return null;
-                                                    },
-                                                  ),
+                                                    ? "Accuracy: ${controller.currentLocation.value?.accuracy?.toStringAsFixed(1)} meters"
+                                                    : "Accuracy: 0.0 meters",
+                                                validator: (value) {
+                                                  if (value.isEmpty) {
+                                                    return "Enter Geo Coordinates";
+                                                  }
+                                                  return null;
+                                                },
+                                              ),
                                             ),
                                           ),
                                           IconButton(
@@ -450,20 +488,18 @@ class _FormOneState extends State<FormOne> {
                                     width: double.infinity,
                                     height: 200,
                                     child: Obx(
-                                          () =>
-                                          GoogleMap(
-                                            initialCameraPosition:
+                                      () => GoogleMap(
+                                        initialCameraPosition:
                                             FormOne._initialCameraPosition,
-                                            scrollGesturesEnabled: false,
-                                            markers: controller.markers.value,
-                                            zoomControlsEnabled: false,
-                                            mapToolbarEnabled: false,
-                                            mapType: MapType.normal,
-                                            onMapCreated: (
-                                                mapController) async {
-                                              _controller = mapController;
-                                            },
-                                          ),
+                                        scrollGesturesEnabled: false,
+                                        markers: controller.markers.value,
+                                        zoomControlsEnabled: false,
+                                        mapToolbarEnabled: false,
+                                        mapType: MapType.normal,
+                                        onMapCreated: (mapController) async {
+                                          _controller = mapController;
+                                        },
+                                      ),
                                     ),
                                   ),
                                   Positioned(
@@ -520,10 +556,7 @@ class _FormOneState extends State<FormOne> {
               ],
             ),
           ),
-          Obx(() =>
-          controller
-              .isLoading()
-              .value
+          Obx(() => controller.isLoading().value
               ? const SimpleProgressDialog()
               : const SizedBox())
         ],
@@ -570,7 +603,8 @@ class _FormOneState extends State<FormOne> {
 
     if (locationData != null) {
       controller.setCurrentLocation(locationData);
-      _latLngController.text="${locationData.latitude}/${locationData.longitude}";
+      _latLngController.text =
+          "${locationData.latitude}/${locationData.longitude}";
       controller.addMarker(Marker(
         markerId: const MarkerId("currentLocation"),
         position: LatLng(locationData.latitude!, locationData.longitude!),
@@ -595,20 +629,18 @@ class _FormOneState extends State<FormOne> {
 
   bool validateAndSaveFormData() {
     FocusScope.of(context).unfocus();
-    if(_formKey.currentState!=null) {
+    if (_formKey.currentState != null) {
       if (!_formKey.currentState!.validate()) {
         showToastMessage("Please enter all the fields");
         return false;
       }
-    }else{
+    } else {
       return false;
     }
 
     formOneSingletonModel.outletName = _shopNameController.text.trim();
 
-    if (_addressController.text
-        .trim()
-        .isNotEmpty) {
+    if (_addressController.text.trim().isNotEmpty) {
       formOneSingletonModel.outletAddress = _addressController.text.trim();
     } else {
       formOneSingletonModel.outletAddress = "";
@@ -616,18 +648,14 @@ class _FormOneState extends State<FormOne> {
 
     formOneSingletonModel.landmark = _landMarkController.text.trim();
 
-    if (_agreedSalesController.text
-        .trim()
-        .isNotEmpty) {
+    if (_agreedSalesController.text.trim().isNotEmpty) {
       formOneSingletonModel.agreedSalesVolume =
           int.parse(_agreedSalesController.text.trim());
     } else {
       formOneSingletonModel.agreedSalesVolume = null;
     }
 
-    if (_shopRadiusController.text
-        .trim()
-        .isNotEmpty) {
+    if (_shopRadiusController.text.trim().isNotEmpty) {
       formOneSingletonModel.radius =
           double.parse(_shopRadiusController.text.trim());
     } else {
@@ -646,7 +674,6 @@ class _FormOneState extends State<FormOne> {
     formOneSingletonModel.outletType = _outletType?.value;
     formOneSingletonModel.outletTypeId = _outletType?.key;
 
-
     formOneSingletonModel.marketType = _marketType?.value;
     formOneSingletonModel.marketTypeId = _marketType?.key;
 
@@ -659,13 +686,13 @@ class _FormOneState extends State<FormOne> {
     formOneSingletonModel.comments = _commentController.text.trim();
 
     formOneSingletonModel.competitorsCooler =
-    _competitorsCooler?.value?.trim() == "Yes" ? true : false;
+        _competitorsCooler?.trim() == "Yes" ? true : false;
 
-    if (_journeyPlan!.value!.isEmpty) {
+    if (_journeyPlan!.isEmpty) {
       formOneSingletonModel.journeyPlan = null;
       formOneSingletonModel.pjpModels = null;
     } else {
-      if (_journeyPlan?.value == "Lookup Item 2") {
+      if (_journeyPlan == "Fixed") {
         formOneSingletonModel.journeyPlan = true;
       } else {
         formOneSingletonModel.journeyPlan = false;
@@ -680,10 +707,8 @@ class _FormOneState extends State<FormOne> {
       formOneSingletonModel.lng = controller.currentLocation.value!.longitude;
     }
 
-    if (_journeyPlan?.value == "Lookup Item 2") {
-      if (controller
-          .getPjpModels()
-          .isNotEmpty) {
+    if (_journeyPlan == "Fixed") {
+      if (controller.getPjpModels().isNotEmpty) {
         formOneSingletonModel.pjpModels = controller.getPjpModels();
       } else {
         formOneSingletonModel.pjpModels = [];

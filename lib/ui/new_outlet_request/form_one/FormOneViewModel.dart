@@ -1,4 +1,8 @@
+import 'package:eds_survey/Route.dart';
+import 'package:eds_survey/data/db/entities/look_up_data.dart';
+import 'package:eds_survey/data/db/entities/route.dart';
 import 'package:eds_survey/data/models/LookUpObject.dart';
+import 'package:eds_survey/ui/market_visit/Repository.dart';
 import 'package:eds_survey/utils/Constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -6,39 +10,48 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 import '../../../data/models/PJPModel.dart';
+import '../../../data/models/outlet_request/LookUpDataObject.dart';
 
-class FormOneViewModel extends GetxController{
-
-  final RxBool _isLoading=false.obs;
+class FormOneViewModel extends GetxController {
+  final Repository _repository;
   Rx<LocationData?> currentLocation = Rx<LocationData?>(null);
 
+  Rx<String> selectedJourneyPlan = "".obs;
   Rx<List<String>> selectedJourneyPlanDays = RxList<String>().obs;
 
   Rx<Set<Marker>> markers = RxSet<Marker>().obs;
 
+  final Rx<LookUpData?> _lookUpData = Rx<LookUpData>(LookUpData());
+
+  final Rx<List<LookUpDataObject>?> _routes = Rx<List<LookUpDataObject>>([]);
 
   List<String> weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-  final List<LookUpObject> items = [
-   LookUpObject(key: 1,value: "Lookup Item 1"),
-   LookUpObject(key: 2,value: "Lookup Item 2"),
-   LookUpObject(key: 3,value: "Lookup Item 3"),
-   LookUpObject(key: 4,value: "Lookup Item 4"),
-   LookUpObject(key: 5,value: "Lookup Item 5"),
+  final List<LookUpDataObject> competitorCooler = [
+    LookUpDataObject(value: "Yes"),
+    LookUpDataObject(value: "No")
+  ];
+  final List<LookUpDataObject> journeyPlan = [
+    LookUpDataObject(value: "Fixed"),
+    LookUpDataObject(value: "Open")
   ];
 
-  FormOneViewModel();
+  FormOneViewModel(this._repository);
 
-
-  void setLoading(bool value){
-    _isLoading.value=value;
-    _isLoading.refresh();
+  @override
+  void onInit() {
+    loadLookUpData();
+    super.onInit();
   }
 
-  RxBool isLoading()=>_isLoading;
+  void setLoading(bool value) {
+    _repository.setLoading(value);
+  }
 
-  void setCurrentLocation(LocationData locationData){
-    currentLocation.value=locationData;
+  RxBool isLoading() => _repository.isLoading();
+
+  void setCurrentLocation(LocationData locationData) {
+    currentLocation.value = locationData;
     currentLocation.refresh();
   }
 
@@ -57,11 +70,11 @@ class FormOneViewModel extends GetxController{
     selectedJourneyPlanDays.refresh();
   }
 
-  List<PJPModel> getPjpModels(){
-    List<PJPModel> pjpModelList=[];
+  List<PJPModel> getPjpModels() {
+    List<PJPModel> pjpModelList = [];
     ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    for(String selectedDay in selectedJourneyPlanDays.value){
-      switch(selectedDay){
+    for (String selectedDay in selectedJourneyPlanDays.value) {
+      switch (selectedDay) {
         case "Mon":
           pjpModelList.add(PJPModel.secondary(Constants.MONDAY, "Monday"));
           break;
@@ -83,9 +96,38 @@ class FormOneViewModel extends GetxController{
         case "Sun":
           pjpModelList.add(PJPModel.secondary(Constants.MONDAY, "Monday"));
           break;
-
       }
     }
     return pjpModelList;
+  }
+
+  Future<void> loadLookUpData() async {
+    _repository.getLookUpData().then(
+      (lookUpData) {
+        _lookUpData.value = lookUpData;
+        _lookUpData.refresh();
+      },
+    );
+
+    _repository.getAllRoutes().then(
+      (routes) {
+        _routes.value = routes
+            .map(
+              (route) =>
+                  LookUpDataObject(key: route.routeId, value: route.routeName),
+            )
+            .toList();
+        _routes.refresh();
+      },
+    );
+  }
+
+  Rx<LookUpData?> getLookUpData() => _lookUpData;
+
+  Rx<List<LookUpDataObject>?> getRoutes() => _routes;
+
+  void setJourneyPlan(String value) {
+    selectedJourneyPlan.value = value;
+    selectedJourneyPlan.refresh();
   }
 }

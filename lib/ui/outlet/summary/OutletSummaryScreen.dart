@@ -13,6 +13,7 @@ import 'package:eds_survey/utils/PreferenceUtil.dart';
 import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -22,7 +23,7 @@ import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../components/navigation_drawer/MyNavigationDrawer.dart';
-import '../../../components/progress_dialogs/PregressDialog.dart';
+import '../../../components/progress_dialog/PregressDialog.dart';
 import '../../../data/WorkWithSingletonModel.dart';
 import '../../../data/db/entities/outlet.dart';
 import '../../../data/db/entities/workwith/WOutlet.dart';
@@ -441,7 +442,7 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
                                                   notFlowReasonCode =
                                                       hashMap[selectedReason];
                                                   Navigator.of(context).pop();
-                                                  setStartNotFlow();
+                                                  notFlowClick();
                                                 },
                                                 child: Text(
                                                   "Yes",
@@ -583,11 +584,14 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
     }
   }
 
-  void notFlowClick() {
+  void notFlowClick() async {
     if (!isFakeLocation) {
-      //TODO-add auto time check here, if not auto time then show dialog message and return
-      bool autoTime = true;
-      if (!autoTime) {
+
+      bool isAutoTimeEnabled = await _checkAutoTime();
+
+      if (!isAutoTimeEnabled && !controller.isTestUser()) {
+        //TODO-show dialog message
+        showToastMessage("Please enable auto date time");
         return;
       }
       controller.updateOutletStatusCode(1);
@@ -600,6 +604,23 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
     } else {
       showToastMessage("You are using fake GPS");
     }
+  }
+
+  Future<bool> _checkAutoTime() async {
+    const platform = MethodChannel('com.optimus.time/autoTime');
+
+    bool isAutoTimeEnabled;
+    try {
+      final bool result = await platform.invokeMethod('isAutoDateTimeEnabled');
+      isAutoTimeEnabled = result;
+    } on PlatformException catch (e) {
+      isAutoTimeEnabled = false;
+    } on Exception catch(e){
+      e.printInfo();
+      isAutoTimeEnabled=false;
+    }
+
+    return isAutoTimeEnabled;
   }
 
   Future<LocationData> _setLocationCallback() async {
@@ -680,6 +701,7 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
 
       showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (context) => AlertDialog(
           title: Text("Warning",style: GoogleFonts.roboto()),
           content: Text(

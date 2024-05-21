@@ -88,7 +88,7 @@ class OutletSummaryViewModel extends GetxController {
 
     Configuration configuration = getConfiguration();
 
-    if ((!configuration.geoFenceRequired &&
+    if ((configuration.geoFenceRequired &&
             distance >= configuration.geoFenceMinRadius &&
             outletStatus <= 2) &&
         !isTestUser()) {

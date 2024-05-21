@@ -14,6 +14,7 @@ Task _$TaskFromJson(Map<String, dynamic> json) => Task(
       completedDate: json['completedDate'] as String?,
       status: json['status'] as String?,
       remarks: json['remarks'] as String?,
+      missingSkus: json['missingSkus'] as String?,
     );
 
 Map<String, dynamic> _$TaskToJson(Task instance) {
@@ -25,6 +26,7 @@ Map<String, dynamic> _$TaskToJson(Task instance) {
     'completedDate': instance.completedDate,
     'status': instance.status,
     'remarks': instance.remarks,
+    'missingSkus': instance.missingSkus,
   };
 
   data.removeWhere((key, value) => value == null);

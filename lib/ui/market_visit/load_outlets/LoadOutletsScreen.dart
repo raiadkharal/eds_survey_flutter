@@ -1,6 +1,6 @@
 import 'package:eds_survey/Route.dart';
 import 'package:eds_survey/components/CustomDropdownButton.dart';
-import 'package:eds_survey/components/buttons/CustomButton.dart';
+import 'package:eds_survey/components/button/CustomButton.dart';
 import 'package:eds_survey/data/db/entities/distribution.dart';
 import 'package:eds_survey/ui/market_visit/SurveyViewModel.dart';
 import 'package:eds_survey/ui/outlet/outlet_list/OutletsScreen.dart';
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../components/progress_dialogs/PregressDialog.dart';
+import '../../../components/progress_dialog/PregressDialog.dart';
 import '../../../data/db/entities/route.dart';
 import '../../../utils/Utils.dart';
 

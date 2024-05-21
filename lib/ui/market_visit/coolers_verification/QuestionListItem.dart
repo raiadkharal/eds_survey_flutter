@@ -1,7 +1,8 @@
+import 'package:eds_survey/components/dropdown/customer_service_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../components/dropdowns/SimpleDropdownButton.dart';
+import '../../../components/dropdown/SimpleDropdownButton.dart';
 import '../../../utils/Colors.dart';
 
 class CoolerQuestionListItem extends StatelessWidget {
@@ -31,10 +32,10 @@ class CoolerQuestionListItem extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: SimpleDropdownButton(
+            child: CustomerServiceDropdown(
               options: options,
               isExpanded: false,
-              borderOutlined: false,
+              underLined: false,
               onChanged: onChanged,
             ),
           )

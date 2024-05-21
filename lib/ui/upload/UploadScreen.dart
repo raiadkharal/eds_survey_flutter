@@ -1,4 +1,4 @@
-import 'package:eds_survey/components/buttons/CustomButton.dart';
+import 'package:eds_survey/components/button/CustomButton.dart';
 import 'package:eds_survey/ui/upload/UploadViewModel.dart';
 import 'package:eds_survey/utils/Constants.dart';
 import 'package:eds_survey/utils/NetworkManager.dart';
@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../components/progress_dialogs/PregressDialog.dart';
+import '../../components/progress_dialog/PregressDialog.dart';
 import '../../data/models/UploadProgressModel.dart';
 import '../../utils/Colors.dart';
 

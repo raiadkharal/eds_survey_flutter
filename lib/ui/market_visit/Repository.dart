@@ -507,8 +507,8 @@ class Repository extends GetxController {
         productList?.map((product) => product.productName ?? "").toList());
   }
 
-  Future<LookUpData> getBrandsAndPackages() {
-    return _mainDao.getBrandsAndPackages();
+  Future<LookUpData> getLookUpData() {
+    return _mainDao.getLookUpData();
   }
 
   void addRequest(RequestForm outletRequestForm) {
@@ -640,4 +640,9 @@ class Repository extends GetxController {
 
   Future<List<RequestForm>> getAllUnSyncedRequestForms(int requestId) async =>
       _mainDao.getAllUnSyncedRequestForms(requestId);
+
+  Future<List<MRoute>> getAllRoutes() async{
+   return _mainDao.getRoutes();
+  }
+
 }

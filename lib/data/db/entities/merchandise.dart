@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../models/MerchandisingImage.dart';
-import '../converters/MerchandiseConverter.dart';
 
 part 'merchandise.g.dart';
 
