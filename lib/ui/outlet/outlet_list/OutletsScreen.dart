@@ -4,6 +4,7 @@ import 'package:eds_survey/ui/outlet/outlet_list/OutletsViewModel.dart';
 import 'package:eds_survey/ui/outlet/summary/OutletSummaryScreen.dart';
 import 'package:eds_survey/ui/outlet/summary/OutletSummaryViewModel.dart';
 import 'package:eds_survey/utils/Enums.dart';
+import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,16 +25,17 @@ class OutletListScreen extends StatefulWidget {
 }
 
 class _OutletListScreenState extends State<OutletListScreen> {
-  final OutletsViewModel controller = Get.find<OutletsViewModel>();
+  final OutletsViewModel controller =
+      Get.put<OutletsViewModel>(OutletsViewModel(Get.find()));
 
   @override
   void initState() {
-   List<dynamic>? args=Get.arguments;
-   if(args!=null) {
-     controller.setSelectedRouteId(args[0]);
-     controller.setSelectedDistributionId(args[1]);
-     controller.setSurveyType(args[2]);
-   }
+    List<dynamic>? args = Get.arguments;
+    if (args != null) {
+      controller.setSelectedRouteId(args[0]);
+      controller.setSelectedDistributionId(args[1]);
+      controller.setSurveyType(args[2]);
+    }
     super.initState();
   }
 
@@ -45,18 +47,22 @@ class _OutletListScreenState extends State<OutletListScreen> {
         baseContext: context,
       ),
       appBar: AppBar(
-          foregroundColor: Colors.white,
-          backgroundColor: primaryColor,
-          // leading: IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(
-          //       Icons.menu,
-          //       color: Colors.white,
-          //     )),
-          title: Text(
-            "EDS Survey",
-            style: GoogleFonts.roboto(color: Colors.white),
-          )),
+        foregroundColor: Colors.white,
+        backgroundColor: primaryColor,
+        title: Text(
+          "OUTLET LIST",
+          style: GoogleFonts.roboto(color: Colors.white),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showSearch(
+                    context: context,
+                    delegate: CustomSearchDelegate(controller));
+              },
+              icon: const Icon(Icons.search))
+        ],
+      ),
       body: Column(
         children: [
           Container(
@@ -72,39 +78,38 @@ class _OutletListScreenState extends State<OutletListScreen> {
             ),
           ),
           Expanded(
-              child: FutureBuilder<List<dynamic>>(
+              child: FutureBuilder(
             future: controller.loadOutlets(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                var outlets = [];
-                if (controller.getSurveyType() == SurveyType.MARKET_VISIT) {
-                  outlets = snapshot.requireData.isNotEmpty
-                      ? snapshot.requireData as List<Outlet>
-                      : [];
-                } else {
-                  outlets = snapshot.requireData.isNotEmpty
-                      ? snapshot.requireData as List<WOutlet>
-                      : [];
-                }
-                return ListView.separated(
-                  itemCount: outlets.length,
-                  itemBuilder: (context, index) {
-                    return OutletListItem(
-                      onTap: (outletId) {
-                        Get.toNamed(Routes.outletSummary,
-                            arguments: [outletId,controller.getSurveyType()]);
-                      },
-                      outletItem: outlets[index],
-                      surveyType: controller.getSurveyType()??SurveyType.MARKET_VISIT,
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return Container(
-                      color: Colors.grey,
-                      height: 0.5,
-                      width: double.infinity,
-                    );
-                  },
+                return Obx(
+                  () => ListView.separated(
+                    itemCount: controller.outlets.value.length,
+                    itemBuilder: (context, index) {
+                      return OutletListItem(
+                        onTap: (outletId) async {
+                          final result = await Get.toNamed(Routes.outletSummary,
+                              arguments: [
+                                outletId,
+                                controller.getSurveyType()
+                              ]);
+                          if (result == "ok") {
+                            setState(() {});
+                          }
+                        },
+                        outletItem: controller.outlets.value[index],
+                        surveyType: controller.getSurveyType() ??
+                            SurveyType.MARKET_VISIT,
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Container(
+                        color: Colors.black54,
+                        height: 0.5,
+                        width: double.infinity,
+                      );
+                    },
+                  ),
                 );
               } else {
                 return const Center(
@@ -115,6 +120,151 @@ class _OutletListScreenState extends State<OutletListScreen> {
           )),
         ],
       ),
+    );
+  }
+}
+
+class CustomSearchDelegate extends SearchDelegate {
+  final OutletsViewModel controller;
+
+  CustomSearchDelegate(this.controller);
+
+
+  @override
+  String? get searchFieldLabel => "Enter Outlet Name or Code";
+
+  @override
+  TextStyle? get searchFieldStyle => GoogleFonts.roboto(fontSize: 16);
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+          showSuggestions(context);
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    List<dynamic> filteredItems = [];
+
+    if (controller.getSurveyType() == SurveyType.MARKET_VISIT) {
+      filteredItems = controller.outlets.value
+          .where((outlet) =>
+              (outlet as Outlet)
+                  .outletName
+                  .toString()
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
+              outlet.outletCode.toString().contains(query))
+          .toList() as List<Outlet>;
+    } else if (controller.getSurveyType() == SurveyType.SURVEY_WITH) {
+      filteredItems = controller.outlets.value
+          .where((outlet) =>
+              (outlet as WOutlet)
+                  .outletName
+                  .toString()
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
+              outlet.outletCode.toString().contains(query))
+          .toList() as List<WOutlet>;
+    }
+    return ListView.separated(
+      itemCount: filteredItems.length,
+      itemBuilder: (context, index) {
+        return OutletListItem(
+          onTap: (outletId) async {
+
+            //Clear focus
+            FocusScope.of(context).requestFocus(FocusNode());
+
+            //close search bar
+            close(context, null);
+
+            Get.toNamed(Routes.outletSummary,
+                arguments: [outletId, controller.getSurveyType()]);
+          },
+          outletItem: filteredItems[index],
+          surveyType: controller.getSurveyType() ?? SurveyType.MARKET_VISIT,
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) {
+        return Container(
+          color: Colors.black54,
+          height: 0.5,
+          width: double.infinity,
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<dynamic> filteredItems = [];
+
+    if (controller.getSurveyType() == SurveyType.MARKET_VISIT) {
+      filteredItems = controller.outlets.value
+          .where((outlet) =>
+              (outlet as Outlet)
+                  .outletName
+                  .toString()
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
+              outlet.outletCode.toString().contains(query))
+          .toList() as List<Outlet>;
+    } else if (controller.getSurveyType() == SurveyType.SURVEY_WITH) {
+      filteredItems = controller.outlets.value
+          .where((outlet) =>
+              (outlet as WOutlet)
+                  .outletName
+                  .toString()
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
+              outlet.outletCode.toString().contains(query))
+          .toList() as List<WOutlet>;
+    }
+    return ListView.separated(
+      itemCount: filteredItems.length,
+      itemBuilder: (context, index) {
+        return OutletListItem(
+          onTap: (outletId) async {
+
+            //Clear focus
+            FocusScope.of(context).requestFocus(FocusNode());
+
+            //close search bar
+            close(context, null);
+
+            //navigate to outlet summary screen
+            Get.toNamed(Routes.outletSummary,
+                arguments: [outletId, controller.getSurveyType()]);
+          },
+          outletItem: filteredItems[index],
+          surveyType: controller.getSurveyType() ?? SurveyType.MARKET_VISIT,
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) {
+        return Container(
+          color: Colors.black54,
+          height: 0.5,
+          width: double.infinity,
+        );
+      },
     );
   }
 }

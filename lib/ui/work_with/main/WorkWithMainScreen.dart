@@ -39,7 +39,7 @@ class _WorkWithMainScreenState extends State<WorkWithMainScreen> {
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
         title: Text(
-          "Main Screen",
+          "LOAD OUTLETS",
           style: GoogleFonts.roboto(color: Colors.black),
         ),
       ),

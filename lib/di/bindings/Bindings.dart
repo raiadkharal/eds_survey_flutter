@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../components/dialog/sku_avalability/sku_availability_dialog_controller.dart';
 import '../../data/db/DatabaseHelper.dart';
 import '../../data/db/dao/MainDao.dart';
 import '../../data/db/dao/MainDaoImpl.dart';
@@ -21,7 +22,7 @@ class SurveyBinding implements Bindings {
   Future<void> dependencies() async {
     Get.put<ApiService>(ApiService(), permanent: true);
     await Get.putAsync<Database>(
-        () async => await DatabaseHelper.initDatabase(),
+        () async => await DatabaseHelper.getDatabase(),
         permanent: true);
     Get.put<MainDao>(MainDaoImpl(Get.find()), permanent: true);
     await Get.putAsync<SharedPreferences>(
@@ -37,16 +38,14 @@ class SurveyBinding implements Bindings {
         permanent: true);
     Get.put<HomeViewModel>(HomeViewModel(Get.find<HomeRepository>(), Get.find<PreferenceUtil>(),Get.find<Repository>()),
         permanent: true);
-    Get.put<OutletsViewModel>(OutletsViewModel(Get.find()), permanent: true);
     Get.put<SurveyViewModel>(SurveyViewModel(Get.find(), Get.find()),
         permanent: true);
     // Get.put<OutletSummaryViewModel>(OutletSummaryViewModel(Get.find()),
     //     permanent: true);
     // Get.put<MerchandisingViewModel>(MerchandisingViewModel(Get.find()),
     //     permanent: true);
-    Get.lazyPut<LoginRepository>(
-        () => LoginRepository.getInstance(Get.find(), Get.find()));
-    Get.lazyPut<LoginViewModel>(() => LoginViewModel(Get.find(), Get.find()));
+    Get.put<LoginRepository>(LoginRepository.getInstance(Get.find(), Get.find()),permanent: true);
+    Get.put<LoginViewModel>(LoginViewModel(Get.find(), Get.find()),permanent: true);
     Get.put<WorkWithMainViewModel>(
         WorkWithMainViewModel(Get.find(), Get.find()),
         permanent: true);

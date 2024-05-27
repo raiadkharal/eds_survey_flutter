@@ -10,6 +10,7 @@ class Routes{
   static const String coolerVerification = "/coolerVerification";
   static const String gandola = "/gandola";
   static const String stockInformation = "/stockInformation";
+  static const String competitorStockInformation = "/competitorStockInformation";
   static const String expiredStock = "/expiredStock";
   static const String surveyFeedback = "/surveyFeedback";
   static const String priorities = "/priorities";

@@ -117,7 +117,6 @@ class _SignatureScreenState extends State<SignatureScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _controller.dispose();
     super.dispose();
   }

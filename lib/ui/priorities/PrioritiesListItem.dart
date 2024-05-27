@@ -52,28 +52,27 @@ class _PrioritiesListState extends State<PrioritiesList> {
                       options: widget.taskTypes ?? [],
                       onChanged: (taskType) {
                         if (taskType.taskTypeId != null) {
-                          if ((taskType.taskTypeId == 3 ||taskType.taskTypeId == 13)) {
-
+                          if ((taskType.taskTypeId == 3 ||
+                              taskType.taskTypeId == 13)) {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                content: SkuAvailabilityDialog(onSave: (selectedMissingSkus){
-                                  task.remarks = taskType.taskType;
-                                  task.taskId = taskType.taskTypeId ?? 0;
-                                  task.missingSkus=selectedMissingSkus;
-                                  controller.updateTask(widget.tasks[index]);
-                                },),
+                                content: SkuAvailabilityDialog(
+                                  onSave: (selectedMissingSkus) {
+                                    task.remarks = taskType.taskType;
+                                    task.taskId = taskType.taskTypeId ?? 0;
+                                    task.missingSkus = selectedMissingSkus;
+                                    controller.updateTask(widget.tasks[index]);
+                                  }, task: task,
+                                ),
                               ),
                             );
                           }
-                        } else {
                           task.remarks = taskType.taskType;
                           task.taskId = taskType.taskTypeId ?? 0;
                           controller.updateTask(widget.tasks[index]);
                         }
                       },
-                      selectedValue: widget.taskTypes?.firstWhereOrNull(
-                          (element) => element.taskTypeId == task.taskId),
                       surveyType: widget.surveyType,
                     )),
                 const SizedBox(
@@ -136,7 +135,7 @@ class _PrioritiesListState extends State<PrioritiesList> {
       final DateTime? pickedDate = await showDatePicker(
           context: context,
           initialDate: DateTime.now(),
-          firstDate: DateTime(2000),
+          firstDate: DateTime.now().subtract(const Duration(days: 0)),
           lastDate: DateTime(2101));
 
       // Convert selectedDate to String using intl package

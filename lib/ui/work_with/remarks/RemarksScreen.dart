@@ -128,12 +128,18 @@ class _RemarksScreenState extends State<RemarksScreen> {
   }
 
   void setObservers() {
-    debounce(controller.navigate, (aBoolean) {
+    debounce(controller.navigate, (aBoolean) async {
       if (aBoolean) {
-        Get.toNamed(Routes.surveyFeedback, arguments: [
+
+        final result = await Get.toNamed(Routes.surveyFeedback, arguments: [
           outletId,
           surveyType
         ]);
+
+        if(result=="ok"){
+          Get.back(result: result);
+        }
+
       }
     },time: const Duration(milliseconds: 200));
 

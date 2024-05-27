@@ -1,60 +1,84 @@
-import 'package:flutter/material.dart';
+/*
+import 'dart:async';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'model/todo.dart';
 
-class MyDropdownTextField extends StatefulWidget {
-  @override
-  _MyDropdownTextFieldState createState() => _MyDropdownTextFieldState();
-}
+class DBHelper {
+  static final DBHelper _instance = DBHelper._internal();
+  factory DBHelper() => _instance;
 
-class _MyDropdownTextFieldState extends State<MyDropdownTextField> {
-  TextEditingController _textEditingController = TextEditingController();
-  List<String> _options = ['Option 1', 'Option 2', 'Option 3'];
-  late String _selectedOption=_options[0];
+  DBHelper._internal();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _textEditingController,
-              onTap: () {
-                _showPopupMenu(context);
-              },
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: 'Select an option',
-                suffixIcon: Icon(Icons.arrow_drop_down),
-              ),
-            ),
-            SizedBox(height: 16),
-            _selectedOption != null
-                ? Text('Selected Option: $_selectedOption')
-                : Container(),
-          ],
-        ),
-      ),
-    );
+  static Database? _database;
+  final _controller = StreamController<List<dynamic>>.broadcast();
+
+  Stream<List<dynamic>> get todoStream => _controller.stream;
+
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
   }
 
-  void _showPopupMenu(BuildContext context) async {
-    final result = await showMenu(
-      context: context,
-      position: RelativeRect.fromLTRB(0, 60, 0, 0),
-      items: _options.map((String option) {
-        return PopupMenuItem<String>(
-          value: option,
-          child: Text(option),
+  Future<Database> _initDatabase() async {
+    return openDatabase(
+      join(await getDatabasesPath(), 'todo_database.db'),
+      onCreate: (db, version) {
+        return db.execute(
+          'CREATE TABLE todos(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
         );
-      }).toList(),
+      },
+      version: 1,
     );
+  }
 
-    if (result != null) {
-      setState(() {
-        _selectedOption = result;
-        _textEditingController.text = result;
-      });
-    }
+  Future<void> insertTodo(Todo todo) async {
+    final db = await database;
+    await db.insert(
+      'todos',
+      todo.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    _refreshTodos();
+  }
+
+  Future<List<dynamic>> fetchTodos() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('todos');
+    return List.generate(maps.length, (i) {
+      return dynamic.fromMap(maps[i]);
+    });
+  }
+
+  Future<void> updateTodo(Todo todo) async {
+    final db = await database;
+    await db.update(
+      'todos',
+      todo.toMap(),
+      where: 'id = ?',
+      whereArgs: [todo.id],
+    );
+    _refreshTodos();
+  }
+
+  Future<void> deleteTodo(int id) async {
+    final db = await database;
+    await db.delete(
+      'todos',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    _refreshTodos();
+  }
+
+  void _refreshTodos() async {
+    var todos = await fetchTodos();
+    _controller.sink.add(todos);
+  }
+
+  void dispose() {
+    _controller.close();
   }
 }
+*/

@@ -50,16 +50,16 @@ class UploadViewModel extends GetxController {
   List<UploadProgressModel> getUploadProgressPostItems() =>
       uploadProgressPostItems;
 
-  void loadMarketVisits() {
-    getAllSurveyItems();
+  Future<void> loadMarketVisits() async{
+    return await getAllSurveyItems();
   }
 
-  void getAllSurveyItems() {
+  Future<void> getAllSurveyItems() async {
     // setLoading(true);
     uploadProgressItems = [];
     uploadProgressMarketItems = [];
 
-    _repository.getAllSurveyItems().then((items) {
+    _repository.getAllSurveyItems().then((items) async {
       uploadProgressMarketItems = [];
 
       for (MarketVisit item in items) {
@@ -71,7 +71,7 @@ class UploadViewModel extends GetxController {
             marketVisit: item));
       }
 
-      getAllPreWorkItems();
+      await getAllPreWorkItems();
 
       debugPrint("UploadMV size: ${items.length}");
     }).onError((error, stackTrace) {
@@ -80,9 +80,9 @@ class UploadViewModel extends GetxController {
     });
   }
 
-  void getAllPreWorkItems() {
+  Future<void> getAllPreWorkItems() async{
     uploadProgressPreItems = [];
-    _repository.getAllPreWork().then((items) {
+    _repository.getAllPreWork().then((items) async{
       uploadProgressPreItems = [];
 
       for (WorkWithPre item in items) {
@@ -94,7 +94,7 @@ class UploadViewModel extends GetxController {
             workWithPre: item));
       }
 
-      getAllPostWorkItems();
+      await getAllPostWorkItems();
 
       debugPrint("UploadVM: Work W size: ${items.length}");
     }).onError((error, stackTrace) {
@@ -103,7 +103,7 @@ class UploadViewModel extends GetxController {
     });
   }
 
-  void getAllPostWorkItems() {
+  Future<void> getAllPostWorkItems() async{
     uploadProgressPostItems = [];
     _repository.getAllPostWork().then((items) {
       uploadProgressPostItems = [];

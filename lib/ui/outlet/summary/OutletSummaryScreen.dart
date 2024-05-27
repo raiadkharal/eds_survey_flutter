@@ -502,7 +502,7 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
     );
   }
 
-  void startFlowToNext() {
+  Future<void> startFlowToNext() async {
     double distance = Util.checkMetre(currentLatLng, outletLatLng);
 
     if (surveyType == SurveyType.SURVEY_WITH) {
@@ -520,8 +520,11 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
         WorkWithSingletonModel.getInstance().setStatus(statusId);
 
         if (statusId == 1) {
-          Get.toNamed(Routes.merchandising,
+          final result  = await Get.toNamed(Routes.merchandising,
               arguments: [wOutlet.outletId, surveyType]);
+          if(result=="ok"){
+            Get.back(result: result);
+          }
         } else {
           // controller.setLoading(true);
           controller.postWorkWith(WorkWithSingletonModel.getInstance());
@@ -550,8 +553,13 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
           }
         }
         if (statusId == 1) {
-          Get.toNamed(Routes.merchandising,
+        final result = await Get.toNamed(Routes.merchandising,
               arguments: [outlet.outletId, surveyType]);
+
+          if(result=="ok"){
+            Get.back(result: result);
+          }
+
         } else {
           controller.postMarketVisit();
         }
@@ -788,10 +796,11 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
       }
     }, time: const Duration(milliseconds: 200));
 
-    debounce(controller.postMarketVisitSaved(), (aBoolean) {
-      if (aBoolean.getContentIfNotHandled() != null) {
+    debounce(controller.getSurveySavedWithEvent(), (event) {
+      if (event.getContentIfNotHandled() != null) {
         controller.setOutletStatus(1);
         // navigate back to outlet list screen
+        // Get.back(result: "ok");
         Get.until((route) => Get.currentRoute == Routes.outletList);
         SurveySingletonModel.getInstance().reset();
       }
@@ -801,10 +810,11 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
       if (aBoolean) {
         controller.setOutletStatus(1);
         // navigate back to outlet list screen
+        // Get.back(result: "ok");
         Get.until((route) => Get.currentRoute == Routes.outletList);
         WorkWithSingletonModel.getInstance().reset();
       }
-    }, time: const Duration(milliseconds: 200));
+    }, time: const Duration(milliseconds: 100));
 
     debounce(controller.getMessage(), (event) {
       showToastMessage(event.peekContent());

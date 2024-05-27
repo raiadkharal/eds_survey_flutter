@@ -26,6 +26,9 @@ import '../entities/task_type.dart';
 import '../entities/workwith/WOutlet.dart';
 
 abstract class MainDao {
+
+  Stream<List<Outlet>> getOutletStream();
+  Stream<List<WOutlet>> getWOutletStream();
   Future<List<MRoute>> findAllRoutes(int distributionId);
 
   Future<List<WRoute>> findWRoutes(int distributionId);
@@ -158,7 +161,7 @@ abstract class MainDao {
 
   Future<int> workWithOutletCount(int routeId);
 
-  Future<void> insertPreWorkWithData(WorkWithPre workWith);
+  Future<void> insertPostWorkWithData(WorkWithPost workWith);
 
   Future<WorkWithPost> findWorkWithByOutletId(int outletId);
 

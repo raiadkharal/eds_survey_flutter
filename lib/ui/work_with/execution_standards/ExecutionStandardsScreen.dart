@@ -111,9 +111,14 @@ class _ExecutionStandardsScreenState extends State<ExecutionStandardsScreen> {
   }
 
   void setObservers() {
-    ever(controller.navigate, (aBoolean) {
+    ever(controller.navigate, (aBoolean) async {
       if (aBoolean) {
-        Get.toNamed(Routes.stepsOfCall,arguments: [outletId,surveyType]);
+        final result = await Get.toNamed(Routes.stepsOfCall,arguments: [outletId,surveyType]);
+
+        if(result=="ok"){
+          Get.back(result: result);
+        }
+
       }
     });
   }

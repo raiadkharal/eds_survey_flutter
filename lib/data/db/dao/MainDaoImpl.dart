@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:eds_survey/data/db/dao/MainDao.dart';
 import 'package:eds_survey/data/db/entities/asset_entity.dart';
 import 'package:eds_survey/data/db/entities/asset_missing_reason.dart';
@@ -31,7 +33,25 @@ import '../entities/outlet_request/RequestForm.dart';
 class MainDaoImpl extends MainDao {
   final Database _database;
 
+
+  final _outletController = StreamController<List<Outlet>>.broadcast();
+
+  final _wOutletController = StreamController<List<WOutlet>>.broadcast();
+
+
+
   MainDaoImpl(this._database);
+
+
+  @override
+  Stream<List<Outlet>> getOutletStream() {
+    return _outletController.stream;
+  }
+
+  @override
+  Stream<List<WOutlet>> getWOutletStream() {
+   return _wOutletController.stream;
+  }
 
   @override
   Future<List<Designation>> findAllDesignation() async {
@@ -463,8 +483,8 @@ class MainDaoImpl extends MainDao {
   }
 
   @override
-  Future<void> insertPreWorkWithData(WorkWithPre workWith) async {
-    _database.insert("WorkWithPre", workWith.toJson(),
+  Future<void> insertPostWorkWithData(WorkWithPost workWith) async {
+    _database.insert("WorkWithPost", workWith.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
@@ -495,6 +515,8 @@ class MainDaoImpl extends MainDao {
       where: 'outletId = ?',
       whereArgs: [outlet.outletId],
     );
+
+    refreshWOutlets(outlet.routeId);
   }
 
   @override
@@ -507,7 +529,7 @@ class MainDaoImpl extends MainDao {
   @override
   Future<List<MarketVisit>> dayEndQuery() async {
     final result = await _database.rawQuery(
-        "Select * from MarketVisit  where MarketVisit.synced = 0 UNION Select * from WorkWithPost where WorkWithPost.synced = 0");
+        "Select * from MarketVisit where MarketVisit.synced = 0 UNION Select * from WorkWithPost where WorkWithPost.synced = 0");
 
     return result.map((e) => MarketVisit.fromJson(e)).toList();
   }
@@ -526,6 +548,8 @@ class MainDaoImpl extends MainDao {
       where: 'outletId = ?',
       whereArgs: [outlet.outletId],
     );
+
+    refreshOutlets(outlet.routeId, outlet.distributionId);
   }
 
   @override
@@ -720,5 +744,25 @@ class MainDaoImpl extends MainDao {
           "RequestForm", where: "requesTypeId = ?", whereArgs: [requestId]);
 
       return result.map((e) => RequestForm.fromJson(e)).toList();
+  }
+
+  void refreshOutlets(int? routeId,int? distributionId) async{
+    if(routeId!=null && distributionId!=null) {
+      final outlets = await findAllOutletsForRoute(routeId, distributionId);
+      _outletController.sink.add(outlets);
+    }
+  }
+
+  void refreshWOutlets(int? routeId) async{
+    if(routeId!=null) {
+      final outlets = await findWOutletsForRoute(routeId);
+      _wOutletController.sink.add(outlets);
+    }
+  }
+
+
+  void dispose(){
+    _outletController.close();
+    _wOutletController.close();
   }
 }

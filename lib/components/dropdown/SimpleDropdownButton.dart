@@ -79,9 +79,6 @@ class _SimpleDropdownExpiredStockState extends State<SimpleDropdownButton> {
               : InputBorder.none,
         ),
         onChanged: (value) {
-          // setState(() {
-          //   selectedValue = value!;
-          // });
           if (widget.onChanged != null) {
             if (value != null) {
               widget.onChanged!(value);

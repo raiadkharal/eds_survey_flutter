@@ -61,12 +61,6 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
       appBar: AppBar(
           foregroundColor: Colors.white,
           backgroundColor: primaryColor,
-          // leading: IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(
-          //       Icons.menu,
-          //       color: Colors.white,
-          //     )),
           title: Text(
             "EDS Survey",
             style: GoogleFonts.roboto(color: Colors.white),
@@ -179,20 +173,35 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
       (merchandiseImages) => updateMerchandiseList(merchandiseImages),
     );
 
-    ever(controller.isSaved, (aBoolean) {
+    ever(controller.isSaved, (aBoolean) async {
       if (aBoolean) {
         // showToastMessage("Saved");
         if (surveyType == SurveyType.MARKET_VISIT) {
           if (controller.getConfiguration().tenantId ==
               Constants.ENGRO_USER_ID) {
-            Get.toNamed(Routes.customerService,
+           final result = await Get.toNamed(Routes.customerService,
                 arguments: [outletId, surveyType]);
+
+            if(result=="ok"){
+             Get.back(result: result);
+           }
+
           } else {
-            Get.toNamed(Routes.gandola, arguments: [outletId, surveyType]);
+            final result = await Get.toNamed(Routes.gandola, arguments: [outletId, surveyType]);
+
+            if(result=="ok"){
+              Get.back(result: result);
+            }
+
           }
         } else {
-          Get.toNamed(Routes.executionStandards,
+         final result = await Get.toNamed(Routes.executionStandards,
               arguments: [outletId, surveyType]);
+
+          if(result=="ok"){
+            Get.back(result: result);
+          }
+
         }
       }
     });
@@ -228,7 +237,7 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
         }
       } else {
         setLoading(false);
-        showToastMessage("Something went wrong.Please try again!");
+        showToastMessage("No Image Captured!");
       }
     } catch (e) {
       setLoading(false);
@@ -278,22 +287,11 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
 
   Future<File?> addWatermark(String imagePath) async {
     final ReceivePort receivePort = ReceivePort();
-    // final Completer<File?> completer = Completer<File?>();
 
     await Isolate.spawn(
       processImageInIsolate,
       [receivePort.sendPort, imagePath],
     );
-    // receivePort.listen((message) {
-    //   if (message.containsKey('error')) {
-    //     completer.completeError(message['error']);
-    //   } else {
-    //     String outputImagePath = message['outputImagePath'];
-    //     completer.complete(File(outputImagePath));
-    //   }
-    //   receivePort.close();
-    // });
-
     return await receivePort.first as File?;
   }
 
@@ -357,7 +355,7 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
       File watermarkedFile = File(outputImagePath);
 
       // Save the watermarked image
-      watermarkedFile.writeAsBytesSync(img.encodePng(resizedImage));
+      watermarkedFile.writeAsBytesSync(img.encodeJpg(resizedImage));
       // sendPort.send({'outputImagePath': outputImagePath});
       Isolate.exit(sendPort,watermarkedFile);
     } catch (e) {

@@ -26,7 +26,7 @@ class CustomerServiceDropdown extends StatefulWidget {
 }
 
 class _SimpleDropdownButtonState extends State<CustomerServiceDropdown> {
-  late String? selectedValue = widget.options.first;
+  String? selectedValue;
 
   @override
   Widget build(BuildContext context) {
@@ -56,16 +56,14 @@ class _SimpleDropdownButtonState extends State<CustomerServiceDropdown> {
               ),
             ));
       }).toList(),
-      onChanged: widget.enabled
-          ? (value) {
+      onChanged: (value) {
         setState(() {
           selectedValue = value!;
         });
         if (widget.onChanged != null) {
           widget.onChanged!(value!);
         }
-      }
-          : null,
+      },
     );
   }
 }

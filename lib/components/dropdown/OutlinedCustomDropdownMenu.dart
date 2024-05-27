@@ -10,14 +10,13 @@ class OutlineCustomDropDownMenu extends StatefulWidget {
   final bool isExpanded;
   final bool underLined;
   final SurveyType surveyType;
-  final dynamic selectedValue;
   final Function(dynamic) onChanged;
 
   const OutlineCustomDropDownMenu(
       {super.key,
       required this.options,
       this.isExpanded = true,
-      this.underLined = true, required this.onChanged, required this.selectedValue, required this.surveyType});
+      this.underLined = true, required this.onChanged, required this.surveyType});
 
   @override
   State<OutlineCustomDropDownMenu> createState() =>
@@ -25,7 +24,6 @@ class OutlineCustomDropDownMenu extends StatefulWidget {
 }
 
 class _OutlineCustomDropDownMenuState extends State<OutlineCustomDropDownMenu> {
-  late dynamic selectedValue = widget.selectedValue??widget.options.first;
 
   late final List<TaskType> taskTypes;
   late final List<WTaskType> wTaskTypes;
@@ -45,13 +43,16 @@ class _OutlineCustomDropDownMenuState extends State<OutlineCustomDropDownMenu> {
   Widget build(BuildContext context) {
     return DropdownButtonFormField(
       isDense: true,
-      value: selectedValue,
+      alignment:AlignmentDirectional.centerStart,
+      hint: const Align(alignment: Alignment.centerLeft,child: Text("select task"),),
       isExpanded: widget.isExpanded,
       items: widget.options.map((option) {
         return DropdownMenuItem<dynamic>(
             value: option,
+            alignment:AlignmentDirectional.centerStart,
             child: Text(
               option.taskType??"",
+              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.roboto(color: Colors.black54, fontSize: 14),
             ));
       }).toList(),
@@ -64,9 +65,6 @@ class _OutlineCustomDropDownMenuState extends State<OutlineCustomDropDownMenu> {
               OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
           contentPadding: EdgeInsets.all(8.0)),
       onChanged: (value) {
-        setState(() {
-          selectedValue = value!;
-        });
         widget.onChanged(value!);
       },
     );

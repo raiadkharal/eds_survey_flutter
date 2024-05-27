@@ -65,11 +65,20 @@ class Util {
     try {
       File imageFile = File(filePath);
       List<int> imageBytes = await imageFile.readAsBytes();
-      return base64Encode(imageBytes);
+      final base64String = base64Encode(imageBytes);
+      return utf8.decode(base64String.codeUnits);
     }catch(e){
       showToastMessage("Something went wrong. Please try again later");
     }
     return null;
+  }
+
+  static Future<String> convertImageToUtf8(String imagePath) async {
+    final file = File(imagePath);
+    final bytes = await file.readAsBytes();
+    final base64String = base64Encode(bytes);
+    final utf8String = utf8.decode(base64String.codeUnits);
+    return utf8String;
   }
 
   static bool isSameDate(DateTime date1, DateTime date2) {

@@ -110,9 +110,14 @@ class _StepOfCallScreenState extends State<StepOfCallScreen> {
   }
 
   void setObservers() {
-    debounce(controller.navigate, (aBoolean){
+    debounce(controller.navigate, (aBoolean) async {
       if(aBoolean) {
-        Get.toNamed(Routes.remarks,arguments: [outletId,surveyType]);
+        final result = await Get.toNamed(Routes.remarks,arguments: [outletId,surveyType]);
+
+        if(result=="ok"){
+          Get.back(result: result);
+        }
+
       }
     },time: const Duration(milliseconds: 200));
   }

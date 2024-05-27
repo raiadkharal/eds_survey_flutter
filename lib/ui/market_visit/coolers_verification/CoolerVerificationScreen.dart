@@ -181,8 +181,7 @@ class _CoolerVerificationScreenState extends State<CoolerVerificationScreen> {
     );
   }
 
-  void onNextClick(BuildContext context) {
-    Get.toNamed(Routes.expiredStock, arguments: [outletId, surveyType]);
+  Future<void> onNextClick(BuildContext context) async {
 
     List<MarketVisitResponse> marketVisitResponseList = [];
 
@@ -198,6 +197,12 @@ class _CoolerVerificationScreenState extends State<CoolerVerificationScreen> {
           .add(MarketVisitResponse("CV", "CV_CF", cVcClPepsi));
       marketVisitResponseList
           .add(MarketVisitResponse("CV", "CV_CP", cVcCiPepsi));
+
+      final result = await Get.toNamed(Routes.expiredStock, arguments: [outletId, surveyType]);
+
+      if(result=="ok"){
+        Get.back(result: result);
+      }
 
       controller.setData(marketVisitResponseList);
     } else {

@@ -1,6 +1,7 @@
 import 'package:eds_survey/data/models/LookUpObject.dart';
 import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SimpleDropdownExpiredStock extends StatefulWidget {
@@ -26,7 +27,13 @@ class SimpleDropdownExpiredStock extends StatefulWidget {
 }
 
 class _SimpleDropdownButtonState extends State<SimpleDropdownExpiredStock> {
- late LookUpObject selectedValue = widget.options.first;
+  LookUpObject? selectedValue;
+
+  @override
+  void initState() {
+    selectedValue = widget.hint.isEmpty ? widget.options.first : null;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +43,7 @@ class _SimpleDropdownButtonState extends State<SimpleDropdownExpiredStock> {
           showToastMessage("Select Package");
         }
       },
-      child: DropdownButton<LookUpObject>(
+      child: DropdownButtonFormField<LookUpObject>(
         value: selectedValue,
         isExpanded: widget.isExpanded,
         isDense: true,
@@ -45,29 +52,36 @@ class _SimpleDropdownButtonState extends State<SimpleDropdownExpiredStock> {
           widget.hint,
           style: GoogleFonts.roboto(color: Colors.black54, fontSize: 14),
         ),
-        underline: widget.underLined
-            ? Container(
-                color: Colors.grey,
-                height: 1,
-              )
-            : const SizedBox(),
         items: widget.options.map((option) {
           return DropdownMenuItem(
               enabled: widget.enabled,
               value: option,
               alignment: AlignmentDirectional.centerStart,
               child: Text(
-                option.value?? "",
+                option.value ?? "",
                 textAlign: TextAlign.end,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.roboto(color: Colors.black54, fontSize: 14),
               ));
         }).toList(),
+        decoration: InputDecoration(
+          hintText: widget.hint,
+          hintStyle: GoogleFonts.roboto(color: Colors.black54),
+          focusedBorder: widget.underLined
+              ? const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black))
+              : InputBorder.none,
+          focusColor: Colors.grey,
+          border: widget.underLined
+              ? const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black))
+              : InputBorder.none,
+        ),
         onChanged: widget.enabled
             ? (value) {
-                setState(() {
-                  selectedValue = value!;
-                });
+                // setState(() {
+                //   selectedValue = value!;
+                // });
                 if (widget.onChanged != null) {
                   widget.onChanged!(value!);
                 }

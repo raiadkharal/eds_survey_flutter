@@ -223,12 +223,17 @@ class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
   }
 
   void setObservers() {
-    ever(controller.cs1DataSaved, (aBoolean) {
+    ever(controller.cs1DataSaved, (aBoolean) async {
       if (aBoolean) {
         //TODO-implement check for engro
         // if (config.getTenantId() == 2)
 
-        Get.toNamed(Routes.stockInformation, arguments: [outletId, surveyType]);
+        final result = await Get.toNamed(Routes.stockInformation, arguments: [outletId, surveyType]);
+
+        if(result=="ok"){
+          Get.back(result: result);
+        }
+
       }
     });
   }

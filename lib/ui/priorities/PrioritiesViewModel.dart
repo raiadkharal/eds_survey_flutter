@@ -41,7 +41,7 @@ class PrioritiesViewModel extends GetxController {
   RxBool isLoading()=>_repository.isLoading();
 
   Rx<Event<String>> getMessage()=>_repository.getMessage();
-  RxBool getPostWorkWithSaved()=>_repository.postWorkWithSaved();
+  Rx<bool> getPostWorkWithSaved()=>_repository.getWorkWithSaved();
 
   void priorityRemarksDataSet() {
     try {

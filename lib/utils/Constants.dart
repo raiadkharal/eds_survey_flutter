@@ -1,6 +1,17 @@
 import '../data/models/outlet_request/LookUpDataObject.dart';
 
 class Constants {
+
+
+  //Engro testing url
+  static const baseUrl = "http://101.50.85.136:84/api/";
+
+  //pepsi testing url
+  // static const _baseUrl = "http://101.50.85.136:81/api/";
+
+  //pepsi production
+  // static const _baseUrl = "https://edshblapi.azurewebsites.net/";
+
   static const homeButtonsPadding = 8.0;
 
   static const String NETWORK_ERROR = "No internet, Please try again later!";
@@ -18,9 +29,9 @@ class Constants {
 
   static const int ENGRO_USER_ID = 2;
 
-  static final valid = [ "","Yes", "No"];
-  static final verify = ["","Yes", "No"];
-  static final confirmation = ["","Yes", "No", "Sometimes", "Majority"];
+  static final valid = [ "Yes", "No"];
+  static final verify = ["Yes", "No"];
+  static final confirmation = ["Yes", "No", "Sometimes", "Majority"];
 
   static final List<LookUpDataObject> competitorCooler = [
     LookUpDataObject(value: "Yes"),
@@ -29,7 +40,6 @@ class Constants {
 
 
   static final percentage = [
-    "",
     "0-20%",
     "21-40%",
     "41-60%",

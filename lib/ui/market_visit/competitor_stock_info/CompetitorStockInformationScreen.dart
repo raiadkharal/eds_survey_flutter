@@ -1,7 +1,6 @@
 import 'package:eds_survey/Route.dart';
 import 'package:eds_survey/components/progress_dialog/PregressDialog.dart';
-import 'package:eds_survey/ui/market_visit/coolers_verification/CoolerVerificationScreen.dart';
-import 'package:eds_survey/ui/market_visit/expired_stock/ExpiredStockScreen.dart';
+import 'package:eds_survey/ui/market_visit/competitor_stock_info/CometitorStockInformationViewModel.dart';
 import 'package:eds_survey/ui/market_visit/stock_information/StockInformationViewModel.dart';
 import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/material.dart';
@@ -14,19 +13,25 @@ import '../../../data/MarketVisitResponse.dart';
 import '../../../utils/Colors.dart';
 import '../../../utils/Enums.dart';
 
-class StockInformationScreen extends StatefulWidget {
-  const StockInformationScreen({super.key});
+class CompetitorStockInformationScreen extends StatefulWidget {
+  const CompetitorStockInformationScreen({super.key});
 
   @override
-  State<StockInformationScreen> createState() => _StockInformationScreenState();
+  State<CompetitorStockInformationScreen> createState() =>
+      _CompetitorStockInformationScreenState();
 }
 
-class _StockInformationScreenState extends State<StockInformationScreen> {
-  final StockInformationViewModel controller =
-      Get.put(StockInformationViewModel(Get.find()));
+class _CompetitorStockInformationScreenState
+    extends State<CompetitorStockInformationScreen> {
+  final CompetitorStockInformationViewModel controller =
+      Get.put(CompetitorStockInformationViewModel(Get.find()));
+
+  final othersTextController = TextEditingController();
 
   late final int outletId;
   late final SurveyType surveyType;
+
+  RxBool othersCheckBox = false.obs;
 
   @override
   void initState() {
@@ -56,7 +61,7 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Text(
-              "STOCK INFORMATION",
+              "COMPETITOR STOCK INFORMATION",
               style: GoogleFonts.roboto(
                   color: Colors.black,
                   fontSize: 22,
@@ -120,11 +125,15 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
                                               .contains(item),
                                           onChanged: (value) {
                                             controller.toggleItem(item);
-                                            if(value??false) {
+                                            if (value ?? false) {
                                               controller.addMarketVisitResponse(
                                                   item, index);
-                                            }else{
-                                              controller.removeResponse(MarketVisitResponse("SI", "SI_C${index + 1}", item));
+                                            } else {
+                                              controller.removeResponse(
+                                                  MarketVisitResponse(
+                                                      "CSI",
+                                                      "CSI_C${index + 1}",
+                                                      item));
                                             }
                                           }),
                                     ),
@@ -139,6 +148,49 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
                                 );
                               },
                             ),
+                            Row(
+                              children: [
+                                Obx(
+                                  () => Checkbox(
+                                    value: othersCheckBox.value,
+                                    onChanged: (value) => othersCheckBox(value),
+                                  ),
+                                ),
+                                Text(
+                                  "Others",
+                                  style: GoogleFonts.roboto(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.normal),
+                                )
+                              ],
+                            ),
+                            Obx(
+                              () => othersCheckBox.value
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 5.0, horizontal: 16),
+                                      child: TextField(
+                                        controller: othersTextController,
+                                        maxLines: 2,
+                                        keyboardType: TextInputType.text,
+                                        decoration: const InputDecoration(
+                                            border: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.black),
+                                                borderRadius:
+                                                    BorderRadius.zero),
+                                            enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.black),
+                                                borderRadius:
+                                                    BorderRadius.zero),
+                                            hintText:
+                                                "Enter SKUs Name (comma separated)"),
+                                      ),
+                                    )
+                                  : const SizedBox(),
+                            )
                           ],
                         ),
                       );
@@ -151,7 +203,7 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
             },
           )),
           CustomButton(
-            onTap: ()=>onNextClick(),
+            onTap: () => onNextClick(),
             text: "Next",
             enabled: true,
             fontSize: 22,
@@ -163,11 +215,21 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
   }
 
   Future<void> onNextClick() async {
+    FocusScope.of(context).requestFocus(FocusNode());
+    if (othersCheckBox.value) {
+      if (othersTextController.text.toString().isEmpty) {
+        showToastMessage("Please enter Sku name");
+        return;
+      }else{
+        controller.addMarketVisitResponse(othersTextController.text.toString(), 1);
+      }
+    }
+
     if (controller.validate()) {
       controller.setData();
 
-      Get.toNamed(Routes.competitorStockInformation,
-          arguments: [outletId, surveyType])?.then((result) {
+      Get.toNamed(Routes.coolerVerification, arguments: [outletId, surveyType])
+          ?.then((result) {
         controller.onResumed();
         if(result=="ok"){
           Get.back(result: result);

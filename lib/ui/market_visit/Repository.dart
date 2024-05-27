@@ -53,8 +53,9 @@ class Repository extends GetxController {
   final ApiService _apiService;
   final PreferenceUtil _preferenceUtil;
   late RxBool _isLoading;
-  late RxBool _postWorkWithSaved;
+  late Rx<bool> _postWorkWithSaved;
   late RxBool _surveySaved;
+  late Rx<bool> _workWithSaved;
   late RxBool _outletRequestSaved;
   late Rx<Event<bool>> _surveySavedWithEvent;
   late Rx<Event<String>> _msg;
@@ -68,6 +69,7 @@ class Repository extends GetxController {
     _postWorkWithSaved = false.obs;
     _outletRequestSaved = false.obs;
     _surveySaved = false.obs;
+    _workWithSaved = false.obs;
     _surveySavedWithEvent = Event(false).obs;
     _msg = Event("").obs;
     _routesModelMutableLiveData = Rx<RoutesModel>(RoutesModel());
@@ -164,13 +166,9 @@ class Repository extends GetxController {
     final json = jsonEncode(workWithModel.toJson());
     debugPrint("Before: $json");
 
-    WorkWithPre workWith = WorkWithPre(
-        routeId: routeId ?? 0,
-        psrId: psrId ?? 0,
-        synced: false,
-        data: json,
-        outletId: outletId);
-    savePreWorkWithInDb(workWith);
+    WorkWithPost workWithPost = WorkWithPost(
+        outletId: workWithModel.outletId ?? 0, synced: false, data: json);
+    savePostWorkWithInDb(workWithPost);
 
     try {
       //TODO- uncomment this when merchandise images converted success to UTF-8 format
@@ -183,7 +181,7 @@ class Repository extends GetxController {
         for (MerchandisingImage merchandisingImage
             in merchandises.merchandiseImages!) {
           merchandisingImage.image =
-              await Util.imageFileToBase64(merchandisingImage.path ?? "");
+              await Util.convertImageToUtf8(merchandisingImage.path ?? "");
           merchandisingImages.add(merchandisingImage);
         }
       }
@@ -191,7 +189,7 @@ class Repository extends GetxController {
     } catch (e) {
       e.printInfo();
     }
-    String finalJson = jsonEncode(workWith.toJson());
+    String finalJson = jsonEncode(workWithModel.toJson());
     debugPrint("After: $finalJson");
 
     NetworkManager.getInstance().isConnectedToInternet().then((aBoolean) async {
@@ -252,7 +250,7 @@ class Repository extends GetxController {
           for (MerchandisingImage merchandisingImage
               in merchandises.merchandiseImages!) {
             merchandisingImage.image =
-                await Util.imageFileToBase64(merchandisingImage.path ?? "");
+                await Util.convertImageToUtf8(merchandisingImage.path ?? "");
             merchandisingImages.add(merchandisingImage);
           }
         }
@@ -262,7 +260,7 @@ class Repository extends GetxController {
       }
 
       String finalJson = jsonEncode(dataModel.toJson());
-      debugPrint("Before: $finalJson");
+      debugPrint("After: $finalJson");
 
       NetworkManager.getInstance()
           .isConnectedToInternet()
@@ -305,9 +303,10 @@ class Repository extends GetxController {
 
   RxBool isOutletRequestSaved() => _outletRequestSaved;
 
-  RxBool postWorkWithSaved() => _postWorkWithSaved;
+  Rx<bool> postWorkWithSaved() => _postWorkWithSaved;
 
   RxBool surveySaved() => _surveySaved;
+  Rx<bool> getWorkWithSaved() => _workWithSaved;
 
   Rx<RoutesModel> getRoutesLiveData() => _routesModelMutableLiveData;
 
@@ -321,13 +320,18 @@ class Repository extends GetxController {
     _surveySaved.refresh();
   }
 
+  void setWorkWithSaved(bool value) {
+    _workWithSaved.value = value;
+    _workWithSaved.refresh();
+  }
+
+
   void setSurveySavedWithEvent(bool value) {
     _surveySavedWithEvent.value = Event(value);
     _surveySavedWithEvent.refresh();
   }
 
   Rx<Event<bool>> getSurveySavedWithEvent() => _surveySavedWithEvent;
-
 
   Rx<Event<String>> getMessage() => _msg;
 
@@ -347,15 +351,16 @@ class Repository extends GetxController {
   Future<int> workWithOutletCount(int routeId) async =>
       _mainDao.workWithOutletCount(routeId);
 
-  void savePreWorkWithInDb(WorkWithPre workWith) async =>
-      _mainDao.insertPreWorkWithData(workWith);
+  void savePostWorkWithInDb(WorkWithPost workWith) async =>
+      _mainDao.insertPostWorkWithData(workWith);
 
   Future<Merchandise> findMerchandise(int outletId) async =>
       _mainDao.findMerchandiseByOutletId(outletId);
 
-  onUploadPostWorkWith(
+  void onUploadPostWorkWith(
       BaseResponse response, bool isSaveOnline, int? outletId) {
     if (!bool.parse(response.success ?? "true")) {
+      setWorkWithSaved(false);
       setPostWorkWithSaved(false);
       setError(response.errorMessage);
       return;
@@ -392,7 +397,7 @@ class Repository extends GetxController {
     _msg.refresh();
   }
 
-  updatePostWorkWithStatus(int? outletId, bool sync) {
+  void updatePostWorkWithStatus(int? outletId, bool sync) {
     if (outletId != null) {
       getWorkWith(outletId).then((workWith) {
         workWith.synced = true;
@@ -421,6 +426,7 @@ class Repository extends GetxController {
     }).onError((error, stackTrace) {
       setError("Error saving Survey!");
       setLoading(false);
+      setWorkWithSaved(false);
       setPostWorkWithSaved(false);
     });
   }
@@ -430,8 +436,9 @@ class Repository extends GetxController {
     outlet.alreadyVisit = true;
 
     _mainDao.updateWOutlet(outlet).whenComplete(() {
-      setProgressMsg(Constants.LOADED);
+      showToastMessage("Upload Success");
       setLoading(false);
+      setWorkWithSaved(true);
       setPostWorkWithSaved(true);
     });
   }
@@ -491,7 +498,7 @@ class Repository extends GetxController {
         marketVisit.synced = sync;
         _mainDao.updateMarketSurvey(marketVisit);
       }).whenComplete(() {
-        setProgressMsg("Uploaded Success");
+        showToastMessage("Uploaded Success");
         setLoading(false);
         setSurveySaved(true);
         setSurveySavedWithEvent(true);
@@ -641,8 +648,16 @@ class Repository extends GetxController {
   Future<List<RequestForm>> getAllUnSyncedRequestForms(int requestId) async =>
       _mainDao.getAllUnSyncedRequestForms(requestId);
 
-  Future<List<MRoute>> getAllRoutes() async{
-   return _mainDao.getRoutes();
+  Future<List<MRoute>> getAllRoutes() async {
+    return _mainDao.getRoutes();
+  }
+
+  Stream<List<Outlet>> getOutletStream(){
+    return _mainDao.getOutletStream();
+  }
+
+  Stream<List<WOutlet>> getWOutletStream(){
+    return _mainDao.getWOutletStream();
   }
 
 }

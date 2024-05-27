@@ -212,7 +212,7 @@ class _GandolaScreenState extends State<GandolaScreen> {
     );
   }
 
-  void onNextClick() {
+  Future<void> onNextClick() async {
     List<MarketVisitResponse> marketVisitResponseList = [];
 
     if (controller.questionOneResponse != null) {
@@ -242,8 +242,13 @@ class _GandolaScreenState extends State<GandolaScreen> {
       SurveySingletonModel.getInstance().addResponses(marketVisitResponseList);
 
       //navigate to next screen
-      Get.toNamed(Routes.customerService,
+      final result = await Get.toNamed(Routes.customerService,
           arguments: [outletId, surveyType]);
+
+      if(result=="ok"){
+        Get.back(result: result);
+      }
+
     } else {
       showToastMessage("Please select option");
     }

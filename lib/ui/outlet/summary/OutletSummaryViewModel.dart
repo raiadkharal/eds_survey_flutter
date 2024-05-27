@@ -41,18 +41,10 @@ class OutletSummaryViewModel extends GetxController {
 
   OutletSummaryViewModel(this._repository);
 
-  Rx<Event<bool>> postMarketVisitSaved() =>
+  Rx<Event<bool>> getSurveySavedWithEvent() =>
       _repository.getSurveySavedWithEvent();
 
   Rx<Event<String>> getMessage() => _repository.getMessage();
-
-  /*{
-    isLoading = false.obs;
-    isLocationChanged = false.obs;
-    enableBtn = false.obs;
-    isStartFlow = false.obs;
-    outletNearbyPos = 0.0.obs;
-  }*/
 
   Future<Object?> loadSelectedOutlet(
       int? selectedOutletId, SurveyType surveyType) async {
@@ -164,7 +156,7 @@ class OutletSummaryViewModel extends GetxController {
 
   void setLoading(bool loading) => _repository.setLoading(loading);
 
-  RxBool getPostWorkWithSaved()=>_repository.postWorkWithSaved();
+  Rx<bool> getPostWorkWithSaved()=>_repository.postWorkWithSaved();
 
   bool isTestUser()=>_repository.isTestUser();
 }

@@ -1,4 +1,5 @@
 import 'package:eds_survey/data/db/entities/outlet.dart';
+import 'package:eds_survey/data/models/Product.dart';
 import 'package:eds_survey/ui/market_visit/Repository.dart';
 import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,8 +12,23 @@ class OutletsViewModel extends GetxController {
   int? _selectedDistributionId;
   int? _selectedRouteId;
   SurveyType? _surveyType;
+  final Rx<List<dynamic>> outlets=Rx<List<dynamic>>([]);
 
   OutletsViewModel(this._repository);
+
+
+  @override
+  void onReady() {
+   _repository.getOutletStream().listen((outlets) {
+     populateOutlets(outlets);
+   },);
+
+   _repository.getWOutletStream().listen((outlets) {
+     populateOutlets(outlets);
+   },);
+
+    super.onReady();
+  }
 
   int? getSelectedDistributionId() => _selectedDistributionId;
 
@@ -27,16 +43,23 @@ class OutletsViewModel extends GetxController {
 
   SurveyType? getSurveyType() => _surveyType;
 
-  Future<List<dynamic>> loadOutlets() async {
+  Future<void> loadOutlets() async {
     if (_selectedRouteId != null && _selectedDistributionId != null) {
       if (_surveyType == SurveyType.MARKET_VISIT) {
-        return _repository.getOutlets(
+        final outlets = await _repository.getOutlets(
             _selectedRouteId!, _selectedDistributionId!);
+
+        populateOutlets(outlets);
+
       } else {
-        return _repository.getWOutlets(_selectedRouteId!);
+        final outlets = await _repository.getWOutlets(_selectedRouteId!);
+        populateOutlets(outlets);
       }
     }
-    showToastMessage("Please Select route to load outlets");
-    return [];
+  }
+
+  void populateOutlets(List<dynamic> outletList){
+    outlets.value=outletList;
+    outlets.refresh();
   }
 }

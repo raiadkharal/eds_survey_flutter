@@ -2,6 +2,7 @@ import 'package:eds_survey/Route.dart';
 import 'package:eds_survey/ui/SplashScreen.dart';
 import 'package:eds_survey/ui/home/HomeScreen.dart';
 import 'package:eds_survey/ui/login/LoginScreen.dart';
+import 'package:eds_survey/ui/market_visit/competitor_stock_info/CompetitorStockInformationScreen.dart';
 import 'package:eds_survey/ui/market_visit/coolers_verification/CoolerVerificationScreen.dart';
 import 'package:eds_survey/ui/market_visit/customer_service/CustomerServiceScreen.dart';
 import 'package:eds_survey/ui/market_visit/expired_stock/ExpiredStockScreen.dart';
@@ -70,6 +71,8 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: Routes.stockInformation, page: () => const StockInformationScreen(),transition: Transition.rightToLeft),
         GetPage(
+            name: Routes.competitorStockInformation, page: () => const CompetitorStockInformationScreen(),transition: Transition.rightToLeft),
+        GetPage(
             name: Routes.expiredStock, page: () => const ExpiredStockScreen(),transition: Transition.rightToLeft),
         GetPage(
             name: Routes.surveyFeedback, page: () => const SurveyFeedbackScreen(),transition: Transition.rightToLeft),
@@ -91,6 +94,7 @@ class MyApp extends StatelessWidget {
             name: Routes.outletRequestFormOne, page: () => const FormOne(),transition: Transition.rightToLeft),
         GetPage(
             name: Routes.outletRequestFormTwo, page: () => const FormTwo(),transition:Transition.rightToLeft),
+
 
       ],
     );

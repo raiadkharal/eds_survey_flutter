@@ -10,14 +10,6 @@ import 'package:http/http.dart' as http;
 import '../../data/models/Request.dart';
 
 class ApiService extends ApiInterface {
-  //Engro testing url
-  static const _baseUrl = "http://101.50.85.136:84/api/";
-
-  //pepsi testing url
-  // static const _baseUrl = "http://101.50.85.136:81/api/";
-
-  //pepsi production
-  // static const _baseUrl = "https://edshblapi.azurewebsites.net/";
 
   final _httpClient = http.Client();
 
@@ -164,11 +156,11 @@ class ApiService extends ApiInterface {
       Uri uri;
       if (queryParameters != null) {
         //parse url string to Uri and add query parameters to Uri
-        uri = Uri.parse(_baseUrl + path)
+        uri = Uri.parse(Constants.baseUrl + path)
             .replace(queryParameters: queryParameters);
       } else {
         //parse url string to Uri
-        uri = Uri.parse(_baseUrl + path);
+        uri = Uri.parse(Constants.baseUrl + path);
       }
 
       // make request to the server
@@ -192,11 +184,11 @@ class ApiService extends ApiInterface {
       Uri uri;
       if (queryParameters != null) {
         //parse url string to Uri and add query parameters to Uri
-        uri = Uri.parse(_baseUrl + path)
+        uri = Uri.parse(Constants.baseUrl + path)
             .replace(queryParameters: queryParameters);
       } else {
         //parse url string to Uri
-        uri = Uri.parse(_baseUrl + path);
+        uri = Uri.parse(Constants.baseUrl + path);
       }
 
       final response = await _httpClient.post(

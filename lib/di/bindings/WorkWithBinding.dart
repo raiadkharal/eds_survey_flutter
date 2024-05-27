@@ -31,7 +31,7 @@ class WorkWithBinding implements Bindings{
   Future<void> dependencies() async {
     Get.put<ApiService>(ApiService(), permanent: true);
     await Get.putAsync<Database>(
-            () async => await DatabaseHelper.initDatabase(),
+            () async => await DatabaseHelper.getDatabase(),
         permanent: true);
     Get.put<MainDao>(MainDaoImpl(Get.find()), permanent: true);
     await Get.putAsync<SharedPreferences>(

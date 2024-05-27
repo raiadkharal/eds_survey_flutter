@@ -40,7 +40,11 @@ class SurveySingletonModel {
 
 
   void reset() {
-    _startDateTime = null;
+    _feedBack=null;
+   _remarks=null;
+   _customerSignature=null;
+   _distance=null;
+   _outletId=null;
     _assets.clear();
     _tasks.clear();
     _outletImages.clear();

@@ -10,13 +10,9 @@ class ExpiredStockViewModel extends GetxController {
 
   final Repository _repository;
 
-  List<LookUpObject> packages = [
-    LookUpObject(key: 0, value: "Packs")
-  ];
+  List<LookUpObject> packages = [];
 
-  List<LookUpObject> brands = [
-    LookUpObject(firstIntExtraField: 0, value: "Brands"),
-  ];
+  List<LookUpObject> brands = [];
 
   Rx<ExpiredStock> expiredStock = ExpiredStock.defaultValue.obs;
   RxList<LookUpObject> brandsByPackage1 = RxList<LookUpObject>();

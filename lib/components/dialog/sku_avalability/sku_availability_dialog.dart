@@ -10,10 +10,14 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SkuAvailabilityDialog extends StatefulWidget {
-  final Function(String) onSave;
+import '../../../data/db/entities/task.dart';
 
-  const SkuAvailabilityDialog({super.key, required this.onSave});
+class SkuAvailabilityDialog extends StatefulWidget {
+  final Function(String?) onSave;
+  final Task task;
+
+  const SkuAvailabilityDialog(
+      {super.key, required this.onSave, required this.task});
 
   @override
   State<SkuAvailabilityDialog> createState() => _SkuAvailabilityDialogState();
@@ -22,13 +26,24 @@ class SkuAvailabilityDialog extends StatefulWidget {
 class _SkuAvailabilityDialogState extends State<SkuAvailabilityDialog> {
   final SkuAvailabilityDialogController controller =
       Get.put<SkuAvailabilityDialogController>(
-          SkuAvailabilityDialogController(Get.find<Repository>()));
+          SkuAvailabilityDialogController(Get.find<Repository>()),
+          permanent: true);
 
   @override
   void initState() {
-    controller.resetSelectedProducts();
+    List<String> missingSkus = widget.task.missingSkus != null
+        ? widget.task.missingSkus!
+            .split(",")
+            .map(
+              (e) => e.trimLeft(),
+            )
+            .toList()
+        : [];
+    controller.setSelectedProducts(missingSkus);
+    // controller.resetSelectedProducts();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -97,9 +112,10 @@ class _SkuAvailabilityDialogState extends State<SkuAvailabilityDialog> {
                           Obx(
                             () => Checkbox(
                                 value: controller.selectedProducts.value
-                                    .contains(item),
+                                    .contains(item.productName),
                                 onChanged: (value) {
-                                  controller.toggleItem(item, value ?? false);
+                                  controller.toggleItem(
+                                      item.productName, value ?? false);
                                 }),
                           ),
                           Flexible(
@@ -136,20 +152,17 @@ class _SkuAvailabilityDialogState extends State<SkuAvailabilityDialog> {
                           )),
                       TextButton(
                           onPressed: () {
-
-                            if(controller.selectedProducts.value.isEmpty){
+                            if (controller.selectedProducts.value.isEmpty) {
                               showToastMessage("Please select missing SKUs");
                               return;
                             }
 
                             Navigator.of(context).pop();
-                            String selectedProductNamesStr =
-                                widget.onSave(controller.selectedProducts.value
-                                    .map(
-                                      (product) => product.productName,
-                                    )
-                                    .join(", "));
-                            widget.onSave(selectedProductNamesStr);
+                            String? selectedProductNameStr = controller
+                                .selectedProducts.value
+                                .map((productName) => productName)
+                                .join(", ");
+                            widget.onSave(selectedProductNameStr);
                           },
                           child: Text(
                             "Save",

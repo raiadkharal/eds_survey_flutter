@@ -168,6 +168,8 @@ class _SurveyFeedbackScreenState extends State<SurveyFeedbackScreen> {
                             ),
                             IconButton(
                                 onPressed: () {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
                                   _navigateToSignatureScreen();
                                 },
                                 icon: const Icon(
@@ -231,7 +233,10 @@ class _SurveyFeedbackScreenState extends State<SurveyFeedbackScreen> {
     );
   }
 
-  void onNextClick(BuildContext context) {
+  Future<void> onNextClick(BuildContext context) async {
+    //remove focus from feedback textField
+    FocusScope.of(context).requestFocus(FocusNode());
+
     if (SurveySingletonModel.getInstance().getOutletId() == null ||
         SurveySingletonModel.getInstance().getOutletId() == 0) {
       //Low memory dialog
@@ -255,8 +260,10 @@ class _SurveyFeedbackScreenState extends State<SurveyFeedbackScreen> {
     }
 
     //TODO-add signature null check here
-
-    //else
+    if(signature.isEmpty){
+      showToastMessage("Signature field is missing");
+      return;
+    }
 
     if (surveyType == SurveyType.MARKET_VISIT) {
       //verification dialog
@@ -320,7 +327,11 @@ class _SurveyFeedbackScreenState extends State<SurveyFeedbackScreen> {
         WorkWithSingletonModel.getInstance().setFeedback(feedBack);
         WorkWithSingletonModel.getInstance().setCustomerSignature(signature);
 
-        Get.toNamed(Routes.priorities, arguments: [outletId, surveyType]);
+        final result = await Get.toNamed(Routes.priorities, arguments: [outletId, surveyType]);
+
+        if(result=="ok"){
+          Get.back(result: result);
+        }
 
       } catch (e) {
         showToastMessage("Something went Wrong.Please try again later");
@@ -331,11 +342,11 @@ class _SurveyFeedbackScreenState extends State<SurveyFeedbackScreen> {
   void setObservers() {
     debounce(controller.isSurveySaved(), (aBoolean) {
       if (aBoolean) {
-        //TODO- Update below navigation
+        // Get.back(result: "ok");
         Get.until((route) => Get.currentRoute==Routes.outletList);
         SurveySingletonModel.getInstance().reset();
       }
-    }, time: const Duration(milliseconds: 200));
+    }, time: const Duration(milliseconds: 1000));
 
     debounce(controller.getMessage(), (event) {
       showToastMessage(event.peekContent());

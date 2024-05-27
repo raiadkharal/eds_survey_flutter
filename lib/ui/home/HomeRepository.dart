@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:eds_survey/data/SurveySingletonModel.dart';
 import 'package:eds_survey/data/db/DatabaseHelper.dart';
 import 'package:eds_survey/data/db/dao/MainDao.dart';
 import 'package:eds_survey/data/db/dao/MainDaoImpl.dart';
@@ -43,7 +44,6 @@ import '../../utils/Event.dart';
 import '../../utils/Util.dart';
 
 class HomeRepository extends GetxController {
-
   static HomeRepository? _instance;
   final ApiService _apiService;
   final PreferenceUtil _preferenceUtil;
@@ -56,7 +56,7 @@ class HomeRepository extends GetxController {
   final Rx<Event<String>> _msg = Event("").obs;
   final Rx<Event<String>> _progressMsg = Event("").obs;
   late RxBool _uploadCompleted;
- late Rx<RoutesModel> _routesModelMutableLiveData;
+  late Rx<RoutesModel> _routesModelMutableLiveData;
 
   int _remainingTasks = 0, _totalTasks = 0;
 
@@ -146,6 +146,7 @@ class HomeRepository extends GetxController {
           status.dayStarted = 1;
           status.syncDate = logModel.startDay!;
           _preferenceUtil.saveWorkSyncData(status);
+          _onDayStart.value = isStart;
           if (isStart) {
             fetchData(isStart);
           }
@@ -259,18 +260,17 @@ class HomeRepository extends GetxController {
         lookUpData.packages = response.packages;
         lookUpData.brands = response.brands;
         lookUpData.products = response.products;
-        lookUpData.vpo_classification=response.vpo_classification;
-        lookUpData.outlet_classification=response.outlet_classification;
-        lookUpData.trade_classification=response.trade_classification;
-        lookUpData.channels=response.channels;
-        lookUpData.cities=response.cities;
-        lookUpData.outletTypes=response.outletTypes;
-        lookUpData.market_types=response.market_types;
+        lookUpData.vpo_classification = response.vpo_classification;
+        lookUpData.outlet_classification = response.outlet_classification;
+        lookUpData.trade_classification = response.trade_classification;
+        lookUpData.channels = response.channels;
+        lookUpData.cities = response.cities;
+        lookUpData.outletTypes = response.outletTypes;
+        lookUpData.market_types = response.market_types;
 
         _homeDao.insertPackagesAndBrands(lookUpData);
 
         _preferenceUtil.saveConfig(response.configuration);
-
       }).whenComplete(() {
         _preferenceUtil.setMVTargetOutlets(response.targetOutlets ?? 0);
         fetchWorkWith(loadedOnDayStart);
@@ -303,10 +303,9 @@ class HomeRepository extends GetxController {
 
       final response = await _apiService.loadWorkWithData(accessToken);
 
-
       if (response.status == RequestStatus.SUCCESS) {
-
-        var mainModel = WorkWithResponseModel.fromJson(jsonDecode(response.data));
+        var mainModel =
+            WorkWithResponseModel.fromJson(jsonDecode(response.data));
 
         if (bool.parse(mainModel.success ?? "true")) {
           onWorkWithDataLoaded(mainModel, isStart);
@@ -394,7 +393,8 @@ class HomeRepository extends GetxController {
           }).then((value) {
             _preferenceUtil.clearAllPreferences();
           }).whenComplete(() {
-            //TODO- clear survey Signletonmodels here
+            SurveySingletonModel.getInstance().reset();
+            WorkWithSingletonModel.getInstance().reset();
             _isLoggedOut.value = true;
           }));
     } catch (e) {
@@ -502,7 +502,7 @@ class HomeRepository extends GetxController {
 
   Rx<Event<String>> getMessage() => _msg;
 
-  Rx<RoutesModel> getRoutesLiveData()=>_routesModelMutableLiveData;
+  Rx<RoutesModel> getRoutesLiveData() => _routesModelMutableLiveData;
 
   bool isDayStarted() {
     return _preferenceUtil.getWorkSyncData().isDayStarted;
@@ -642,7 +642,7 @@ class HomeRepository extends GetxController {
             for (MerchandisingImage merchandisingImage
                 in merchandises.merchandiseImages!) {
               merchandisingImage.image =
-                  await Util.imageFileToBase64(merchandisingImage.path ?? "");
+                  await Util.convertImageToUtf8(merchandisingImage.path ?? "");
               merchandisingImages.add(merchandisingImage);
             }
           }
@@ -711,7 +711,7 @@ class HomeRepository extends GetxController {
             for (MerchandisingImage merchandisingImage
                 in merchandises.merchandiseImages!) {
               merchandisingImage.image =
-                  await Util.imageFileToBase64(merchandisingImage.path ?? "");
+                  await Util.convertImageToUtf8(merchandisingImage.path ?? "");
               merchandisingImages.add(merchandisingImage);
             }
           }
@@ -719,15 +719,11 @@ class HomeRepository extends GetxController {
         } catch (e) {
           debugPrint(e.toString());
         }
-
         String finalJson = jsonEncode(workWithSingletonModel.toJson());
         debugPrint("after: $finalJson");
-
         final accessToken = _preferenceUtil.getToken();
-
         final response =
             await _apiService.saveWorkWith(workWithSingletonModel, accessToken);
-
         if (response.status == RequestStatus.SUCCESS) {
           BaseResponse baseResponse =
               BaseResponse.fromJson(json.decode(response.data));
@@ -757,18 +753,16 @@ class HomeRepository extends GetxController {
       if (workWithPost.data != null) {
         WorkWithSingletonModel workWithSingletonModel =
             WorkWithSingletonModel.fromJson(jsonDecode(workWithPost.data!));
-
         try {
-          // set merchandise images in work with model
+          /* set merchandise images in work with model */
           Merchandise? merchandises =
               await findMerchandise(workWithSingletonModel.getOutletId() ?? 0);
           List<MerchandisingImage> merchandisingImages = [];
-
           if (merchandises.merchandiseImages != null) {
             for (MerchandisingImage merchandisingImage
                 in merchandises.merchandiseImages!) {
               merchandisingImage.image =
-                  await Util.imageFileToBase64(merchandisingImage.path ?? "");
+                  await Util.convertImageToUtf8(merchandisingImage.path ?? "");
               merchandisingImages.add(merchandisingImage);
             }
           }
@@ -818,7 +812,7 @@ class HomeRepository extends GetxController {
     _isWorkWithOutletsLoaded.refresh();
   }
 
-  void setRoutesLiveData(RoutesModel routesModel){
+  void setRoutesLiveData(RoutesModel routesModel) {
     _routesModelMutableLiveData(routesModel);
     _routesModelMutableLiveData.refresh();
   }
@@ -836,29 +830,31 @@ class HomeRepository extends GetxController {
 
           String accessToken = _preferenceUtil.getToken();
 
-          final response = await _apiService.getRoutesModel(accessToken, packageInfo.buildNumber);
+          final response = await _apiService.getRoutesModel(
+              accessToken, packageInfo.buildNumber);
 
           if (response.status == RequestStatus.SUCCESS) {
             setLoading(false);
 
             //parse data into model
-            //TODO- add empty response data check here and update catch block
-            RoutesModel routesModel =
-                RoutesModel.fromJson(jsonDecode(response.data));
-            if (bool.parse(routesModel.success ?? "true")) {
-              if (routesModel.outlets != null) {
-
-                setLoading(false);
-                setMessage(Constants.LOADED);
-                _onDayStart.value = isStart;
-                setRoutesLiveData(routesModel);
-
+            if (response.data != "") {
+              RoutesModel routesModel =
+                  RoutesModel.fromJson(jsonDecode(response.data));
+              if (bool.parse(routesModel.success ?? "true")) {
+                if (routesModel.outlets != null) {
+                  setMessage(Constants.LOADED);
+                  // _onDayStart.value = isStart;
+                  setRoutesLiveData(routesModel);
+                } else {
+                  onError(routesModel.errorMessage);
+                }
               } else {
-                onError(routesModel.errorMessage);
+                setLoading(false);
+                onError(response.message);
               }
             } else {
-              setLoading(false);
-              onError(response.message);
+              setMessage(Constants.LOADED);
+              _onDayStart.value = isStart;
             }
           }
         } catch (e) {
@@ -871,13 +867,11 @@ class HomeRepository extends GetxController {
     });
   }
 
-  void deleteTables(bool getRouteTables) async{
-    if(getRouteTables){
+  void deleteTables(bool getRouteTables) async {
+    if (getRouteTables) {
       _homeDao.deleteDocuments();
       _homeDao.deleteOutlets();
-    }else{
-
-    }
+    } else {}
   }
 
   void addDocuments(List<DocumentTable>? documents) {

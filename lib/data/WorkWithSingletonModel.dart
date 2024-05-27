@@ -157,7 +157,7 @@ class WorkWithSingletonModel {
   void addResponses(List<MarketVisitResponse?> visitResponse) {
     for (MarketVisitResponse? response in visitResponse) {
       if (response!.response.isNotEmpty && !questionsCode.contains(response.questionCode)) {
-        getWorkWithResponses()!.add(response);
+        getWorkWithResponses().add(response);
         questionsCode.add(response.questionCode);
       } else {
         if (getWorkWithResponses().isNotEmpty) {
@@ -168,6 +168,16 @@ class WorkWithSingletonModel {
   }
 
   void reset() {
+    remarks=null;
+    feedback=null;
+    date=null;
+    psrCode=null;
+    merchandisingImages=[];
+    customerSignature=null;
+    distributionId=null;
+    distance=null;
+    routeId=null;
+    outletId=null;
     date = 0;
     responses = [];
     tasks = [];
@@ -177,8 +187,6 @@ class WorkWithSingletonModel {
     MAStrenght1 = MAStrenght2 = ESStrenght1 = ESStrenght2 = null;
     dailyVisitId = 0;
     barCodes = [];
-    // Repository.getInstance(MarketSurveyApplication.getInstance()).reset();
-    // You'll need to handle the Repository part accordingly in your Dart code.
   }
 
   void setStartTime(int time) {

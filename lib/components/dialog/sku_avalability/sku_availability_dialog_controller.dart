@@ -18,11 +18,10 @@ class SkuAvailabilityDialogController extends GetxController {
 
   final Rx<List<LookUpObject>> _packages = Rx<List<LookUpObject>>([]);
 
-  late Rx<List<Product>> selectedProducts;
+  late Rx<List<String>> selectedProducts=Rx<List<String>>([]);
 
-  SkuAvailabilityDialogController(this._repository){
-    selectedProducts = Rx<List<Product>>([]);
-  }
+  SkuAvailabilityDialogController(this._repository);
+
 
   Rx<List<Product>> getProducts() => _products;
 
@@ -34,11 +33,13 @@ class SkuAvailabilityDialogController extends GetxController {
 
   Rx<List<LookUpObject>> getPackages()=>_packages;
 
-  void toggleItem(Product item,bool checked) {
-    if(checked){
-      selectedProducts.value.add(item);
-    }else{
-      selectedProducts.value.remove(item);
+  void toggleItem(String? item,bool checked) {
+    if(item!=null) {
+      if (checked) {
+        selectedProducts.value.add(item);
+      } else {
+        selectedProducts.value.remove(item);
+      }
     }
     // if (selectedProducts.value.contains(item)) {
     //   selectedProducts.value.remove(item);
@@ -58,6 +59,11 @@ class SkuAvailabilityDialogController extends GetxController {
     _products.value = lookUpData.products ?? [];
   }
 
+  void setSelectedProducts(List<String> products){
+    selectedProducts(products);
+    selectedProducts.refresh();
+  }
+
   void filterProductsByPackage(int packageId) {
     List<Product> filteredList = [];
 
@@ -66,7 +72,6 @@ class SkuAvailabilityDialogController extends GetxController {
         filteredList.add(product);
       }
     }
-
     _products.value = filteredList;
     _products.refresh();
   }

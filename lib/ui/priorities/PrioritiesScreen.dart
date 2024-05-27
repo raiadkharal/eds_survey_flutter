@@ -169,14 +169,25 @@ class _PrioritiesScreenState extends State<PrioritiesScreen> {
     }
   }
 
-  void onNextClick(BuildContext context) {
+  Future<void> onNextClick(BuildContext context) async {
     List<Task> tasks = controller.tasks.value;
 
     if (tasks.isNotEmpty) {
       for (Task task in tasks) {
-        if (task.taskDate == null || task.remarks == null) {
-          showToastMessage("Please enter task data");
-          return;
+        if (task.taskId == 3 || task.taskId == 13) {
+          if (task.taskDate == null || task.remarks == null) {
+            showToastMessage("Please enter task data");
+            return;
+          }
+          if (task.missingSkus == null || task.missingSkus!.isEmpty) {
+            showToastMessage("Please select missing Skus");
+            return;
+          }
+        } else {
+          if (task.taskDate == null || task.remarks == null) {
+            showToastMessage("Please enter task data");
+            return;
+          }
         }
       }
     } else {
@@ -186,7 +197,13 @@ class _PrioritiesScreenState extends State<PrioritiesScreen> {
 
     if (surveyType == SurveyType.MARKET_VISIT) {
       SurveySingletonModel.getInstance().setTasks(tasks);
-      Get.toNamed(Routes.surveyFeedback, arguments: [outletId, surveyType]);
+
+      final result = await Get.toNamed(Routes.surveyFeedback,
+          arguments: [outletId, surveyType]);
+
+      if (result == "ok") {
+        Get.back(result: result);
+      }
     } else {
       //low memory dialog
       if (WorkWithSingletonModel.getInstance().getOutletId() == null ||
@@ -285,9 +302,10 @@ class _PrioritiesScreenState extends State<PrioritiesScreen> {
 
     debounce(controller.getPostWorkWithSaved(), (aBoolean) {
       if (aBoolean) {
+        // Get.back(result: "ok");
         Get.until((route) => Get.currentRoute == Routes.outletList);
         WorkWithSingletonModel.getInstance().reset();
       }
-    }, time: const Duration(milliseconds: 200));
+    }, time: const Duration(milliseconds: 100));
   }
 }

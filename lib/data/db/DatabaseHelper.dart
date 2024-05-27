@@ -8,7 +8,7 @@ class DatabaseHelper {
   DatabaseHelper._privateConstructor();
 
   // this opens the database (and creates it if it doesn't exist)
-  static Future<Database> initDatabase() async {
+  static Future<Database> getDatabase() async {
     String path = join(await getDatabasesPath(), _databaseName);
     return openDatabase(
       path,
