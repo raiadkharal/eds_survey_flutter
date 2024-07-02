@@ -18,26 +18,27 @@ class ApiService extends ApiInterface {
       String type, String username, String password) async {
     Map<String, dynamic> bodyJson = {
       'grant_type': type,
-      'username': username,
+      'userName': username,
       'password': password
     };
 
     final headers = {
-      "Content-Type": "application/x-www-form-urlencoded",
+      "content-type" : "application/json",
+      "accept" : "application/json",
     };
 
-    return makePostRequest("token", bodyJson, headers, null);
+    return makePostRequest("token",jsonEncode(bodyJson), headers, null);
   }
 
   @override
   Future<ApiResponse> updateStartEndStatus(
       Map<String, dynamic> body, String accessToken) async {
     final headers = {
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/json",
       "Authorization": "Bearer $accessToken"
     };
 
-    return makePostRequest("api/AppOpertion/LogStartEnd", body, headers, null);
+    return makePostRequest("AppOpertion/LogStartEnd", jsonEncode(body), headers, null);
   }
 
   @override
@@ -47,7 +48,7 @@ class ApiService extends ApiInterface {
       "Authorization": "Bearer $accessToken"
     };
 
-    return makeGetRequest("api/MarketVisit/Get", headers, null);
+    return makeGetRequest("MarketVisit/Get", headers, null);
   }
 
   @override
@@ -57,7 +58,7 @@ class ApiService extends ApiInterface {
       "Authorization": "Bearer $accessToken"
     };
 
-    return makeGetRequest("api/WorkWith/Get", headers, null);
+    return makeGetRequest("WorkWith/Get", headers, null);
   }
 
   @override
@@ -74,7 +75,7 @@ class ApiService extends ApiInterface {
     };
 
     return makeGetRequest(
-        "api/MarketVisit/GetOutletsByRouteId", headers, queryParameters);
+        "MarketVisit/GetOutletsByRouteId", headers, queryParameters);
   }
 
   @override
@@ -91,7 +92,7 @@ class ApiService extends ApiInterface {
     };
 
     return makeGetRequest(
-        "api/MarketVisit/GetOutletsByRouteId", headers, queryParameters);
+        "MarketVisit/GetOutletsByRouteId", headers, queryParameters);
   }
 
 
@@ -105,7 +106,7 @@ class ApiService extends ApiInterface {
     };
 
     return makePostRequest(
-        "api/WorkWith/PostWorkWith", json.encode(workWithModel.toJson()), headers, null);
+        "WorkWith/PostWorkWith", json.encode(workWithModel.toJson()), headers, null);
   }
 
   @override
@@ -115,7 +116,7 @@ class ApiService extends ApiInterface {
       "Authorization": "Bearer $accessToken"
     };
 
-    return makePostRequest("api/MarketVisit/PostOutletMarketVisit",
+    return makePostRequest("MarketVisit/PostOutletMarketVisit",
         json.encode(surveyModel.toJson()), headers, null);
   }
 

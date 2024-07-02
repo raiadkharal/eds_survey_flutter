@@ -9,7 +9,6 @@ part of 'WorkWithSingletonModel.dart';
 WorkWithSingletonModel _$WorkWithSingletonModelFromJson(
         Map<String, dynamic> json) =>
     WorkWithSingletonModel()
-      ..date = json['date'] as int?
       ..psrCode = json['psrCode'] as String?
       ..routeId = json['routeId'] as int?
       ..userCode = json['userCode'] as String?
@@ -60,7 +59,6 @@ WorkWithSingletonModel _$WorkWithSingletonModelFromJson(
 Map<String, dynamic> _$WorkWithSingletonModelToJson(
     WorkWithSingletonModel instance) {
   Map<String, dynamic> data = {
-    'date': instance.date,
     'psrCode': instance.psrCode,
     'routeId': instance.routeId,
     'userCode': instance.userCode,

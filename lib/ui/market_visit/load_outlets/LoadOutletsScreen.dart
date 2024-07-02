@@ -56,19 +56,30 @@ class _LoadOutletsScreenState extends State<LoadOutletsScreen> {
                   future: controller.distributions,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
-                      controller
-                          .setSelectedDistribution(snapshot.requireData[0]);
-                      return CustomDropdownButton<Distribution>(
-                        items: snapshot.requireData,
-                        value: snapshot.requireData[0],
-                        displayValue: (item) =>
-                            item.distributionName ?? "No Distributions",
-                        onChanged: (distribution) {
-                          if(distribution!=null) {
-                            controller.setSelectedDistribution(distribution);
-                          }
-                        },
-                      );
+                      if (snapshot.hasData&&snapshot.requireData.isNotEmpty) {
+                        controller
+                            .setSelectedDistribution(snapshot.requireData[0]);
+                        return CustomDropdownButton<Distribution>(
+                          items: snapshot.requireData,
+                          value: snapshot.requireData[0],
+                          displayValue: (item) =>
+                              item.distributionName ?? "No Distributions",
+                          onChanged: (distribution) {
+                            if (distribution != null) {
+                              controller.setSelectedDistribution(distribution);
+                            }
+                          },
+                        );
+                      } else {
+                        return Expanded(
+                            child: Container(
+                          color: Colors.white,
+                          child: const Center(
+                            child: Text(
+                                "Distributions not found. Please download data again!"),
+                          ),
+                        ));
+                      }
                     } else {
                       return const Center(child: CircularProgressIndicator());
                     }
@@ -85,17 +96,28 @@ class _LoadOutletsScreenState extends State<LoadOutletsScreen> {
                   future: controller.routes,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
-                      controller.setSelectedRouteId(snapshot.requireData[0]);
-                      return CustomDropdownButton<MRoute>(
-                        items: snapshot.requireData,
-                        value: snapshot.requireData[0],
-                        displayValue: (item) => item.routeName ?? "No Routes",
-                        onChanged: (route) {
-                          if(route!=null) {
-                            controller.setSelectedRouteId(route);
-                          }
-                        },
-                      );
+                      if (snapshot.hasData&&snapshot.requireData.isNotEmpty) {
+                        controller.setSelectedRouteId(snapshot.requireData[0]);
+                        return CustomDropdownButton<MRoute>(
+                          items: snapshot.requireData,
+                          value: snapshot.requireData[0],
+                          displayValue: (item) => item.routeName ?? "No Routes",
+                          onChanged: (route) {
+                            if (route != null) {
+                              controller.setSelectedRouteId(route);
+                            }
+                          },
+                        );
+                      } else {
+                        return Expanded(
+                            child:  Container(
+                              color: Colors.white,
+                              child: const Center(
+                                child: Text(
+                                    "Routes not found. Please download data again!"),
+                              ),
+                            ));
+                      }
                     } else {
                       return const Center(child: CircularProgressIndicator());
                     }

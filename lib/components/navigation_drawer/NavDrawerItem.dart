@@ -116,7 +116,7 @@ class _NavDrawerItemListState extends State<NavDrawerItemList> {
     PreferenceUtil.getInstance().then((preferenceUtil) {
       preferenceUtil.clearAllPreferences();
     });
-    Get.offAll(LoginScreen());
+    Get.offAll(const LoginScreen());
     Fluttertoast.showToast(msg: "Logout Success");
   }
 }

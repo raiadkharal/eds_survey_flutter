@@ -9,6 +9,7 @@ import 'package:eds_survey/ui/work_with/main/WorkWithMainScreen.dart';
 import 'package:eds_survey/utils/Colors.dart';
 import 'package:eds_survey/utils/Constants.dart';
 import 'package:eds_survey/utils/Enums.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -113,7 +114,67 @@ class _HomeScreenState extends State<HomeScreen> {
                         HomeButton(
                           onTap: () {
                             if (controller.isDayStarted()) {
-                              controller.download();
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+                                  insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+                                  content: SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Update Routes and Outlets!",
+                                          style: GoogleFonts.roboto(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                            "Are you sure you want to fetch updated routes and outlets?",
+                                            style: GoogleFonts.roboto(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400)),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text("NO",style: GoogleFonts.roboto(
+                                                    fontSize: 16,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.w400),)),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                  controller.download();
+                                                },
+                                                child: Text("YES",style: GoogleFonts.roboto(
+                                                    fontSize: 16,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.w400)))
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
                             } else {
                               showToastMessage(Constants.ERROR_DAY_NO_STARTED);
                             }
@@ -250,6 +311,8 @@ class _HomeScreenState extends State<HomeScreen> {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20),
                   title: Text(
                     "Day Started! ( $startDate )",
                     style: GoogleFonts.roboto(
@@ -263,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text(
                           "Your day has been started",
-                          style: GoogleFonts.roboto(fontSize: 14),
+                          style: GoogleFonts.roboto(fontSize: 16),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -275,7 +338,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   "Ok",
                                   style:
-                                      GoogleFonts.roboto(color: Colors.black),
+                                      GoogleFonts.roboto(color: Colors.black,fontSize: 16),
                                 )),
                           ],
                         )

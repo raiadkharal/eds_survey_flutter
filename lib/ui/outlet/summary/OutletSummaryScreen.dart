@@ -407,51 +407,56 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: const Text("Warning"),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Are you sure you want to take an action?",
-                                          style:
-                                              GoogleFonts.roboto(fontSize: 14),
-                                        ),
-                                        const SizedBox(
-                                          height: 24,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            TextButton(
-                                                onPressed: () =>
-                                                    Navigator.of(context).pop(),
-                                                child: Text(
-                                                  "No",
-                                                  style: GoogleFonts.roboto(
-                                                      color: Colors.black),
-                                                )),
-                                            TextButton(
-                                                onPressed: () {
-                                                  Map<String, int> hashMap = {};
-                                                  hashMap['Outlet Closed'] = 2;
-                                                  hashMap['No Time'] = 3;
+                                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+                                    insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+                                    title: const Text("Warning!"),
+                                    content: SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Are you sure you want to take an action?",
+                                            style:
+                                                GoogleFonts.roboto(fontSize: 16),
+                                          ),
+                                          const SizedBox(
+                                            height: 24,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.of(context).pop(),
+                                                  child: Text(
+                                                    "No",
+                                                    style: GoogleFonts.roboto(
+                                                        color: Colors.black,fontSize: 16),
+                                                  )),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Map<String, int> hashMap = {};
+                                                    hashMap['Outlet Closed'] = 2;
+                                                    hashMap['No Time'] = 3;
 
-                                                  notFlowReasonCode =
-                                                      hashMap[selectedReason];
-                                                  Navigator.of(context).pop();
-                                                  notFlowClick();
-                                                },
-                                                child: Text(
-                                                  "Yes",
-                                                  style: GoogleFonts.roboto(
-                                                      color: Colors.black),
-                                                )),
-                                          ],
-                                        )
-                                      ],
+                                                    notFlowReasonCode =
+                                                        hashMap[selectedReason];
+                                                    Navigator.of(context).pop();
+                                                    notFlowClick();
+                                                  },
+                                                  child: Text(
+                                                    "Yes",
+                                                    style: GoogleFonts.roboto(
+                                                        color: Colors.black,fontSize: 16),
+                                                  )),
+                                            ],
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -711,7 +716,9 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          title: Text("Warning",style: GoogleFonts.roboto()),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+          title: Text("Warning!",style: GoogleFonts.roboto()),
           content: Text(
               "You are $distance away from the retailer's defined boundary.\nPress Ok to continue" +
                   "\nCurrent LatLng ::  ${currentLatLng?.latitude} , ${currentLatLng?.longitude} \nAlert Count :: ${repeat+1}",style: GoogleFonts.roboto(),),
@@ -719,7 +726,7 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
             TextButton(onPressed: () {
               Navigator.of(context).pop();
               _setLocationCallback();
-            }, child: Text("Ok",style: GoogleFonts.roboto(color: Colors.grey.shade800),))
+            }, child: Text("Ok",style: GoogleFonts.roboto(color: Colors.grey.shade800,fontSize: 16),))
           ],
         ),
       );
@@ -817,7 +824,9 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
     }, time: const Duration(milliseconds: 100));
 
     debounce(controller.getMessage(), (event) {
-      showToastMessage(event.peekContent());
+      if(!event.hasBeenHandled){
+        showToastMessage(event.peekContent());
+      }
     }, time: const Duration(milliseconds: 200));
   }
 

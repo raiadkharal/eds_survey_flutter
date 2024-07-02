@@ -20,7 +20,6 @@ class WorkWithSingletonModel {
   WorkWithSingletonModel._internal();
 
 
-  int? date;
   String? psrCode;
   int? routeId;
   String? userCode;
@@ -54,7 +53,6 @@ class WorkWithSingletonModel {
 
   void setMainScreenData(int routeId, int date, int distributionId) {
     this.routeId = routeId;
-    this.date = date;
     this.distributionId = distributionId;
   }
 
@@ -170,7 +168,6 @@ class WorkWithSingletonModel {
   void reset() {
     remarks=null;
     feedback=null;
-    date=null;
     psrCode=null;
     merchandisingImages=[];
     customerSignature=null;
@@ -178,7 +175,6 @@ class WorkWithSingletonModel {
     distance=null;
     routeId=null;
     outletId=null;
-    date = 0;
     responses = [];
     tasks = [];
     esCount = stcCount = 0.0;

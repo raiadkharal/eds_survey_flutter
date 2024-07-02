@@ -357,10 +357,10 @@ class HomeRepository extends GetxController {
           _homeDao.insertPsr(response.psrs!);
         }
       }).whenComplete(() {
-        // setLoading(false);
-        // setMessage(Constants.LOADED);
+        setLoading(false);
+        setMessage(Constants.LOADED);
         // _onDayStart.value = isStart;
-        getRoutesModel(isStart);
+        // getRoutesModel(isStart);
         _preferenceUtil.setWWTargetOutlets(response.getTargetOutlets() ?? 0);
       }).onError((error, stackTrace) {
         setLoading(false);

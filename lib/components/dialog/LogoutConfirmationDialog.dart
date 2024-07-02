@@ -11,6 +11,8 @@ class LogoutConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       title: Text(
         "Logout!",
         style: GoogleFonts.roboto(fontSize: 18, fontWeight: FontWeight.w400),
@@ -23,7 +25,7 @@ class LogoutConfirmationDialog extends StatelessWidget {
           children: [
             Text(
               "Are you sure you want to logout?",
-              style: GoogleFonts.roboto(fontSize: 14),
+              style: GoogleFonts.roboto(fontSize: 16),
             ),
             const SizedBox(
               height: 24,
@@ -35,13 +37,13 @@ class LogoutConfirmationDialog extends StatelessWidget {
                     onPressed: onCancel,
                     child: Text(
                       "No",
-                      style: GoogleFonts.roboto(color: Colors.black),
+                      style: GoogleFonts.roboto(color: Colors.black,fontSize: 16),
                     )),
                 TextButton(
                     onPressed: onConfirm,
                     child: Text(
                       "Yes",
-                      style: GoogleFonts.roboto(color: Colors.black),
+                      style: GoogleFonts.roboto(color: Colors.black,fontSize: 16),
                     )),
               ],
             )

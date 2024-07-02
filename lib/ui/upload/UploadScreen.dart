@@ -161,11 +161,15 @@ class _UploadScreenState extends State<UploadScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  dataList[index].description ?? "",
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 16),
+                                Flexible(
+                                  child: Text(
+                                    dataList[index].description ?? "",
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.roboto(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 16),
+                                  ),
                                 ),
                                 SizedBox(
                                     height: 20,

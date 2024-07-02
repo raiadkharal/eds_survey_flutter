@@ -128,12 +128,14 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
                                             }
                                           }),
                                     ),
-                                    Text(
-                                      item,
-                                      style: GoogleFonts.roboto(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.normal),
+                                    Flexible(
+                                      child: Text(
+                                        item,
+                                        style: GoogleFonts.roboto(
+                                            color: Colors.black,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.normal),
+                                      ),
                                     ),
                                   ],
                                 );

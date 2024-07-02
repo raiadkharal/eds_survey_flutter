@@ -57,6 +57,8 @@ class _PrioritiesListState extends State<PrioritiesList> {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
+                                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+                                insetPadding: const EdgeInsets.symmetric(horizontal: 20),
                                 content: SkuAvailabilityDialog(
                                   onSave: (selectedMissingSkus) {
                                     task.remarks = taskType.taskType;
