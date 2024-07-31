@@ -36,6 +36,8 @@ class _OutletListScreenState extends State<OutletListScreen> {
       controller.setSelectedDistributionId(args[1]);
       controller.setSurveyType(args[2]);
     }
+
+    controller.init();
     super.initState();
   }
 

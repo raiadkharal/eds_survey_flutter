@@ -26,6 +26,8 @@ class _LoadOutletsScreenState extends State<LoadOutletsScreen> {
   @override
   void initState() {
     super.initState();
+
+    controller.loadData();
     setObservers();
   }
 
@@ -63,7 +65,7 @@ class _LoadOutletsScreenState extends State<LoadOutletsScreen> {
                           items: snapshot.requireData,
                           value: snapshot.requireData[0],
                           displayValue: (item) =>
-                              item.distributionName ?? "No Distributions",
+                              item.distributionName ?? "No Distribution Name",
                           onChanged: (distribution) {
                             if (distribution != null) {
                               controller.setSelectedDistribution(distribution);
@@ -101,7 +103,7 @@ class _LoadOutletsScreenState extends State<LoadOutletsScreen> {
                         return CustomDropdownButton<MRoute>(
                           items: snapshot.requireData,
                           value: snapshot.requireData[0],
-                          displayValue: (item) => item.routeName ?? "No Routes",
+                          displayValue: (item) => item.routeName ?? "No Route name",
                           onChanged: (route) {
                             if (route != null) {
                               controller.setSelectedRouteId(route);

@@ -88,17 +88,10 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
       appBar: AppBar(
           foregroundColor: Colors.white,
           backgroundColor: primaryColor,
-          // leading: IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(
-          //       Icons.menu,
-          //       color: Colors.white,
-          //     )),
-          title: Expanded(
-              child: Text(
+          title: Text(
             "EDS Survey",
             style: GoogleFonts.roboto(color: Colors.white),
-          ))),
+          )),
       body: FutureBuilder<Object?>(
         future: controller.loadSelectedOutlet(outletId, surveyType),
         builder: (context, snapshot) {
@@ -407,8 +400,11 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                                    insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5))),
+                                    insetPadding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
                                     title: const Text("Warning!"),
                                     content: SizedBox(
                                       width: MediaQuery.of(context).size.width,
@@ -419,8 +415,8 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
                                         children: [
                                           Text(
                                             "Are you sure you want to take an action?",
-                                            style:
-                                                GoogleFonts.roboto(fontSize: 16),
+                                            style: GoogleFonts.roboto(
+                                                fontSize: 16),
                                           ),
                                           const SizedBox(
                                             height: 24,
@@ -431,16 +427,20 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
                                             children: [
                                               TextButton(
                                                   onPressed: () =>
-                                                      Navigator.of(context).pop(),
+                                                      Navigator.of(context)
+                                                          .pop(),
                                                   child: Text(
                                                     "No",
                                                     style: GoogleFonts.roboto(
-                                                        color: Colors.black,fontSize: 16),
+                                                        color: Colors.black,
+                                                        fontSize: 16),
                                                   )),
                                               TextButton(
                                                   onPressed: () {
-                                                    Map<String, int> hashMap = {};
-                                                    hashMap['Outlet Closed'] = 2;
+                                                    Map<String, int> hashMap =
+                                                        {};
+                                                    hashMap['Outlet Closed'] =
+                                                        2;
                                                     hashMap['No Time'] = 3;
 
                                                     notFlowReasonCode =
@@ -451,7 +451,8 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
                                                   child: Text(
                                                     "Yes",
                                                     style: GoogleFonts.roboto(
-                                                        color: Colors.black,fontSize: 16),
+                                                        color: Colors.black,
+                                                        fontSize: 16),
                                                   )),
                                             ],
                                           )
@@ -525,9 +526,9 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
         WorkWithSingletonModel.getInstance().setStatus(statusId);
 
         if (statusId == 1) {
-          final result  = await Get.toNamed(Routes.merchandising,
+          final result = await Get.toNamed(Routes.merchandising,
               arguments: [wOutlet.outletId, surveyType]);
-          if(result=="ok"){
+          if (result == "ok") {
             Get.back(result: result);
           }
         } else {
@@ -558,13 +559,12 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
           }
         }
         if (statusId == 1) {
-        final result = await Get.toNamed(Routes.merchandising,
+          final result = await Get.toNamed(Routes.merchandising,
               arguments: [outlet.outletId, surveyType]);
 
-          if(result=="ok"){
+          if (result == "ok") {
             Get.back(result: result);
           }
-
         } else {
           controller.postMarketVisit();
         }
@@ -599,7 +599,6 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
 
   void notFlowClick() async {
     if (!isFakeLocation) {
-
       bool isAutoTimeEnabled = await _checkAutoTime();
 
       if (!isAutoTimeEnabled && !controller.isTestUser()) {
@@ -628,9 +627,9 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
       isAutoTimeEnabled = result;
     } on PlatformException catch (e) {
       isAutoTimeEnabled = false;
-    } on Exception catch(e){
+    } on Exception catch (e) {
       e.printInfo();
-      isAutoTimeEnabled=false;
+      isAutoTimeEnabled = false;
     }
 
     return isAutoTimeEnabled;
@@ -716,17 +715,26 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(5))),
           insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-          title: Text("Warning!",style: GoogleFonts.roboto()),
+          title: Text("Warning!", style: GoogleFonts.roboto()),
           content: Text(
-              "You are $distance away from the retailer's defined boundary.\nPress Ok to continue" +
-                  "\nCurrent LatLng ::  ${currentLatLng?.latitude} , ${currentLatLng?.longitude} \nAlert Count :: ${repeat+1}",style: GoogleFonts.roboto(),),
+            "You are $distance away from the retailer's defined boundary.\nPress Ok to continue" +
+                "\nCurrent LatLng ::  ${currentLatLng?.latitude} , ${currentLatLng?.longitude} \nAlert Count :: ${repeat + 1}",
+            style: GoogleFonts.roboto(),
+          ),
           actions: [
-            TextButton(onPressed: () {
-              Navigator.of(context).pop();
-              _setLocationCallback();
-            }, child: Text("Ok",style: GoogleFonts.roboto(color: Colors.grey.shade800,fontSize: 16),))
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _setLocationCallback();
+                },
+                child: Text(
+                  "Ok",
+                  style: GoogleFonts.roboto(
+                      color: Colors.grey.shade800, fontSize: 16),
+                ))
           ],
         ),
       );
@@ -781,8 +789,6 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
     }
   }
 
-
-
   void setObservers() {
     debounce(controller.isStartFlow, (value) {
       if (value) {
@@ -798,8 +804,8 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
 
     debounce(controller.outletNearbyPos, (distance) {
       if (currentLatLng != null && outletLatLng != null) {
-        AlertDialogManager.getInstance()
-            .showLocationMissMatchAlertDialog(context,currentLatLng!, outletLatLng!);
+        AlertDialogManager.getInstance().showLocationMissMatchAlertDialog(
+            context, currentLatLng!, outletLatLng!);
       }
     }, time: const Duration(milliseconds: 200));
 
@@ -824,10 +830,9 @@ class _OutletSummaryScreenState extends State<OutletSummaryScreen> {
     }, time: const Duration(milliseconds: 100));
 
     debounce(controller.getMessage(), (event) {
-      if(!event.hasBeenHandled){
+      if (!event.hasBeenHandled) {
         showToastMessage(event.peekContent());
       }
     }, time: const Duration(milliseconds: 200));
   }
-
 }

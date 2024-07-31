@@ -9,9 +9,7 @@ class SyncedViewModel extends GetxController{
   final Repository _repository;
   RxList<RequestForm> syncedForms = RxList<RequestForm>();
 
-  SyncedViewModel(this._repository){
-    getRevertedForms(Constants.OUTLETS_REVERTED_WORKFLOW,Constants.NEW_OUTLET_REQUEST_TYPE_ID);
-  }
+  SyncedViewModel(this._repository);
 
 
   Future<void> getRevertedForms(int revertedId,int formId) async{

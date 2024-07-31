@@ -10,7 +10,10 @@ class CustomerServiceViewModel extends GetxController{
   final Repository _repository;
   RxBool cs1DataSaved =false.obs;
 
-  CustomerServiceViewModel(this._repository){
+  CustomerServiceViewModel(this._repository);
+
+
+  void init(){
     cs1DataSaved=false.obs;
   }
 

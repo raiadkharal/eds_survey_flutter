@@ -20,9 +20,7 @@ class SurveyViewModel extends GetxController {
   int? _selectedDistributionId;
   int? _selectedRouteId;
 
-  SurveyViewModel(this._repository, this._homeRepository) {
-    loadData();
-  }
+  SurveyViewModel(this._repository, this._homeRepository);
 
   Future<void> loadData() async {
     distributions = _repository.getMarketVisitDistributions();

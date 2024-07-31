@@ -38,11 +38,10 @@ class _UploadScreenState extends State<UploadScreen> {
         appBar: AppBar(
             foregroundColor: Colors.white,
             backgroundColor: primaryColor,
-            title: Expanded(
-                child: Text(
+            title: Text(
               "Upload",
               style: GoogleFonts.roboto(color: Colors.white),
-            ))),
+            )),
         body: Stack(
           children: [
             Padding(

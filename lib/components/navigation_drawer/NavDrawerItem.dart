@@ -35,22 +35,42 @@ class _NavDrawerItemListState extends State<NavDrawerItemList> {
     return FutureBuilder(
       future: getVersionCode(),
       builder: (context, snapshot) {
-        String versionCode = snapshot.requireData;
         if(snapshot.connectionState==ConnectionState.done){
-          return  Container(
-            padding: const EdgeInsets.only(top: 15.0),
-            // margin: const EdgeInsets.only(left: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                menuItem(1, "My Account", FontAwesomeIcons.solidUserCircle),
-                // menuItem(2, "Outlet Request", FontAwesomeIcons.file),
-                menuItem(3, "Check for Update", Icons.refresh),
-                menuItem(4, "Version ( $versionCode )", Icons.abc),
-                menuItem(5, "Logout", Icons.login_outlined),
-              ],
-            ),
-          );
+          if (snapshot.hasData &&snapshot.requireData.isNotEmpty) {
+            String versionCode = snapshot.requireData;
+            return  Container(
+                        padding: const EdgeInsets.only(top: 15.0),
+                        // margin: const EdgeInsets.only(left: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            menuItem(1, "My Account", FontAwesomeIcons.solidUserCircle),
+                            // menuItem(2, "Outlet Request", FontAwesomeIcons.file),
+                            menuItem(3, "Check for Update", Icons.refresh),
+                            menuItem(4, "Version ( $versionCode )", Icons.abc),
+                            menuItem(5, "Logout", Icons.login_outlined),
+                          ],
+                        ),
+                      );
+          }else if(snapshot.hasError){
+            return Center(child: Text(snapshot.error.toString()),);
+          }
+          else {
+            return  Container(
+              padding: const EdgeInsets.only(top: 15.0),
+              // margin: const EdgeInsets.only(left: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  menuItem(1, "My Account", FontAwesomeIcons.solidUserCircle),
+                  // menuItem(2, "Outlet Request", FontAwesomeIcons.file),
+                  menuItem(3, "Check for Update", Icons.refresh),
+                  menuItem(4, "Version ( number )", Icons.abc),
+                  menuItem(5, "Logout", Icons.login_outlined),
+                ],
+              ),
+            );
+          }
         }else{
           return const Center(child: CircularProgressIndicator(),);
         }

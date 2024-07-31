@@ -9,9 +9,7 @@ class RevertedViewModel extends GetxController{
   final Repository _repository;
   RxList<RequestForm> revertedForms = RxList<RequestForm>();
 
-  RevertedViewModel(this._repository){
-    getRevertedForms(Constants.NEW_OUTLET_REQUEST_TYPE_ID,Constants.OUTLETS_REVERTED_WORKFLOW);
-  }
+  RevertedViewModel(this._repository);
 
 
   Future<void> getRevertedForms(int formId,int revertedId) async{

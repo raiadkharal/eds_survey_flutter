@@ -22,12 +22,15 @@ import 'package:eds_survey/ui/outlet_request/draft/DraftScreen.dart';
 import 'package:eds_survey/ui/priorities/PrioritiesScreen.dart';
 import 'package:eds_survey/ui/upload/UploadScreen.dart';
 import 'package:eds_survey/ui/work_with/execution_standards/ExecutionStandardsScreen.dart';
+import 'package:eds_survey/ui/work_with/main/WorkWithMainScreen.dart';
 import 'package:eds_survey/ui/work_with/remarks/RemarksScreen.dart';
 import 'package:eds_survey/ui/work_with/steps_of_call/StepsOfCallScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Future.delayed(const Duration(milliseconds: 1000));
   runApp(
     const MyApp(),
   );
@@ -51,11 +54,13 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: Routes.splash, page: () => const SplashScreen(),transition: Transition.fade),
         GetPage(
-            name: Routes.login, page: () => LoginScreen(),transition: Transition.rightToLeft),
+            name: Routes.login, page: () => const LoginScreen(),transition: Transition.rightToLeft),
         GetPage(
             name: Routes.home, page: () => const HomeScreen(),transition: Transition.rightToLeft),
         GetPage(
             name: Routes.loadOutlets, page: () => const LoadOutletsScreen(),transition: Transition.rightToLeft),
+        GetPage(
+            name: Routes.workWithMain, page: () => const WorkWithMainScreen(),transition: Transition.rightToLeft),
         GetPage(
             name: Routes.outletList, page: () => const OutletListScreen(),transition: Transition.rightToLeft),
         GetPage(

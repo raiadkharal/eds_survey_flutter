@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../utils/Colors.dart';
+import '../../../utils/Constants.dart';
 import '../OutletRequestItem.dart';
 
 class RevertedScreen extends StatefulWidget {
@@ -18,6 +19,12 @@ class _RevertedScreenState extends State<RevertedScreen> {
   final RevertedViewModel controller =
       Get.put<RevertedViewModel>(RevertedViewModel(Get.find<Repository>()));
 
+
+  @override
+  void initState() {
+    super.initState();
+    controller.getRevertedForms(Constants.NEW_OUTLET_REQUEST_TYPE_ID,Constants.OUTLETS_REVERTED_WORKFLOW);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

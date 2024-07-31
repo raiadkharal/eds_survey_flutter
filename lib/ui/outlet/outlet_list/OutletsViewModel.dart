@@ -17,17 +17,14 @@ class OutletsViewModel extends GetxController {
   OutletsViewModel(this._repository);
 
 
-  @override
-  void onReady() {
-   _repository.getOutletStream().listen((outlets) {
-     populateOutlets(outlets);
-   },);
+  void init(){
+    _repository.getOutletStream().listen((outlets) {
+      populateOutlets(outlets);
+    },);
 
-   _repository.getWOutletStream().listen((outlets) {
-     populateOutlets(outlets);
-   },);
-
-    super.onReady();
+    _repository.getWOutletStream().listen((outlets) {
+      populateOutlets(outlets);
+    },);
   }
 
   int? getSelectedDistributionId() => _selectedDistributionId;

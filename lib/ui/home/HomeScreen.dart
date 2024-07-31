@@ -51,17 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
             foregroundColor: Colors.white,
             backgroundColor: primaryColor,
-            // leading: IconButton(
-            //     onPressed: () {},
-            //     icon: const Icon(
-            //       Icons.menu,
-            //       color: Colors.white,
-            //     )),
-            title: Expanded(
-                child: Text(
+            title: Text(
               "EDS Survey",
               style: GoogleFonts.roboto(color: Colors.white),
-            ))),
+            )),
         body: Stack(
           children: [
             Padding(
@@ -111,77 +104,90 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
 
                         //Download data
-                        HomeButton(
-                          onTap: () {
-                            if (controller.isDayStarted()) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                                  insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-                                  content: SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Update Routes and Outlets!",
-                                          style: GoogleFonts.roboto(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Text(
-                                            "Are you sure you want to fetch updated routes and outlets?",
+                        Expanded(
+                          child: HomeButton(
+                            onTap: () {
+                              if (controller.isDayStarted()) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.all(Radius.circular(5))),
+                                    insetPadding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
+                                    content: SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Update Routes and Outlets!",
                                             style: GoogleFonts.roboto(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400)),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: Text("NO",style: GoogleFonts.roboto(
-                                                    fontSize: 16,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w400),)),
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                  controller.download();
-                                                },
-                                                child: Text("YES",style: GoogleFonts.roboto(
-                                                    fontSize: 16,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w400)))
-                                          ],
-                                        )
-                                      ],
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                              "Are you sure you want to fetch updated routes and outlets?",
+                                              style: GoogleFonts.roboto(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400)),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text(
+                                                    "NO",
+                                                    style: GoogleFonts.roboto(
+                                                        fontSize: 16,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  )),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                    controller.download();
+                                                  },
+                                                  child: Text("YES",
+                                                      style: GoogleFonts.roboto(
+                                                          fontSize: 16,
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                              FontWeight.w400)))
+                                            ],
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            } else {
-                              showToastMessage(Constants.ERROR_DAY_NO_STARTED);
-                            }
-                          },
-                          text: "Download",
-                          iconData: Icons.cloud_download_rounded,
-                          color: Colors.blueAccent,
+                                );
+                              } else {
+                                showToastMessage(Constants.ERROR_DAY_NO_STARTED);
+                              }
+                            },
+                            text: "Download",
+                            iconData: Icons.cloud_download_rounded,
+                            color: Colors.blueAccent,
+                          ),
                         )
                       ],
                     ),
@@ -193,33 +199,37 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        HomeButton(
-                            onTap: () {
-                              if (controller.isDayStarted()) {
-                                Get.toNamed(Routes.loadOutlets);
-                              } else {
-                                showToastMessage(
-                                    Constants.ERROR_DAY_NO_STARTED);
-                              }
-                            },
-                            text: "Market Visit",
-                            iconData: Icons.file_open_sharp,
-                            color: Colors.blueAccent),
+                        Expanded(
+                          child: HomeButton(
+                              onTap: () {
+                                if (controller.isDayStarted()) {
+                                  Get.toNamed(Routes.loadOutlets);
+                                } else {
+                                  showToastMessage(
+                                      Constants.ERROR_DAY_NO_STARTED);
+                                }
+                              },
+                              text: "Market Visit",
+                              iconData: Icons.file_open_sharp,
+                              color: Colors.blueAccent),
+                        ),
                         const SizedBox(
                           width: Constants.homeButtonsPadding,
                         ),
-                        HomeButton(
-                            onTap: () {
-                              if (controller.isDayStarted()) {
-                                Get.to(const WorkWithMainScreen());
-                              } else {
-                                showToastMessage(
-                                    Constants.ERROR_DAY_NO_STARTED);
-                              }
-                            },
-                            text: "Work * With",
-                            iconData: Icons.file_open_rounded,
-                            color: primaryColor)
+                        Expanded(
+                          child: HomeButton(
+                              onTap: () {
+                                if (controller.isDayStarted()) {
+                                  Get.toNamed(Routes.workWithMain);
+                                } else {
+                                  showToastMessage(
+                                      Constants.ERROR_DAY_NO_STARTED);
+                                }
+                              },
+                              text: "Work * With",
+                              iconData: Icons.file_open_rounded,
+                              color: primaryColor),
+                        )
                       ],
                     ),
                   ),
@@ -230,33 +240,37 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        HomeButton(
-                            onTap: () {
-                              if (controller.isDayStarted()) {
-                                controller.dayEnd();
-                              } else {
-                                showToastMessage(
-                                    Constants.ERROR_DAY_NO_STARTED);
-                              }
-                            },
-                            text: "End Day",
-                            iconData: Icons.alarm_off,
-                            color: primaryColor),
+                        Expanded(
+                          child: HomeButton(
+                              onTap: () {
+                                if (controller.isDayStarted()) {
+                                  controller.dayEnd();
+                                } else {
+                                  showToastMessage(
+                                      Constants.ERROR_DAY_NO_STARTED);
+                                }
+                              },
+                              text: "End Day",
+                              iconData: Icons.alarm_off,
+                              color: primaryColor),
+                        ),
                         const SizedBox(
                           width: Constants.homeButtonsPadding,
                         ),
-                        HomeButton(
-                            onTap: () {
-                              if (controller.isDayStarted()) {
-                                Get.toNamed(Routes.upload);
-                              } else {
-                                showToastMessage(
-                                    Constants.ERROR_DAY_NO_STARTED);
-                              }
-                            },
-                            text: "Upload",
-                            iconData: Icons.cloud_upload,
-                            color: Colors.blueAccent)
+                        Expanded(
+                          child: HomeButton(
+                              onTap: () {
+                                if (controller.isDayStarted()) {
+                                  Get.toNamed(Routes.upload);
+                                } else {
+                                  showToastMessage(
+                                      Constants.ERROR_DAY_NO_STARTED);
+                                }
+                              },
+                              text: "Upload",
+                              iconData: Icons.cloud_upload,
+                              color: Colors.blueAccent),
+                        )
                       ],
                     ),
                   )
@@ -311,8 +325,9 @@ class _HomeScreenState extends State<HomeScreen> {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-              insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(5))),
+                  insetPadding: const EdgeInsets.symmetric(horizontal: 20),
                   title: Text(
                     "Day Started! ( $startDate )",
                     style: GoogleFonts.roboto(
@@ -337,8 +352,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                                 child: Text(
                                   "Ok",
-                                  style:
-                                      GoogleFonts.roboto(color: Colors.black,fontSize: 16),
+                                  style: GoogleFonts.roboto(
+                                      color: Colors.black, fontSize: 16),
                                 )),
                           ],
                         )

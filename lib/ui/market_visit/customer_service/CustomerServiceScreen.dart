@@ -55,6 +55,7 @@ class _CustomerServiceScreenState extends State<CustomerServiceScreen> {
     outletId = args[0];
     surveyType = args[1];
 
+    controller.init();
     setObservers();
     super.initState();
   }

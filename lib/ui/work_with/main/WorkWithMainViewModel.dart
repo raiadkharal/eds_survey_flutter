@@ -18,19 +18,15 @@ class WorkWithMainViewModel extends GetxController{
   int? _selectedDistributionId;
   int? _selectedRouteId;
 
-  late RxList<Psr> psrLiveData=RxList<Psr>([]);
-  late Rx<bool> navigate;
-  late Rx<String> msg;
+  RxList<Psr> psrLiveData=RxList<Psr>([]);
+  Rx<bool> navigate=false.obs;
+  Rx<String> msg="".obs;
 
 
 
-  WorkWithMainViewModel(this._repository, this._homeRepository){
-    navigate=false.obs;
-    msg="".obs;
-    loadData();
-  }
+  WorkWithMainViewModel(this._repository, this._homeRepository);
 
-  Future<void> loadData() async {
+  Future<void> init() async {
     distributions = _repository.getWorkWithDistributions();
     psrLiveData.value= await _repository.getPSrs();
   }

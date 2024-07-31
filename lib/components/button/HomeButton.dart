@@ -17,26 +17,24 @@ class HomeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          color: color,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                iconData,
-                size: 72,
-                color: Colors.white,
-              ),
-              Text(
-                text,
-                style: GoogleFonts.roboto(color: Colors.white,fontSize: 16),
-              )
-            ],
-          ),
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        color: color,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              iconData,
+              size: 72,
+              color: Colors.white,
+            ),
+            Text(
+              text,
+              style: GoogleFonts.roboto(color: Colors.white,fontSize: 16),
+            )
+          ],
         ),
       ),
     );

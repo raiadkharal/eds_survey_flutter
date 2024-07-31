@@ -30,6 +30,7 @@ class _WorkWithMainScreenState extends State<WorkWithMainScreen> {
   @override
   void initState() {
     setObservers();
+    controller.init();
     super.initState();
   }
 
@@ -60,19 +61,30 @@ class _WorkWithMainScreenState extends State<WorkWithMainScreen> {
                   future: controller.distributions,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
-                      controller
-                          .setSelectedDistribution(snapshot.requireData[0]);
-                      return CustomDropdownButton<WDistribution>(
-                        items: snapshot.requireData,
-                        value: snapshot.requireData[0],
-                        displayValue: (item) =>
-                            item.distributionName ?? "No Distributions",
-                        onChanged: (distribution) {
-                          if(distribution!=null) {
-                            controller.setSelectedDistribution(distribution);
-                          }
-                        },
-                      );
+                      if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
+                        controller
+                            .setSelectedDistribution(snapshot.requireData[0]);
+                        return CustomDropdownButton<WDistribution>(
+                          items: snapshot.requireData,
+                          value: snapshot.requireData[0],
+                          displayValue: (item) =>
+                              item.distributionName ?? "No Distribution name",
+                          onChanged: (distribution) {
+                            if (distribution != null) {
+                              controller.setSelectedDistribution(distribution);
+                            }
+                          },
+                        );
+                      } else {
+                        return Expanded(
+                            child: Container(
+                              color: Colors.white,
+                              child: const Center(
+                                child: Text(
+                                    "Distributions not found. Please download data again!"),
+                              ),
+                            ));
+                      }
                     } else {
                       return const Center(child: CircularProgressIndicator());
                     }
@@ -89,19 +101,29 @@ class _WorkWithMainScreenState extends State<WorkWithMainScreen> {
                   future: controller.routes,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
-                      if(snapshot.requireData.isNotEmpty) {
+                      if (snapshot.hasData&&snapshot.requireData.isNotEmpty) {
                         controller.setSelectedRouteId(snapshot.requireData[0]);
+                        return CustomDropdownButton<WRoute>(
+                          items: snapshot.requireData,
+                          value: snapshot.requireData[0],
+                          displayValue: (item) =>
+                          item.mRouteName ?? "No Route name",
+                          onChanged: (route) {
+                            if (route != null) {
+                              controller.setSelectedRouteId(route);
+                            }
+                          },
+                        );
+                      }else{
+                        return Expanded(
+                            child:  Container(
+                              color: Colors.white,
+                              child: const Center(
+                                child: Text(
+                                    "Routes not found. Please download data again!"),
+                              ),
+                            ));
                       }
-                      return CustomDropdownButton<WRoute>(
-                        items: snapshot.requireData,
-                        value: snapshot.requireData[0],
-                        displayValue: (item) => item.mRouteName ?? "No Routes",
-                        onChanged: (route) {
-                          if(route!=null) {
-                            controller.setSelectedRouteId(route);
-                          }
-                        },
-                      );
                     } else {
                       return const Center(child: CircularProgressIndicator());
                     }
