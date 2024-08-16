@@ -54,8 +54,8 @@ class OutletListItem extends StatelessWidget {
                   children: [
                     Text(
                       surveyType == SurveyType.MARKET_VISIT
-                          ? outlet.outletName ?? "Outlet Name"
-                          : wOutlet.outletName ?? "Outlet Name",
+                          ? "${outlet.outletName} - ${outlet.location}"
+                          :"${wOutlet.outletName} - ${wOutlet.location}",
                       style: GoogleFonts.roboto(
                           color: primaryColor
                           ,
