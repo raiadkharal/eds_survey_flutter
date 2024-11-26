@@ -22,7 +22,6 @@ import 'package:eds_survey/data/db/entities/workwith/WorkWithPost.dart';
 import 'package:eds_survey/data/db/entities/workwith/WorkWithPre.dart';
 import 'package:eds_survey/data/models/Product.dart';
 import 'package:eds_survey/utils/Utils.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../models/DocumentTable.dart';
@@ -131,7 +130,7 @@ class MainDaoImpl extends MainDao {
             conflictAlgorithm: ConflictAlgorithm.replace);
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
+      showToastMessage(e.toString());
     }
   }
 
@@ -149,7 +148,7 @@ class MainDaoImpl extends MainDao {
       _database.insert("LookUpData", lookUpData.toJson(),
           conflictAlgorithm: ConflictAlgorithm.replace);
     } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
+      showToastMessage(e.toString());
     }
   }
 

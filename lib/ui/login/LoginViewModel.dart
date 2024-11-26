@@ -5,8 +5,8 @@ import 'package:eds_survey/ui/login/LoginRepository.dart';
 import 'package:eds_survey/ui/login/LoginScreen.dart';
 import 'package:eds_survey/utils/Enums.dart';
 import 'package:eds_survey/utils/PreferenceUtil.dart';
+import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 
@@ -33,7 +33,7 @@ class LoginViewModel extends GetxController {
           _repository.setLoggedInUser(user);
           successCallback(true);
         } else {
-          Fluttertoast.showToast(msg: response.message.toString());
+          showToastMessage(response.message.toString());
         }
       },
     );

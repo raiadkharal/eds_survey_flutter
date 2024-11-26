@@ -27,7 +27,6 @@ import 'package:eds_survey/utils/PreferenceUtil.dart';
 import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';

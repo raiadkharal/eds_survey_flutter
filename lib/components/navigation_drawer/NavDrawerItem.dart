@@ -4,7 +4,6 @@ import 'package:eds_survey/utils/Constants.dart';
 import 'package:eds_survey/utils/PreferenceUtil.dart';
 import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -99,7 +98,7 @@ class _NavDrawerItemListState extends State<NavDrawerItemList> {
   void navigate(int id) {
     switch (id) {
       case 1:
-        Fluttertoast.showToast(msg: "Account");
+        showToastMessage("Account");
         break;
       case 2:
         if(isDayStarted()) {
@@ -110,10 +109,10 @@ class _NavDrawerItemListState extends State<NavDrawerItemList> {
         }
         break;
       case 3:
-        Fluttertoast.showToast(msg: "Update");
+        showToastMessage("Update");
         break;
       case 4:
-        Fluttertoast.showToast(msg: "Version");
+        showToastMessage("Version");
         break;
       case 5:
         showDialog(
@@ -137,6 +136,6 @@ class _NavDrawerItemListState extends State<NavDrawerItemList> {
       preferenceUtil.clearAllPreferences();
     });
     Get.offAll(const LoginScreen());
-    Fluttertoast.showToast(msg: "Logout Success");
+    showToastMessage("Logout Success");
   }
 }

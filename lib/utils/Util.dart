@@ -3,8 +3,9 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -88,7 +89,8 @@ class Util {
   }
 
   static void showToastMessage(String message){
-    Fluttertoast.showToast(msg: message);
+    // Fluttertoast.showToast(msg: message);
+    Get.snackbar("message", message,snackPosition: SnackPosition.TOP,duration: const Duration(seconds: 2));
   }
 
   static double checkMetre(LatLng? from, LatLng? to) {

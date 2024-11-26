@@ -27,6 +27,7 @@ import 'package:eds_survey/ui/work_with/remarks/RemarksScreen.dart';
 import 'package:eds_survey/ui/work_with/steps_of_call/StepsOfCallScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toastification/toastification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,66 +43,69 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'EDS Survey',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
-        useMaterial3: true,
-      ),
-      initialRoute: "/",
-      getPages: [
-        GetPage(
-            name: Routes.splash, page: () => const SplashScreen(),transition: Transition.fade),
-        GetPage(
-            name: Routes.login, page: () => const LoginScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.home, page: () => const HomeScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.loadOutlets, page: () => const LoadOutletsScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.workWithMain, page: () => const WorkWithMainScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.outletList, page: () => const OutletListScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.outletSummary, page: () => const OutletSummaryScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.merchandising, page: () => const MerchandisingScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.gandola, page: () => const GandolaScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.customerService, page: () => const CustomerServiceScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.coolerVerification, page: () => const CoolerVerificationScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.stockInformation, page: () => const StockInformationScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.competitorStockInformation, page: () => const CompetitorStockInformationScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.expiredStock, page: () => const ExpiredStockScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.surveyFeedback, page: () => const SurveyFeedbackScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.priorities, page: () => const PrioritiesScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.executionStandards, page: () => const ExecutionStandardsScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.stepsOfCall, page: () => const StepOfCallScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.remarks, page: () => const RemarksScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.upload, page: () => const UploadScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.outletRequest, page: () => const OutletRequestScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.newOutletRequest, page: () => const NewOutletRequestScreen(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.outletRequestFormOne, page: () => const FormOne(),transition: Transition.rightToLeft),
-        GetPage(
-            name: Routes.outletRequestFormTwo, page: () => const FormTwo(),transition:Transition.rightToLeft),
+    return  ToastificationWrapper(
+        child: GetMaterialApp(
+          title: 'EDS Survey',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
+            useMaterial3: true,
+          ),
+          initialRoute: "/",
+          getPages: [
+            GetPage(
+                name: Routes.splash, page: () => const SplashScreen(),transition: Transition.fade),
+            GetPage(
+                name: Routes.login, page: () => const LoginScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.home, page: () => const HomeScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.loadOutlets, page: () => const LoadOutletsScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.workWithMain, page: () => const WorkWithMainScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.outletList, page: () => const OutletListScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.outletSummary, page: () => const OutletSummaryScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.merchandising, page: () => const MerchandisingScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.gandola, page: () => const GandolaScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.customerService, page: () => const CustomerServiceScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.coolerVerification, page: () => const CoolerVerificationScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.stockInformation, page: () => const StockInformationScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.competitorStockInformation, page: () => const CompetitorStockInformationScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.expiredStock, page: () => const ExpiredStockScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.surveyFeedback, page: () => const SurveyFeedbackScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.priorities, page: () => const PrioritiesScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.executionStandards, page: () => const ExecutionStandardsScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.stepsOfCall, page: () => const StepOfCallScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.remarks, page: () => const RemarksScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.upload, page: () => const UploadScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.outletRequest, page: () => const OutletRequestScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.newOutletRequest, page: () => const NewOutletRequestScreen(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.outletRequestFormOne, page: () => const FormOne(),transition: Transition.rightToLeft),
+            GetPage(
+                name: Routes.outletRequestFormTwo, page: () => const FormTwo(),transition:Transition.rightToLeft),
 
 
-      ],
+          ],
+        ),
     );
+
   }
 }

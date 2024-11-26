@@ -5,7 +5,6 @@ import 'package:eds_survey/ui/priorities/PrioritiesViewModel.dart';
 import 'package:eds_survey/utils/Enums.dart';
 import 'package:eds_survey/utils/Utils.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart';
